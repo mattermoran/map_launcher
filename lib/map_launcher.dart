@@ -1,0 +1,105 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+enum MapType { apple, google, amap, baidu }
+
+String _enumToString(o) => o.toString().split('.').last;
+
+T _enumFromString<T>(Iterable<T> values, String value) {
+  return values.firstWhere((type) => type.toString().split('.').last == value,
+      orElse: () => null);
+}
+
+class Coords {
+  final double latitude;
+  final double longitude;
+
+  Coords(this.latitude, this.longitude);
+}
+
+class AvailableMap {
+  String mapName;
+  MapType mapType;
+
+  AvailableMap({this.mapName, this.mapType});
+
+  static AvailableMap fromJson(json) {
+    return AvailableMap(
+      mapName: json['mapName'],
+      mapType: _enumFromString(MapType.values, json['mapType']),
+    );
+  }
+
+  Future<void> showMarker({
+    @required Coords coords,
+    @required String title,
+    @required String description,
+  }) {
+    return MapLauncher.launchMap(
+      mapType: mapType,
+      coords: coords,
+      title: title,
+      description: description,
+    );
+  }
+
+  @override
+  String toString() {
+    return "AvailableMap { mapName: $mapName, mapType: ${_enumToString(mapType)} }";
+  }
+}
+
+String _getMapUrl(
+  MapType mapType,
+  Coords coords, [
+  String title,
+  String description,
+]) {
+  switch (mapType) {
+    case MapType.google:
+      if (Platform.isIOS) {
+        return "comgooglemaps://?q=$title&center=${coords.latitude},${coords.longitude}";
+      }
+      return "geo:${coords.latitude},${coords.longitude}?q=${coords.latitude},${coords.longitude}";
+    case MapType.amap:
+      return "${Platform.isIOS ? 'ios' : 'android'}amap://viewMap?sourceApplication=map_launcher&poiname=$title&lat=${coords.latitude}&lon=${coords.longitude}&zoom=18&dev=0";
+    case MapType.baidu:
+      return "baidumap://map/marker?location=${coords.latitude},${coords.longitude}&title=$title&content=$description&traffic=on&src=com.map_launcher&coord_type=gcj02&zoom=18";
+    case MapType.apple:
+      return "http://maps.apple.com/maps?saddr=${coords.latitude},${coords.longitude}";
+    default:
+      return null;
+  }
+}
+
+class MapLauncher {
+  static const MethodChannel _channel = const MethodChannel('map_launcher');
+
+  static Future<List<AvailableMap>> get installedMaps async {
+    final maps = await _channel.invokeMethod('getInstalledMaps');
+    return List<AvailableMap>.from(
+      maps.map((map) => AvailableMap.fromJson(map)),
+    );
+  }
+
+  static Future<dynamic> launchMap({
+    @required MapType mapType,
+    @required Coords coords,
+    @required String title,
+    @required String description,
+  }) async {
+    final url = _getMapUrl(mapType, coords, title, description);
+    final Map<String, String> args = {
+      "mapType": _enumToString(mapType),
+      "url": Uri.encodeFull(url),
+      "title": title,
+      "description": description,
+      "latitude": coords.latitude.toString(),
+      "longitude": coords.longitude.toString(),
+    };
+    return _channel.invokeMethod('launchMap', args);
+  }
+}
