@@ -1,8 +1,8 @@
 name: map_launcher
 description: A new flutter plugin project.
 version: 0.1.0
-author:
-homepage:
+author: Alex Miller <mattermoran@gmail.com>
+homepage: https://github.com/mattermoran/map_launcher
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
