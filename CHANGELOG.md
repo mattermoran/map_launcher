@@ -1,3 +1,7 @@
+## 0.1.2
+
+* AndroidX support
+
 ## 0.1.1
 
 * Update description in pubspec.yaml
