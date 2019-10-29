@@ -29,6 +29,11 @@ class MapLauncherDemo extends StatelessWidget {
                           description: description,
                         ),
                         title: Text(map.mapName),
+                        leading: Image(
+                          image: map.icon,
+                          height: 30.0,
+                          width: 30.0,
+                        ),
                       ),
                   ],
                 ),

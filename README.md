@@ -4,7 +4,10 @@
 
 Map Launcher is a flutter plugin to find available maps installed on a device and launch them with a marker for specified location.
 
-![DEMO](https://media.giphy.com/media/dZ3h6sP5BaCaYm9VaC/giphy.gif)
+
+Android             |  iOS
+:-------------------------:|:-------------------------:
+![ANDROID](https://media.giphy.com/media/jpR6J3BpABU4guU8oN/giphy.gif)  |  ![iOS](https://media.giphy.com/media/VEhyMsqb9Nj30VPpaR/giphy.gif)
 
 Currently supported maps:
   - Google Maps
@@ -86,6 +89,11 @@ class MapLauncherDemo extends StatelessWidget {
                           description: description,
                         ),
                         title: Text(map.mapName),
+                        leading: Image(
+                          image: map.icon,
+                          height: 30.0,
+                          width: 30.0,
+                        ),
                       ),
                   ],
                 ),

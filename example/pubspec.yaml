@@ -2,6 +2,8 @@ name: map_launcher_example
 description: Demonstrates how to use the map_launcher plugin.
 publish_to: 'none'
 
+version: 0.1.0
+
 environment:
   sdk: ">=2.2.2 <3.0.0"
 

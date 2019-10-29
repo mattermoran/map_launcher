@@ -23,13 +23,18 @@ class Coords {
 class AvailableMap {
   String mapName;
   MapType mapType;
+  AssetImage icon;
 
-  AvailableMap({this.mapName, this.mapType});
+  AvailableMap({this.mapName, this.mapType, this.icon});
 
   static AvailableMap fromJson(json) {
     return AvailableMap(
       mapName: json['mapName'],
       mapType: _enumFromString(MapType.values, json['mapType']),
+      icon: AssetImage(
+        'assets/icons/${json['mapType']}.png',
+        package: 'map_launcher',
+      ),
     );
   }
 
