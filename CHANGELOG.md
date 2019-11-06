@@ -1,6 +1,6 @@
 ## 0.2.0
 
-* Added a method to check if map is installed
+* Added method to check if map is available
 
 
 ## 0.1.3
