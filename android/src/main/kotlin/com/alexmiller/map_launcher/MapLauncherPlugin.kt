@@ -44,6 +44,12 @@ class MapLauncherPlugin(private val context: Context, private val activity: Acti
       return installedMaps
   }
 
+
+  private fun isMapAvailable(type: String): Boolean {
+    val installedMaps = getInstalledMaps()
+    return installedMaps.any { map -> map.mapType.name == type }
+  }
+
   private fun launchGoogleMaps(url: String) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
     intent.setPackage("com.google.android.apps.maps")
@@ -75,6 +81,10 @@ class MapLauncherPlugin(private val context: Context, private val activity: Acti
         val mapType = MapType.valueOf(args["mapType"] as String)
         val url = args["url"] as String
         launchMap(mapType, url)
+      }
+      "isMapAvailable" -> {
+        var args = call.arguments as Map<String, String>
+        result.success(isMapAvailable(args["mapType"] as String))
       }
       else -> result.notImplemented()
     }

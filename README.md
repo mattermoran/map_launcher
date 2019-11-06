@@ -40,7 +40,7 @@ dependencies:
 
 ## Usage
 
-### Basic example
+### Get list of installed maps and launch first
 
 ```dart
 import 'package:map_launcher/map_launcher.dart';
@@ -53,6 +53,23 @@ await availableMaps.first.showMarker(
   title: "Shanghai Tower",
   description: "Asia's tallest building",
 );
+
+```
+
+
+### Check if map is installed and launch it
+
+```dart
+import 'package:map_launcher/map_launcher.dart';
+
+if (await MapLauncher.isMapAvailable(MapType.google)) {
+  await MapLauncher.launchMap(
+    mapType: MapType.google,
+    coords: coords,
+    title: title,
+    description: description,
+  );
+}
 
 ```
 

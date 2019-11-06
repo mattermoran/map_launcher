@@ -41,10 +41,13 @@ let maps: [Map] = [
     Map(mapName: "Baidu Maps", mapType: MapType.baidu, urlPrefix: "baidumap://")
 ]
 
+func getMapByRawMapType(type: String) -> Map {
+    return maps.first(where: { $0.mapType.type() == type })!
+}
+
 func launchMap(mapType: MapType, url: String, title: String, latitude: String, longitude: String) {
     switch mapType {
     case MapType.apple:
-        print("apple maps")
         let coordinate = CLLocationCoordinate2DMake(Double(latitude)!, Double(longitude)!)
         let region = MKCoordinateRegionMake(coordinate, MKCoordinateSpanMake(0.01, 0.02))
         let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
@@ -68,12 +71,12 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
-    func isMapAvailable(map: Map) -> Bool {
-        if map.mapType == MapType.apple {
-           return true
-        }
-        return UIApplication.shared.canOpenURL(URL(string:map.urlPrefix!)!)
-    }
+  func isMapAvailable(map: Map) -> Bool {
+      if map.mapType == MapType.apple {
+          return true
+      }
+      return UIApplication.shared.canOpenURL(URL(string:map.urlPrefix!)!)
+  }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
@@ -87,6 +90,11 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
       let latitude = args["latitude"] as! String
       let longitude = args["longitude"] as! String
       launchMap(mapType: MapType(rawValue: mapType)!, url: url, title: title, latitude: latitude, longitude: longitude)
+    case "isMapAvailable":
+      let args = call.arguments as! NSDictionary
+      let mapType = args["mapType"] as! String
+      let map = getMapByRawMapType(type: mapType)
+      result(isMapAvailable(map: map))
     default:
       print("method does not exist")
     }

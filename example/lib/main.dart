@@ -13,6 +13,15 @@ class MapLauncherDemo extends StatelessWidget {
 
       print(availableMaps);
 
+      if (await MapLauncher.isMapAvailable(MapType.google)) {
+        MapLauncher.launchMap(
+          mapType: MapType.google,
+          coords: coords,
+          title: title,
+          description: description,
+        );
+      }
+
       showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {

@@ -53,7 +53,7 @@ class AvailableMap {
 
   @override
   String toString() {
-    return "AvailableMap { mapName: $mapName, mapType: ${_enumToString(mapType)} }";
+    return 'AvailableMap { mapName: $mapName, mapType: ${_enumToString(mapType)} }';
   }
 }
 
@@ -66,15 +66,15 @@ String _getMapUrl(
   switch (mapType) {
     case MapType.google:
       if (Platform.isIOS) {
-        return "comgooglemaps://?q=$title&center=${coords.latitude},${coords.longitude}";
+        return 'comgooglemaps://?q=$title&center=${coords.latitude},${coords.longitude}';
       }
-      return "geo:${coords.latitude},${coords.longitude}?q=${coords.latitude},${coords.longitude}";
+      return 'geo:${coords.latitude},${coords.longitude}?q=${coords.latitude},${coords.longitude}';
     case MapType.amap:
-      return "${Platform.isIOS ? 'ios' : 'android'}amap://viewMap?sourceApplication=map_launcher&poiname=$title&lat=${coords.latitude}&lon=${coords.longitude}&zoom=18&dev=0";
+      return '${Platform.isIOS ? 'ios' : 'android'}amap://viewMap?sourceApplication=map_launcher&poiname=$title&lat=${coords.latitude}&lon=${coords.longitude}&zoom=18&dev=0';
     case MapType.baidu:
-      return "baidumap://map/marker?location=${coords.latitude},${coords.longitude}&title=$title&content=$description&traffic=on&src=com.map_launcher&coord_type=gcj02&zoom=18";
+      return 'baidumap://map/marker?location=${coords.latitude},${coords.longitude}&title=$title&content=$description&traffic=on&src=com.map_launcher&coord_type=gcj02&zoom=18';
     case MapType.apple:
-      return "http://maps.apple.com/maps?saddr=${coords.latitude},${coords.longitude}";
+      return 'http://maps.apple.com/maps?saddr=${coords.latitude},${coords.longitude}';
     default:
       return null;
   }
@@ -98,13 +98,20 @@ class MapLauncher {
   }) async {
     final url = _getMapUrl(mapType, coords, title, description);
     final Map<String, String> args = {
-      "mapType": _enumToString(mapType),
-      "url": Uri.encodeFull(url),
-      "title": title,
-      "description": description,
-      "latitude": coords.latitude.toString(),
-      "longitude": coords.longitude.toString(),
+      'mapType': _enumToString(mapType),
+      'url': Uri.encodeFull(url),
+      'title': title,
+      'description': description,
+      'latitude': coords.latitude.toString(),
+      'longitude': coords.longitude.toString(),
     };
     return _channel.invokeMethod('launchMap', args);
+  }
+
+  static Future<bool> isMapAvailable(MapType mapType) async {
+    return _channel.invokeMethod(
+      'isMapAvailable',
+      {'mapType': _enumToString(mapType)},
+    );
   }
 }
