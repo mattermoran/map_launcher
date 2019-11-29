@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
-private enum class MapType { google, amap, baidu }
+private enum class MapType { google, amap, baidu, waze }
 
 private class MapModel(val mapType: MapType, val mapName: String, val packageName: String) {
   fun toMap(): Map<String, String> {
@@ -35,7 +35,8 @@ class MapLauncherPlugin(private val context: Context, private val activity: Acti
   private val maps = listOf(
     MapModel(MapType.google, "Google Maps", "com.google.android.apps.maps"),
     MapModel(MapType.amap, "Amap", "com.autonavi.minimap"),
-    MapModel(MapType.baidu, "Baidu Maps", "com.baidu.BaiduMap")
+    MapModel(MapType.baidu, "Baidu Maps", "com.baidu.BaiduMap"),
+    MapModel(MapType.waze, "Waze", "com.waze")
   )
 
   private fun getInstalledMaps(): List<MapModel> {
