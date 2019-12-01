@@ -76,7 +76,7 @@ String _getMapUrl(
     case MapType.apple:
       return 'http://maps.apple.com/maps?saddr=${coords.latitude},${coords.longitude}';
     case MapType.waze:
-      return 'waze://?ll=${coords.latitude},${coords.longitude}';
+      return 'waze://?ll=${coords.latitude},${coords.longitude}&zoom=10';
     default:
       return null;
   }

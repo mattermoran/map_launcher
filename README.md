@@ -13,6 +13,7 @@ Currently supported maps:
   - Google Maps
   - Baidu Maps
   - Amap (Gaode Maps)
+  - Waze
   - Apple Maps (iOS only)
 
 
@@ -34,6 +35,7 @@ dependencies:
     <string>comgooglemaps</string>
     <string>baidumap</string>
     <string>iosamap</string>
+    <string>waze</string>
 </array>
 ```
 
