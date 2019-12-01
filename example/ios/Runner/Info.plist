@@ -46,6 +46,7 @@
 			<string>comgooglemaps</string>
 			<string>baidumap</string>
 			<string>iosamap</string>
+			<string>waze</string>
 	</array>
 </dict>
 </plist>

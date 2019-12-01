@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum MapType { apple, google, amap, baidu }
+enum MapType { apple, google, amap, baidu, waze }
 
 String _enumToString(o) => o.toString().split('.').last;
 
@@ -75,6 +75,8 @@ String _getMapUrl(
       return 'baidumap://map/marker?location=${coords.latitude},${coords.longitude}&title=$title&content=$description&traffic=on&src=com.map_launcher&coord_type=gcj02&zoom=18';
     case MapType.apple:
       return 'http://maps.apple.com/maps?saddr=${coords.latitude},${coords.longitude}';
+    case MapType.waze:
+      return 'waze://?ll=${coords.latitude},${coords.longitude}&zoom=10';
     default:
       return null;
   }

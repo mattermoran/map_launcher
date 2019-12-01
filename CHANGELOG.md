@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Added Waze support
+
 ## 0.2.0
 
 * Added method to check if map is available
