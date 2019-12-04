@@ -79,8 +79,15 @@ class MapLauncherPlugin(private val context: Context, private val activity: Acti
       }
       "launchMap" -> {
         var args = call.arguments as Map<String, String>
+
+        if (!isMapAvailable(args["mapType"] as String)) {
+          result.error("MAP_NOT_AVAILABLE", "Map is not installed on a device", null)
+          return;
+        }
+
         val mapType = MapType.valueOf(args["mapType"] as String)
         val url = args["url"] as String
+
         launchMap(mapType, url)
       }
       "isMapAvailable" -> {

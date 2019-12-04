@@ -66,18 +66,19 @@ func launchMap(mapType: MapType, url: String, title: String, latitude: String, l
 }
 
 
+func isMapAvailable(map: Map) -> Bool {
+    if map.mapType == MapType.apple {
+        return true
+    }
+    return UIApplication.shared.canOpenURL(URL(string:map.urlPrefix!)!)
+}
+
+
 public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "map_launcher", binaryMessenger: registrar.messenger())
     let instance = SwiftMapLauncherPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
-  }
-
-  func isMapAvailable(map: Map) -> Bool {
-      if map.mapType == MapType.apple {
-          return true
-      }
-      return UIApplication.shared.canOpenURL(URL(string:map.urlPrefix!)!)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -91,6 +92,13 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
       let title = args["title"] as! String
       let latitude = args["latitude"] as! String
       let longitude = args["longitude"] as! String
+
+      let map = getMapByRawMapType(type: mapType)
+      if (!isMapAvailable(map: map)) {
+        result(FlutterError(code: "MAP_NOT_AVAILABLE", message: "Map is not installed on a device", details: nil))
+        return;
+      }
+
       launchMap(mapType: MapType(rawValue: mapType)!, url: url, title: title, latitude: latitude, longitude: longitude)
     case "isMapAvailable":
       let args = call.arguments as! NSDictionary

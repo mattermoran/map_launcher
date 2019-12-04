@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Throw a PlatformException if map is not installed
+
 ## 0.3.0
 
 * Added Waze support
