@@ -51,7 +51,7 @@ func launchMap(mapType: MapType, url: String, title: String, latitude: String, l
     switch mapType {
     case MapType.apple:
         let coordinate = CLLocationCoordinate2DMake(Double(latitude)!, Double(longitude)!)
-        let region = MKCoordinateRegionMake(coordinate, MKCoordinateSpanMake(0.01, 0.02))
+        let region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.02))
         let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
         let mapItem = MKMapItem(placemark: placemark)
         let options = [
