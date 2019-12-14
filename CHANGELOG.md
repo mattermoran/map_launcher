@@ -1,3 +1,8 @@
+## 0.3.2
+
+* Fixes #1 'MKCoordinateRegionMake' is unavailable in Swift </br>
+  Thanks to @diegogarciar
+
 ## 0.3.1
 
 * Throw a PlatformException if map is not installed
