@@ -1,3 +1,7 @@
+## 0.4.1
+
+- Update README file. Remove author field from pubspec.yaml
+
 ## 0.4.0
 
 - Added support for Yandex Maps and Yandex Navigator </br>

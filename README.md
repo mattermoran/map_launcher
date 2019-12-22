@@ -9,13 +9,13 @@ Map Launcher is a flutter plugin to find available maps installed on a device an
 | ![ANDROID](https://media.giphy.com/media/jpR6J3BpABU4guU8oN/giphy.gif) | ![iOS](https://media.giphy.com/media/VEhyMsqb9Nj30VPpaR/giphy.gif) |
 
 Currently supported maps:
-</br><img src="assets/icons/google.png" width="25"> Google Maps
-</br><img src="assets/icons/apple.png" width="25"> Apple Maps (iOS only)
-</br><img src="assets/icons/baidu.png" width="25"> Baidu Maps
-</br><img src="assets/icons/amap.png" width="25"> Amap (Gaode Maps)
-</br><img src="assets/icons/waze.png" width="25"> Waze
-</br><img src="assets/icons/yandexMaps.png" width="25"> Yandex Maps
-</br><img src="assets/icons/yandexNavi.png" width="25"> Yandex Navigator
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/google.png" width="25"> Google Maps
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/apple.png" width="25"> Apple Maps (iOS only)
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/baidu.png" width="25"> Baidu Maps
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/amap.png" width="25"> Amap (Gaode Maps)
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/waze.png" width="25"> Waze
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexMaps.png" width="25"> Yandex Maps
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexNavi.png" width="25"> Yandex Navigator
 
 ## Get started
 
@@ -23,7 +23,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^0.4.0
+  map_launcher: ^0.4.1
 ```
 
 ### For iOS add url schemes in Info.plist file
