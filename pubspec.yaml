@@ -1,6 +1,6 @@
 name: map_launcher
 description: Map Launcher is a flutter plugin to find available maps installed on a device and launch them with a marker for specified location.
-version: 0.3.2
+version: 0.4.0
 author: Alex Miller <mattermoran@gmail.com>
 homepage: https://github.com/mattermoran/map_launcher
 
@@ -30,14 +30,13 @@ flutter:
 
   # To add assets to your plugin package, add an assets section, like this:
   assets:
-   - assets/icons/
+    - assets/icons/
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
   #
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
-
   # To add custom fonts to your plugin package, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

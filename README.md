@@ -4,27 +4,26 @@
 
 Map Launcher is a flutter plugin to find available maps installed on a device and launch them with a marker for specified location.
 
-
-Android             |  iOS
-:-------------------------:|:-------------------------:
-![ANDROID](https://media.giphy.com/media/jpR6J3BpABU4guU8oN/giphy.gif)  |  ![iOS](https://media.giphy.com/media/VEhyMsqb9Nj30VPpaR/giphy.gif)
+|                                Android                                 |                                iOS                                 |
+| :--------------------------------------------------------------------: | :----------------------------------------------------------------: |
+| ![ANDROID](https://media.giphy.com/media/jpR6J3BpABU4guU8oN/giphy.gif) | ![iOS](https://media.giphy.com/media/VEhyMsqb9Nj30VPpaR/giphy.gif) |
 
 Currently supported maps:
-  - Google Maps
-  - Baidu Maps
-  - Amap (Gaode Maps)
-  - Waze
-  - Apple Maps (iOS only)
-
+</br><img src="assets/icons/google.png" width="25"> Google Maps
+</br><img src="assets/icons/apple.png" width="25"> Apple Maps (iOS only)
+</br><img src="assets/icons/baidu.png" width="25"> Baidu Maps
+</br><img src="assets/icons/amap.png" width="25"> Amap (Gaode Maps)
+</br><img src="assets/icons/waze.png" width="25"> Waze
+</br><img src="assets/icons/yandexMaps.png" width="25"> Yandex Maps
+</br><img src="assets/icons/yandexNavi.png" width="25"> Yandex Navigator
 
 ## Get started
-
 
 ### Add dependency
 
 ```yaml
 dependencies:
-  map_launcher: any
+  map_launcher: ^0.4.0
 ```
 
 ### For iOS add url schemes in Info.plist file
@@ -36,9 +35,10 @@ dependencies:
     <string>baidumap</string>
     <string>iosamap</string>
     <string>waze</string>
+    <string>yandexmaps</string>
+    <string>yandexnavi</string>
 </array>
 ```
-
 
 ## Usage
 
@@ -58,7 +58,6 @@ await availableMaps.first.showMarker(
 
 ```
 
-
 ### Check if map is installed and launch it
 
 ```dart
@@ -74,7 +73,6 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 }
 
 ```
-
 
 ### Example using bottom sheet
 
@@ -147,6 +145,6 @@ class MapLauncherDemo extends StatelessWidget {
 }
 ```
 
-
 ## Contributing
+
 Pull requests are welcome.

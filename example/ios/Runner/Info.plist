@@ -47,6 +47,8 @@
 			<string>baidumap</string>
 			<string>iosamap</string>
 			<string>waze</string>
+			<string>yandexnavi</string>
+			<string>yandexmaps</string>
 	</array>
 </dict>
 </plist>
