@@ -68,7 +68,7 @@ String _getMapUrl(
       if (Platform.isIOS) {
         return 'comgooglemaps://?q=$title&center=${coords.latitude},${coords.longitude}';
       }
-      return 'geo:${coords.latitude},${coords.longitude}?q=${coords.latitude},${coords.longitude}';
+      return 'geo:0,0?q=${coords.latitude},${coords.longitude}($title)';
     case MapType.amap:
       return '${Platform.isIOS ? 'ios' : 'android'}amap://viewMap?sourceApplication=map_launcher&poiname=$title&lat=${coords.latitude}&lon=${coords.longitude}&zoom=18&dev=0';
     case MapType.baidu:

@@ -145,6 +145,10 @@ class MapLauncherDemo extends StatelessWidget {
 }
 ```
 
+## Known issues
+
+- Google Maps for Android have a bug that setting label for a marker doesn't work. See more on [Google Issue Tracker](https://issuetracker.google.com/issues/129726279)
+
 ## Contributing
 
 Pull requests are welcome.
