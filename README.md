@@ -23,12 +23,12 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^0.4.2
+  map_launcher: ^0.4.3
 ```
 
 ### For iOS add url schemes in Info.plist file
 
-```plist
+```
 <key>LSApplicationQueriesSchemes</key>
 <array>
     <string>comgooglemaps</string>

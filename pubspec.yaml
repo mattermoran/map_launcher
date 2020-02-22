@@ -1,6 +1,6 @@
 name: map_launcher
 description: Map Launcher is a flutter plugin to find available maps installed on a device and launch them with a marker for specified location.
-version: 0.4.2
+version: 0.4.3
 homepage: https://github.com/mattermoran/map_launcher
 
 environment:

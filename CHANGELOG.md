@@ -1,3 +1,7 @@
+## 0.4.3
+
+- Add license
+
 ## 0.4.2
 
 - Add code to show title in Google Maps for Android. Should work once fixed in Google Maps. Update README.
