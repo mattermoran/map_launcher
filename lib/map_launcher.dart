@@ -13,8 +13,7 @@ enum MapType {
   yandexNavi,
   yandexMaps,
   doubleGis,
-  mapsMe,
-  navitel
+  mapsMe
 }
 
 String _enumToString(o) => o.toString().split('.').last;

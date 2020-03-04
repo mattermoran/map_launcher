@@ -13,7 +13,6 @@ enum MapType: String {
   case yandexMaps
   case doubleGis
   case mapsMe
-  case navitel
 
   func type() -> String {
     return self.rawValue
