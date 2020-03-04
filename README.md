@@ -16,6 +16,8 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/waze.png" width="25"> Waze
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexMaps.png" width="25"> Yandex Maps
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexNavi.png" width="25"> Yandex Navigator
+</br><img src="https://github.com/White-Tiger-Soft/map_launcher/raw/master/assets/icons/doubleGis.png" width="25"> 2GIS
+</br><img src="https://github.com/White-Tiger-Soft/map_launcher/raw/master/assets/icons/mapsMe.png" width="25"> MAPS.ME
 
 ## Get started
 
