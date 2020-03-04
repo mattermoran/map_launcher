@@ -91,7 +91,7 @@ String _getMapUrl(
     case MapType.yandexMaps:
       return 'yandexmaps://maps.yandex.ru/?pt=${coords.longitude},${coords.latitude}&z=16&l=map';
     case MapType.doubleGis:
-      return 'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.latitude},${coords.longitude}';
+      return 'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.longitude},${coords.latitude}';
     default:
       return null;
   }
