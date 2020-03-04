@@ -39,7 +39,7 @@ class MapLauncherPlugin(private val context: Context, private val activity: Acti
     MapModel(MapType.waze, "Waze", "com.waze"),
     MapModel(MapType.yandexNavi, "Yandex Navigator", "ru.yandex.yandexnavi"),
     MapModel(MapType.yandexMaps, "Yandex Maps", "ru.yandex.yandexmaps"),
-    MapModel(MapType.doubleGis, "2ГИС", "ru.dublgis.dgismobile"),
+    MapModel(MapType.doubleGis, "2ГИС", "ru.dublgis.dgismobile")
     
   )
 
