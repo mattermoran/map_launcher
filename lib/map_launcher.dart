@@ -12,7 +12,9 @@ enum MapType {
   waze,
   yandexNavi,
   yandexMaps,
-  doubleGis
+  doubleGis,
+  mapsMe,
+  navitel
 }
 
 String _enumToString(o) => o.toString().split('.').last;
@@ -92,6 +94,8 @@ String _getMapUrl(
       return 'yandexmaps://maps.yandex.ru/?pt=${coords.longitude},${coords.latitude}&z=16&l=map';
     case MapType.doubleGis:
       return 'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.longitude},${coords.latitude}';
+    case MapType.mapsMe:
+      return 'mapsme://route?dll=${coords.longitude},${coords.latitude}&type=pedestrian';
     default:
       return null;
   }

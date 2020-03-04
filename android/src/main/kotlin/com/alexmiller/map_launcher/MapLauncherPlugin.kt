@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
-private enum class MapType { google, amap, baidu, waze, yandexNavi, yandexMaps, doubleGis }
+private enum class MapType { google, amap, baidu, waze, yandexNavi, yandexMaps, doubleGis, mapsMe, navitel }
 
 private class MapModel(val mapType: MapType, val mapName: String, val packageName: String) {
   fun toMap(): Map<String, String> {
@@ -39,7 +39,9 @@ class MapLauncherPlugin(private val context: Context, private val activity: Acti
     MapModel(MapType.waze, "Waze", "com.waze"),
     MapModel(MapType.yandexNavi, "Yandex Navigator", "ru.yandex.yandexnavi"),
     MapModel(MapType.yandexMaps, "Yandex Maps", "ru.yandex.yandexmaps"),
-    MapModel(MapType.doubleGis, "2ГИС", "ru.dublgis.dgismobile")
+    MapModel(MapType.doubleGis, "2ГИС", "ru.dublgis.dgismobile"),
+    MapModel(MapType.mapsMe, "maps.me", "com.mapswithme.maps.pro"),
+    MapModel(MapType.navitel, "Navitel", "com.navitel")
     
   )
 

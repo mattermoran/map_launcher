@@ -12,6 +12,8 @@ enum MapType: String {
   case yandexNavi
   case yandexMaps
   case doubleGis
+  case mapsMe
+  case navitel
 
   func type() -> String {
     return self.rawValue
@@ -45,9 +47,11 @@ let maps: [Map] = [
     Map(mapName: "Baidu Maps", mapType: MapType.baidu, urlPrefix: "baidumap://"),
     Map(mapName: "Waze", mapType: MapType.waze, urlPrefix: "waze://"),
     Map(mapName: "Yandex Navigator", mapType: MapType.yandexNavi, urlPrefix: "yandexnavi://"),
-    Map(mapName: "Yandex Maps", mapType: MapType.yandexMaps, urlPrefix: "yandexmaps://")
-    Map(mapName: "2ГИС", mapType: MapType.doubleGis, urlPrefix: "dgis://")
+    Map(mapName: "Yandex Maps", mapType: MapType.yandexMaps, urlPrefix: "yandexmaps://"),
+    Map(mapName: "2ГИС", mapType: MapType.doubleGis, urlPrefix: "dgis://"),
+    Map(mapName: "MAPS.ME", mapType: MapType.mapsMe, urlPrefix: "mapsme://")
 ]
+
 
 func getMapByRawMapType(type: String) -> Map {
     return maps.first(where: { $0.mapType.type() == type })!
