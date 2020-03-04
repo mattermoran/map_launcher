@@ -40,8 +40,7 @@ class MapLauncherPlugin(private val context: Context, private val activity: Acti
     MapModel(MapType.yandexNavi, "Yandex Navigator", "ru.yandex.yandexnavi"),
     MapModel(MapType.yandexMaps, "Yandex Maps", "ru.yandex.yandexmaps"),
     MapModel(MapType.doubleGis, "2ГИС", "ru.dublgis.dgismobile"),
-    MapModel(MapType.mapsMe, "MAPS.ME", "com.mapswithme.maps.pro"),
-    MapModel(MapType.navitel, "Navitel", "com.navitel")
+    MapModel(MapType.mapsMe, "MAPS.ME", "com.mapswithme.maps.pro")
     
   )
 
