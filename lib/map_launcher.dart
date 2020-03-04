@@ -95,7 +95,7 @@ String _getMapUrl(
     case MapType.doubleGis:
       return 'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.longitude},${coords.latitude}';
     case MapType.mapsMe:
-      return 'mapsme://route?dll=${coords.longitude},${coords.latitude}&type=pedestrian';
+      return 'mapsme://map?&ll=${coords.longitude},${coords.latitude}';
     default:
       return null;
   }
