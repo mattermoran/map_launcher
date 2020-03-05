@@ -33,12 +33,12 @@ class MapLauncherPlugin(private val context: Context, private val activity: Acti
   }
 
   private val maps = listOf(
-    MapModel(MapType.google, "Google Maps", "com.google.android.apps.maps"),
+    MapModel(MapType.google, "Google карты", "com.google.android.apps.maps"),
     MapModel(MapType.amap, "Amap", "com.autonavi.minimap"),
     MapModel(MapType.baidu, "Baidu Maps", "com.baidu.BaiduMap"),
     MapModel(MapType.waze, "Waze", "com.waze"),
-    MapModel(MapType.yandexNavi, "Yandex Navigator", "ru.yandex.yandexnavi"),
-    MapModel(MapType.yandexMaps, "Yandex Maps", "ru.yandex.yandexmaps"),
+    MapModel(MapType.yandexNavi, "Яндекс навигатор", "ru.yandex.yandexnavi"),
+    MapModel(MapType.yandexMaps, "Яндекс карты", "ru.yandex.yandexmaps"),
     MapModel(MapType.doubleGis, "2ГИС", "ru.dublgis.dgismobile"),
     MapModel(MapType.mapsMe, "MAPS.ME", "com.mapswithme.maps.pro")
     
