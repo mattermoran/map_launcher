@@ -40,13 +40,13 @@ class Map {
 }
 
 let maps: [Map] = [
-    Map(mapName: "Apple карты", mapType: MapType.apple, urlPrefix: ""),
-    Map(mapName: "Google карты", mapType: MapType.google, urlPrefix: "comgooglemaps://"),
+    Map(mapName: "Карты Apple", mapType: MapType.apple, urlPrefix: ""),
+    Map(mapName: "Карты Google", mapType: MapType.google, urlPrefix: "comgooglemaps://"),
     Map(mapName: "Amap", mapType: MapType.amap, urlPrefix: "iosamap://"),
     Map(mapName: "Baidu Maps", mapType: MapType.baidu, urlPrefix: "baidumap://"),
     Map(mapName: "Waze", mapType: MapType.waze, urlPrefix: "waze://"),
-    Map(mapName: "Яндекс навигатор", mapType: MapType.yandexNavi, urlPrefix: "yandexnavi://"),
-    Map(mapName: "Яндекс карты", mapType: MapType.yandexMaps, urlPrefix: "yandexmaps://"),
+    Map(mapName: "Яндекс.Навигатор", mapType: MapType.yandexNavi, urlPrefix: "yandexnavi://"),
+    Map(mapName: "Яндекс.Карты", mapType: MapType.yandexMaps, urlPrefix: "yandexmaps://"),
     Map(mapName: "2ГИС", mapType: MapType.doubleGis, urlPrefix: "dgis://"),
     Map(mapName: "MAPS.ME", mapType: MapType.mapsMe, urlPrefix: "mapsme://")
 ]
