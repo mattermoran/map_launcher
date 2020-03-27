@@ -1,3 +1,7 @@
+## 0.4.4
+
+- Specify swift version in map_launcher.podspec file
+
 ## 0.4.3
 
 - Add license
