@@ -46,9 +46,9 @@ let maps: [Map] = [
     Map(mapName: "Baidu Maps", mapType: MapType.baidu, urlPrefix: "baidumap://"),
     Map(mapName: "Waze", mapType: MapType.waze, urlPrefix: "waze://"),
     Map(mapName: "Яндекс.Навигатор", mapType: MapType.yandexNavi, urlPrefix: "yandexnavi://"),
-    Map(mapName: "Яндекс.Карты", mapType: MapType.yandexMaps, urlPrefix: "yandexmaps://test"),
-    Map(mapName: "2ГИС", mapType: MapType.doubleGis, urlPrefix: "dgis://test"),
-    Map(mapName: "MAPS.ME", mapType: MapType.mapsMe, urlPrefix: "mapsme://test")
+    Map(mapName: "Яндекс.Карты", mapType: MapType.yandexMaps, urlPrefix: "yandexmaps://"),
+    Map(mapName: "2ГИС", mapType: MapType.doubleGis, urlPrefix: "dgis://"),
+    Map(mapName: "MAPS.ME", mapType: MapType.mapsMe, urlPrefix: "mapsme://")
 ]
 
 
