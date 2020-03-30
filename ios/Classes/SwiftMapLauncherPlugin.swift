@@ -79,6 +79,9 @@ func isMapAvailable(map: Map) -> Bool {
     if map.mapType == MapType.apple {
         return true
     }
+    if map.mapType == MapType.doubleGis {
+        return true
+    }
     return UIApplication.shared.canOpenURL(URL(string:map.urlPrefix!)!)
 }
 
