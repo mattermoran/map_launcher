@@ -49,6 +49,8 @@
 			<string>waze</string>
 			<string>yandexnavi</string>
 			<string>yandexmaps</string>
+			<string>dgis</string>
+			<string>mapsme</string>
 	</array>
 </dict>
 </plist>
