@@ -116,7 +116,6 @@ class MapLauncher {
       'latitude': coords.latitude.toString(),
       'longitude': coords.longitude.toString(),
     };
-    print(args);
     return _channel.invokeMethod('launchMap', args);
   }
 
