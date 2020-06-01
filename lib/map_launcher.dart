@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum MapType { apple, google, amap, baidu, waze, yandexNavi, yandexMaps }
+enum MapType { apple, google, amap, baidu, waze, yandexNavi, yandexMaps, citymapper }
 
 String _enumToString(o) => o.toString().split('.').last;
 
@@ -81,6 +81,8 @@ String _getMapUrl(
       return 'yandexnavi://show_point_on_map?lat=${coords.latitude}&lon=${coords.longitude}&zoom=16&no-balloon=0&desc=$title';
     case MapType.yandexMaps:
       return 'yandexmaps://maps.yandex.ru/?pt=${coords.longitude},${coords.latitude}&z=16&l=map';
+    case MapType.citymapper:
+      return 'citymapper://directions?endcoord=${coords.latitude},${coords.longitude}&endname=$title';
     default:
       return null;
   }
@@ -101,16 +103,20 @@ class MapLauncher {
     @required Coords coords,
     @required String title,
     @required String description,
+    String address,
   }) async {
     final url = _getMapUrl(mapType, coords, title, description);
+
     final Map<String, String> args = {
       'mapType': _enumToString(mapType),
       'url': Uri.encodeFull(url),
       'title': title,
       'description': description,
+      'address': address,
       'latitude': coords.latitude.toString(),
       'longitude': coords.longitude.toString(),
     };
+    print(args);
     return _channel.invokeMethod('launchMap', args);
   }
 
