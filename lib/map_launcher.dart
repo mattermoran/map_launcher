@@ -103,7 +103,6 @@ class MapLauncher {
     @required Coords coords,
     @required String title,
     @required String description,
-    String address,
   }) async {
     final url = _getMapUrl(mapType, coords, title, description);
 
@@ -112,7 +111,6 @@ class MapLauncher {
       'url': Uri.encodeFull(url),
       'title': title,
       'description': description,
-      'address': address,
       'latitude': coords.latitude.toString(),
       'longitude': coords.longitude.toString(),
     };
