@@ -4,7 +4,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum MapType { apple, google, amap, baidu, waze, yandexNavi, yandexMaps, citymapper }
+enum MapType {
+  apple,
+  google,
+  amap,
+  baidu,
+  waze,
+  yandexNavi,
+  yandexMaps,
+  citymapper
+}
 
 String _enumToString(o) => o.toString().split('.').last;
 
