@@ -1,3 +1,13 @@
+## 0.5.0
+
+- Add support for Citymapper </br>
+  Thanks to @Kiruel
+
+## 0.4.5
+
+- Fix Google Maps title issue on iOS </br>
+  Thanks to @illiashvedov
+
 ## 0.4.4
 
 - Specify swift version in map_launcher.podspec file
