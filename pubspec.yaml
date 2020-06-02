@@ -4,7 +4,8 @@ version: 0.5.0
 homepage: https://github.com/mattermoran/map_launcher
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.10.0"
 
 dependencies:
   flutter:
@@ -24,8 +25,12 @@ flutter:
   # be modified. They are used by the tooling to maintain consistency when
   # adding or updating assets for this project.
   plugin:
-    androidPackage: com.alexmiller.map_launcher
-    pluginClass: MapLauncherPlugin
+    platforms:
+      android:
+        package: com.alexmiller.map_launcher
+        pluginClass: MapLauncherPlugin
+      ios:
+        pluginClass: MapLauncherPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   assets:
