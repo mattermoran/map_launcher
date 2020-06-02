@@ -49,6 +49,7 @@
 			<string>waze</string>
 			<string>yandexnavi</string>
 			<string>yandexmaps</string>
+			<string>citymapper</string>
 	</array>
 </dict>
 </plist>
