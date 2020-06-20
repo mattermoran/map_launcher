@@ -95,15 +95,12 @@ String _getMapUrl(
     case MapType.citymapper:
       return 'citymapper://directions?endcoord=${coords.latitude},${coords.longitude}&endname=$title';
     case MapType.mapswithme:
-      if (Platform.isIOS) {
-        return 'mapswithme://map?v=1&ll=${coords.latitude},${coords.longitude}&n=$title';
-      }
-      return 'https://dlink.maps.me/map?v=1&ll=${coords.latitude},${coords.longitude}&n=$title';
+      return "mapsme://route?dll=${coords.longitude},${coords.latitude}&type=pedestrian";
     case MapType.osmand:
       if (Platform.isIOS) {
         return 'osmandmaps://navigate?lat=${coords.latitude}&lon=${coords.longitude}&title=$title';
       }
-      return 'https://osmand.net/go?lat=${coords.latitude}&lon=${coords.longitude}&title=$title';
+      return 'osmand.navigation:q=${coords.latitude},${coords.longitude}';
     default:
       return null;
   }
