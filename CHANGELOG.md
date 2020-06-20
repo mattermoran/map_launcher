@@ -1,3 +1,8 @@
+## 0.6.0
+
+- Add support for Maps.Me and OsmAnd </br>
+  Thanks to @gsi-yoan and @gsi-alejandrogomez
+
 ## 0.5.0
 
 - Add support for Citymapper </br>
