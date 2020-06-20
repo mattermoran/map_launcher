@@ -95,7 +95,7 @@ String _getMapUrl(
     case MapType.citymapper:
       return 'citymapper://directions?endcoord=${coords.latitude},${coords.longitude}&endname=$title';
     case MapType.mapswithme:
-      return "mapsme://route?dll=${coords.longitude},${coords.latitude}&type=pedestrian";
+      return "mapsme://map?v=1&ll=${coords.latitude},${coords.longitude}&n=$title";
     case MapType.osmand:
       if (Platform.isIOS) {
         return 'osmandmaps://navigate?lat=${coords.latitude}&lon=${coords.longitude}&title=$title';

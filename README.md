@@ -17,6 +17,8 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexMaps.png" width="25"> Yandex Maps
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexNavi.png" width="25"> Yandex Navigator
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/citymapper.png" width="25"> Citymapper
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapswithme.png" width="25"> Maps.me
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.png" width="25"> OsmAnd
 
 ## Get started
 
@@ -39,6 +41,8 @@ dependencies:
     <string>yandexmaps</string>
     <string>yandexnavi</string>
     <string>citymapper</string>
+    <string>mapsme</string>
+		<string>osmandmaps</string>
 </array>
 ```
 
