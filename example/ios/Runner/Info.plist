@@ -50,6 +50,8 @@
 			<string>yandexnavi</string>
 			<string>yandexmaps</string>
 			<string>citymapper</string>
+			<string>mapswithme</string>
+			<string>osmandmaps</string>
 	</array>
 </dict>
 </plist>

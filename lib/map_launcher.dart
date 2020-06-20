@@ -12,7 +12,9 @@ enum MapType {
   waze,
   yandexNavi,
   yandexMaps,
-  citymapper
+  citymapper,
+  mapswithme,
+  osmand
 }
 
 String _enumToString(o) => o.toString().split('.').last;
@@ -92,6 +94,16 @@ String _getMapUrl(
       return 'yandexmaps://maps.yandex.ru/?pt=${coords.longitude},${coords.latitude}&z=16&l=map';
     case MapType.citymapper:
       return 'citymapper://directions?endcoord=${coords.latitude},${coords.longitude}&endname=$title';
+    case MapType.mapswithme:
+      if (Platform.isIOS) {
+        return 'mapswithme://map?v=1&ll=${coords.latitude},${coords.longitude}&n=$title';
+      }
+      return 'https://dlink.maps.me/map?v=1&ll=${coords.latitude},${coords.longitude}&n=$title';
+    case MapType.osmand:
+      if (Platform.isIOS) {
+        return 'osmandmaps://navigate?lat=${coords.latitude}&lon=${coords.longitude}&title=$title';
+      }
+      return 'https://osmand.net/go?lat=${coords.latitude}&lon=${coords.longitude}&title=$title';
     default:
       return null;
   }
