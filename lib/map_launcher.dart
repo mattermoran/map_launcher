@@ -119,7 +119,7 @@ class _SvgImage extends AssetBundleImageProvider {
 
   Future<Codec> _loadAsync(
       AssetBundleImageKey key, DecoderCallback decode) async {
-    Size size = Size(1024, 1024);
+    Size size = Size(256, 256);
 
     final Uint8List bytes = await key.bundle
         .loadString(key.name)
@@ -129,7 +129,7 @@ class _SvgImage extends AssetBundleImageProvider {
           size = (ratio > 1)
               ? Size(size.width, size.width / ratio)
               : Size(size.height * ratio, size.height);
-          return svg.toPicture(size: size);
+          return svg.toPicture(size: size, clipToViewBox: false);
         })
         .then((Picture picture) {
           return picture.toImage(size.width.toInt(), size.height.toInt());
