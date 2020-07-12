@@ -47,7 +47,7 @@ class AvailableMap {
       mapName: json['mapName'],
       mapType: _enumFromString(MapType.values, json['mapType']),
       icon: _SvgImage(
-        'assets/svg/${json['mapType']}.svg',
+        'assets/icons/${json['mapType']}.svg',
         package: 'map_launcher',
       ),
     );

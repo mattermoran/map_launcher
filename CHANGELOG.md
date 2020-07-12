@@ -1,3 +1,8 @@
+## 0.7.0
+
+- Replace png icons with svgs</br>
+  Thanks to @shinsenter
+
 ## 0.6.0
 
 - Add support for Maps.Me and OsmAnd </br>
