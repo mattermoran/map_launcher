@@ -1,10 +1,13 @@
 package com.alexmiller.map_launcher
 
+import androidx.annotation.NonNull;
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -19,16 +22,24 @@ private class MapModel(val mapType: MapType, val mapName: String, val packageNam
   }
 }
 
-class MapLauncherPlugin(private val context: Context, private val activity: Activity, private val pm: PackageManager) : MethodCallHandler {
+public class MapLauncherPlugin: FlutterPlugin, MethodCallHandler {
+  private lateinit var channel : MethodChannel
+  private lateinit var context: Context
+
+  override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "map_launcher")
+
+    this.context = flutterPluginBinding.applicationContext;
+    channel.setMethodCallHandler(this)
+  }
+
   companion object {
     @JvmStatic
     fun registerWith(registrar: Registrar) {
-      val channel = MethodChannel(registrar.messenger(), "map_launcher")
-      val context = registrar.activeContext()
-      val activity = registrar.activity()
-      val pm = context.getPackageManager()
-
-      channel.setMethodCallHandler(MapLauncherPlugin(context, activity, pm))
+      val mapLauncherPlugin = MapLauncherPlugin()
+      mapLauncherPlugin.channel = MethodChannel(registrar.messenger(), "map_launcher")
+      mapLauncherPlugin.context = registrar.context()
+      mapLauncherPlugin.channel?.setMethodCallHandler(mapLauncherPlugin)
     }
   }
 
@@ -45,9 +56,8 @@ class MapLauncherPlugin(private val context: Context, private val activity: Acti
   )
 
   private fun getInstalledMaps(): List<MapModel> {
-      val installedApps = pm.getInstalledApplications(0)
-      val installedMaps = maps.filter { map -> installedApps.any { app -> app.packageName == map.packageName } }
-      return installedMaps
+    val installedApps = context.packageManager.getInstalledApplications(0)
+    return maps.filter { map -> installedApps.any { app -> app.packageName == map.packageName } }
   }
 
 
@@ -78,7 +88,8 @@ class MapLauncherPlugin(private val context: Context, private val activity: Acti
     }
   }
 
-  override fun onMethodCall(call: MethodCall, result: Result) {
+
+  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when (call.method) {
       "getInstalledMaps" -> {
         val installedMaps = getInstalledMaps()
@@ -103,5 +114,9 @@ class MapLauncherPlugin(private val context: Context, private val activity: Acti
       }
       else -> result.notImplemented()
     }
+  }
+
+  override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    channel.setMethodCallHandler(null)
   }
 }
