@@ -1,3 +1,7 @@
+## 0.7.1
+
+- Add constraint for flutter_svg
+
 ## 0.7.0
 
 - Replace png icons with svgs</br>
