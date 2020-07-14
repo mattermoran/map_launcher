@@ -9,16 +9,16 @@ Map Launcher is a flutter plugin to find available maps installed on a device an
 | ![ANDROID](https://media.giphy.com/media/jpR6J3BpABU4guU8oN/giphy.gif) | ![iOS](https://media.giphy.com/media/VEhyMsqb9Nj30VPpaR/giphy.gif) |
 
 Currently supported maps:
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/google.png" width="25"> Google Maps
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/apple.png" width="25"> Apple Maps (iOS only)
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/baidu.png" width="25"> Baidu Maps
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/amap.png" width="25"> Amap (Gaode Maps)
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/waze.png" width="25"> Waze
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexMaps.png" width="25"> Yandex Maps
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexNavi.png" width="25"> Yandex Navigator
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/citymapper.png" width="25"> Citymapper
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapswithme.png" width="25"> Maps.me
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.png" width="25"> OsmAnd
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/google.svg" width="25"> Google Maps
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/apple.svg" width="25"> Apple Maps (iOS only)
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/baidu.svg" width="25"> Baidu Maps
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/amap.svg" width="25"> Amap (Gaode Maps)
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/waze.svg" width="25"> Waze
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexMaps.svg" width="25"> Yandex Maps
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexNavi.svg" width="25"> Yandex Navigator
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/citymapper.svg" width="25"> Citymapper
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapswithme.svg" width="25"> Maps.me
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.svg" width="25"> OsmAnd
 
 ## Get started
 
@@ -26,7 +26,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^0.6.0
+  map_launcher: ^0.7.1
 ```
 
 ### For iOS add url schemes in Info.plist file
