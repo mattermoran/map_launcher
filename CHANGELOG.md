@@ -1,3 +1,7 @@
+## 0.8.0
+
+- Add support for android embedding v2
+
 ## 0.7.1
 
 - Add constraint for flutter_svg

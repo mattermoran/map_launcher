@@ -26,7 +26,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^0.7.1
+  map_launcher: ^0.8.0
 ```
 
 ### For iOS add url schemes in Info.plist file
@@ -42,7 +42,7 @@ dependencies:
     <string>yandexnavi</string>
     <string>citymapper</string>
     <string>mapsme</string>
-		<string>osmandmaps</string>
+    <string>osmandmaps</string>
 </array>
 ```
 
