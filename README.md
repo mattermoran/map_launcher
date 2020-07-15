@@ -26,7 +26,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^0.8.0
+  map_launcher: ^0.8.1
 ```
 
 ### For iOS add url schemes in Info.plist file

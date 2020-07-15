@@ -1,3 +1,8 @@
+## 0.8.1
+
+- Fix #31 </br>
+  Thanks to @LeonidVeremchuk
+
 ## 0.8.0
 
 - Add support for android embedding v2
@@ -8,7 +13,7 @@
 
 ## 0.7.0
 
-- Replace png icons with svgs</br>
+- Replace png icons with svgs </br>
   Thanks to @shinsenter
 
 ## 0.6.0
