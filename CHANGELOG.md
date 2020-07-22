@@ -1,3 +1,8 @@
+## 0.8.2
+
+- Update flutter_svg constraint </br>
+  Thanks to @tuarrep and @jcsena
+
 ## 0.8.1
 
 - Fix #31 </br>
