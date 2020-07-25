@@ -63,6 +63,21 @@ String getMapDirectionsUrl({
         },
       );
 
+    case MapType.baidu:
+      return Utils.buildUrl(
+        url: 'baidumap://map/direction',
+        queryParams: {
+          'destination':
+              'name: ${destinationTitle ?? 'Destination'}|latlng:${destination.latitude},${destination.longitude}',
+          'origin': Utils.nullOrValue(
+            origin,
+            'name: ${originTitle ?? 'Origin'}|latlng:${origin?.latitude},${origin?.longitude}',
+          ),
+          'coord_type': 'gcj02',
+          'mode': Utils.getBaiduDirectionsMode(directionsMode),
+          'src': 'com.map_launcher',
+        },
+      );
     default:
       return null;
   }

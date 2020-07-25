@@ -45,4 +45,19 @@ class Utils {
         return '0';
     }
   }
+
+  static String getBaiduDirectionsMode(DirectionsMode directionsMode) {
+    switch (directionsMode) {
+      case DirectionsMode.driving:
+        return 'driving';
+      case DirectionsMode.transit:
+        return 'transit';
+      case DirectionsMode.walking:
+        return 'walking';
+      case DirectionsMode.bicycling:
+        return 'riding';
+      default:
+        return 'driving';
+    }
+  }
 }
