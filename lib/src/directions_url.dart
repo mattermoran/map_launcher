@@ -88,6 +88,17 @@ String getMapDirectionsUrl({
           'navigate': 'yes',
         },
       );
+
+    case MapType.citymapper:
+      return Utils.buildUrl(url: 'citymapper://directions', queryParams: {
+        'endcoord': '${destination.latitude},${destination.longitude}',
+        'endname': destinationTitle,
+        'startcoord': Utils.nullOrValue(
+          origin,
+          '${origin?.latitude},${origin?.longitude}',
+        ),
+        'startname': originTitle,
+      });
     default:
       return null;
   }
