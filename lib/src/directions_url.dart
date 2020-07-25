@@ -78,6 +78,16 @@ String getMapDirectionsUrl({
           'src': 'com.map_launcher',
         },
       );
+
+    case MapType.waze:
+      return Utils.buildUrl(
+        url: 'waze://',
+        queryParams: {
+          'll': '${destination.latitude},${destination.longitude}',
+          'z': '10',
+          'navigate': 'yes',
+        },
+      );
     default:
       return null;
   }
