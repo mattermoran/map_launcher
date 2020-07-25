@@ -46,8 +46,10 @@ class MapLauncher {
       description: description,
     );
 
+    print(url);
+
     final Map<String, String> args = {
-      'mapType': enumToString(mapType),
+      'mapType': Utils.enumToString(mapType),
       'url': Uri.encodeFull(url),
       'title': title,
       'description': description,
@@ -74,14 +76,14 @@ class MapLauncher {
     print(url);
 
     final Map<String, String> args = {
-      'mapType': enumToString(mapType),
+      'mapType': Utils.enumToString(mapType),
       'url': Uri.encodeFull(url),
       'destinationTitle': destinationTitle,
       'destinationLatitude': destination.latitude.toString(),
       'destinationLongitude': destination.longitude.toString(),
       'originLatitude': origin?.latitude?.toString(),
       'originLongitude': origin?.longitude?.toString(),
-      'directionsMode': enumToString(directionsMode),
+      'directionsMode': Utils.enumToString(directionsMode),
     };
     return _channel.invokeMethod('showDirections', args);
   }
@@ -89,7 +91,7 @@ class MapLauncher {
   static Future<bool> isMapAvailable(MapType mapType) async {
     return _channel.invokeMethod(
       'isMapAvailable',
-      {'mapType': enumToString(mapType)},
+      {'mapType': Utils.enumToString(mapType)},
     );
   }
 }

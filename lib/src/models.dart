@@ -40,7 +40,7 @@ class AvailableMap {
   static AvailableMap fromJson(json) {
     return AvailableMap(
       mapName: json['mapName'],
-      mapType: enumFromString(MapType.values, json['mapType']),
+      mapType: Utils.enumFromString(MapType.values, json['mapType']),
       icon: SvgImage(
         'assets/icons/${json['mapType']}.svg',
         package: 'map_launcher',
@@ -76,6 +76,6 @@ class AvailableMap {
 
   @override
   String toString() {
-    return 'AvailableMap { mapName: $mapName, mapType: ${enumToString(mapType)} }';
+    return 'AvailableMap { mapName: $mapName, mapType: ${Utils.enumToString(mapType)} }';
   }
 }
