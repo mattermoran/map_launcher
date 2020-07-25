@@ -66,6 +66,17 @@ class AvailableMap {
     );
   }
 
+  Future<void> showDirections({
+    @required Coords destination,
+    Coords origin,
+  }) {
+    return MapLauncher.launchDirections(
+      mapType: mapType,
+      destination: destination,
+      origin: origin,
+    );
+  }
+
   @override
   String toString() {
     return 'AvailableMap { mapName: $mapName, mapType: ${_enumToString(mapType)} }';
@@ -145,12 +156,12 @@ class _SvgImage extends AssetBundleImageProvider {
   }
 }
 
-String _getMapUrl(
-  MapType mapType,
-  Coords coords, [
+String _getMapMarkerUrl({
+  @required MapType mapType,
+  @required Coords coords,
   String title,
   String description,
-]) {
+}) {
   switch (mapType) {
     case MapType.google:
       if (Platform.isIOS) {
@@ -183,6 +194,32 @@ String _getMapUrl(
   }
 }
 
+String _getMapDirectionsUrl({
+  @required MapType mapType,
+  @required Coords destination,
+  Coords origin,
+  String title,
+  String description,
+}) {
+  switch (mapType) {
+    case MapType.google:
+      if (Platform.isIOS) {
+        final originParam = origin == null
+            ? ''
+            : 'saddr=${origin.latitude},${origin.longitude}';
+
+        return 'comgooglemaps://?$originParam&daddr=${destination.latitude},${destination.longitude}&directionsmode=driving';
+      }
+      final originParam = origin == null
+          ? ''
+          : 'origin=${origin.latitude},${origin.longitude}&';
+
+      return 'https://www.google.com/maps/dir/?api=1&$originParam&destination=${destination.latitude},${destination.longitude}&travelmode=driving';
+    default:
+      return null;
+  }
+}
+
 class MapLauncher {
   static const MethodChannel _channel = const MethodChannel('map_launcher');
 
@@ -199,7 +236,12 @@ class MapLauncher {
     @required String title,
     @required String description,
   }) async {
-    final url = _getMapUrl(mapType, coords, title, description);
+    final url = _getMapMarkerUrl(
+      mapType: mapType,
+      coords: coords,
+      title: title,
+      description: description,
+    );
 
     final Map<String, String> args = {
       'mapType': _enumToString(mapType),
@@ -208,6 +250,28 @@ class MapLauncher {
       'description': description,
       'latitude': coords.latitude.toString(),
       'longitude': coords.longitude.toString(),
+    };
+    return _channel.invokeMethod('launchMap', args);
+  }
+
+  static Future<dynamic> launchDirections({
+    @required MapType mapType,
+    @required Coords destination,
+    Coords origin,
+  }) async {
+    final url = _getMapDirectionsUrl(
+      mapType: mapType,
+      destination: destination,
+      origin: origin,
+    );
+
+    final Map<String, String> args = {
+      'mapType': _enumToString(mapType),
+      'url': Uri.encodeFull(url),
+      'title': 'title',
+      'description': 'description',
+      'latitude': 'coords.latitude.toString()',
+      'longitude': 'coords.longitude.toString()',
     };
     return _channel.invokeMethod('launchMap', args);
   }
