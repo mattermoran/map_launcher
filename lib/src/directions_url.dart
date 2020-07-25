@@ -99,6 +99,19 @@ String getMapDirectionsUrl({
         ),
         'startname': originTitle,
       });
+
+    case MapType.osmand:
+      if (Platform.isIOS) {
+        return Utils.buildUrl(
+          url: 'osmandmaps://navigate',
+          queryParams: {
+            'lat': '${destination.latitude}',
+            'lon': '${destination.longitude}',
+            'title': destinationTitle,
+          },
+        );
+      }
+      return 'osmand.navigation:q=${destination.latitude},${destination.longitude}';
     default:
       return null;
   }
