@@ -103,7 +103,7 @@ private func showMarker(mapType: MapType, url: String, title: String, latitude: 
     }
 }
 
-private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originLatitude: String?, originLongitude: String?, directionsMode: String?) {
+private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originTitle: String?, originLatitude: String?, originLongitude: String?, directionsMode: String?) {
     switch mapType {
     case MapType.apple:
         
@@ -111,9 +111,14 @@ private func showDirections(mapType: MapType, url: String, destinationTitle: Str
         destinationMapItem.name = destinationTitle ?? "Destination"
         
         let hasOrigin = originLatitude != nil && originLatitude != nil
-        let originMapItem = !hasOrigin
-            ? MKMapItem.forCurrentLocation()
-            : getMapItem(latitude: originLatitude!, longitude: originLongitude!)
+        var originMapItem: MKMapItem {
+            if !hasOrigin {
+                return MKMapItem.forCurrentLocation()
+            }
+            let origin = getMapItem(latitude: originLatitude!, longitude: originLongitude!)
+            origin.name = originTitle ?? "Origin"
+            return origin
+        }
         
 
         MKMapItem.openMaps(
@@ -167,11 +172,15 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
       let args = call.arguments as! NSDictionary
       let mapType = args["mapType"] as! String
       let url = args["url"] as! String
+        
       let destinationTitle = args["destinationTitle"] as? String
       let destinationLatitude = args["destinationLatitude"] as! String
       let destinationLongitude = args["destinationLongitude"] as! String
+        
+      let originTitle = args["originTitle"] as? String
       let originLatitude = args["originLatitude"] as? String
       let originLongitude = args["originLongitude"] as? String
+        
       let directionsMode = args["directionsMode"] as? String
 
       let map = getMapByRawMapType(type: mapType)
@@ -186,6 +195,7 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
         destinationTitle: destinationTitle,
         destinationLatitude: destinationLatitude,
         destinationLongitude: destinationLongitude,
+        originTitle: originTitle,
         originLatitude: originLatitude,
         originLongitude: originLongitude,
         directionsMode: directionsMode

@@ -7,10 +7,10 @@ import 'package:map_launcher/src/utils.dart';
 String getMapDirectionsUrl({
   @required MapType mapType,
   @required Coords destination,
-  String destinationTitle,
-  Coords origin,
-  String originTitle,
-  DirectionsMode directionsMode,
+  @required String destinationTitle,
+  @required Coords origin,
+  @required String originTitle,
+  @required DirectionsMode directionsMode,
 }) {
   switch (mapType) {
     case MapType.google:
@@ -23,6 +23,8 @@ String getMapDirectionsUrl({
               origin,
               '${origin?.latitude},${origin?.longitude}',
             ),
+            // google maps is very inconsistent about their default
+            // between platforms so fallback to .driving
             'directionsmode': Utils.enumToString(directionsMode),
           },
         );
@@ -37,6 +39,8 @@ String getMapDirectionsUrl({
             origin,
             '${origin?.latitude},${origin?.longitude}',
           ),
+          // google maps is very inconsistent about their default
+          // between platforms so fallback to .driving
           'travelmode': Utils.enumToString(directionsMode),
         },
       );

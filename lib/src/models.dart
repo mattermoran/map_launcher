@@ -63,13 +63,17 @@ class AvailableMap {
 
   Future<void> showDirections({
     @required Coords destination,
+    String destinationTitle,
     Coords origin,
+    String originTitle,
     DirectionsMode directionsMode,
   }) {
     return MapLauncher.showDirections(
       mapType: mapType,
       destination: destination,
+      destinationTitle: destinationTitle,
       origin: origin,
+      originTitle: originTitle,
       directionsMode: directionsMode,
     );
   }

@@ -62,14 +62,17 @@ class MapLauncher {
   static Future<dynamic> showDirections({
     @required MapType mapType,
     @required Coords destination,
-    Coords origin,
     String destinationTitle,
-    DirectionsMode directionsMode,
+    Coords origin,
+    String originTitle,
+    DirectionsMode directionsMode = DirectionsMode.driving,
   }) async {
     final url = getMapDirectionsUrl(
       mapType: mapType,
       destination: destination,
+      destinationTitle: destinationTitle,
       origin: origin,
+      originTitle: originTitle,
       directionsMode: directionsMode,
     );
 
@@ -81,8 +84,10 @@ class MapLauncher {
       'destinationTitle': destinationTitle,
       'destinationLatitude': destination.latitude.toString(),
       'destinationLongitude': destination.longitude.toString(),
+      'destinationtitle': destinationTitle,
       'originLatitude': origin?.latitude?.toString(),
       'originLongitude': origin?.longitude?.toString(),
+      'origintitle': originTitle,
       'directionsMode': Utils.enumToString(directionsMode),
     };
     return _channel.invokeMethod('showDirections', args);
