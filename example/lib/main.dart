@@ -77,7 +77,8 @@ class _MapLauncherDemoState extends State<MapLauncherDemo> {
                                 if (_launchMode == LaunchMode.directions) {
                                   map.showDirections(
                                     destination: coords,
-                                    origin: Coords(31.233518, 121.505604),
+                                    origin: Coords(31.234518, 121.505604),
+                                    directionsMode: DirectionsMode.walking,
                                   );
                                 } else {
                                   map.showMarker(
