@@ -70,7 +70,7 @@ await availableMaps.first.showMarker(
 import 'package:map_launcher/map_launcher.dart';
 
 if (await MapLauncher.isMapAvailable(MapType.google)) {
-  await MapLauncher.launchMap(
+  await MapLauncher.showMarker(
     mapType: MapType.google,
     coords: coords,
     title: title,
@@ -80,7 +80,64 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 
 ```
 
-### Example using bottom sheet
+
+## API
+
+
+### Show Marker
+
+| option        | type                | required | default |
+| ------------- | ------------------- | -------- | ------- |
+| `mapType`     | `MapType`           | yes      | -       |
+| `coords`      | `Coords(lat, long)` | yes      | -       |
+| `title`       | `String`            | no       | `''`    |
+| `description` | `String`            | no       | `''`    |
+
+
+##### Maps
+| `mapType`     | `coords`                                                         | `title`                                        | `description` |
+| ------------- | ---------------------------------------------------------------- | ---------------------------------------------- | ------------- |
+| `.google`     | ✓                                                                | iOS only <br /> see Known Issues section below | ✗             |
+| `.apple`      | ✓                                                                | ✓                                              | ✗             |
+| `.amap`       | ✓                                                                | ✓                                              | ✓             |
+| `.baidu`      | ✓                                                                | ✓                                              | ✓             |
+| `.waze`       | ✓                                                                | ✗                                              | ✗             |
+| `.yandexMaps` | ✓                                                                | ✗                                              | ✗             |
+| `.yandexNavi` | ✓                                                                | ✓                                              | ✗             |
+| `.citymapper` | ✓ <br /> does not support marker <br /> shows directions instead | ✓                                              | ✗             |
+| `.mapswithme` | ✓                                                                | ✓                                              | ✗             |
+| `.osmand`     | ✓                                                                | iOS only                                       | ✗             |
+
+### Show Directions
+
+| option             | type                | required | default          |
+| ------------------ | ------------------- | -------- | ---------------- |
+| `mapType`          | `MapType`           | yes      | -                |
+| `destination`      | `Coords(lat, long)` | yes      | -                |
+| `destinationTitle` | `String`            | no       | `'Destination'`  |
+| `origin`           | `Coords(lat, long)` | no       | Current Location |
+| `originTitle`      | `String`            | no       | `'Origin'`       |
+| `directionsMode`   | `DirectionsMode`    | no       | `.driving`       |
+
+
+##### Maps
+| `mapType`     | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` |
+| ------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- |
+| `.google`     | ✓             | ✗                  | ✓                            | ✗             | ✓                |
+| `.apple`      | ✓             | ✓                  | ✓                            | ✓             | ✓                |
+| `.amap`       | ✓             | ✓                  | ✓                            | ✓             | ✓                |
+| `.baidu`      | ✓             | ✓                  | ✓                            | ✓             | ✓                |
+| `.waze`       | ✓             | ✗                  | always uses current location | ✗             | ✗                |
+| `.yandexMaps` | ✓             | ✓                  | ✓                            | ✓             | ✓                |
+| `.yandexNavi` | ✓             | ✓                  | ✓                            | ✓             | ✓                |
+| `.citymapper` | ✓             | ✓                  | ✓                            | ✓             | ✓                |
+| `.mapswithme` | ✓             | ✓                  | only shows marker            | ✗             | ✗                |
+| `.osmand`     | ✓             | iOS only           | always uses current location | ✗             | ✗                |
+
+
+
+## Example
+### Using with bottom sheet
 
 ```dart
 import 'package:flutter/material.dart';
