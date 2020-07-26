@@ -23,7 +23,7 @@ class MapLauncher {
     @required MapType mapType,
     @required Coords coords,
     @required String title,
-    @required String description,
+    String description,
   }) {
     return showMarker(
       mapType: mapType,
@@ -45,8 +45,6 @@ class MapLauncher {
       title: title,
       description: description,
     );
-
-    print(url);
 
     final Map<String, String> args = {
       'mapType': Utils.enumToString(mapType),
@@ -75,8 +73,6 @@ class MapLauncher {
       originTitle: originTitle,
       directionsMode: directionsMode,
     );
-
-    print(url);
 
     final Map<String, String> args = {
       'mapType': Utils.enumToString(mapType),
