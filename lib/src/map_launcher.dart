@@ -37,7 +37,7 @@ class MapLauncher {
     @required MapType mapType,
     @required Coords coords,
     @required String title,
-    @required String description,
+    String description,
   }) async {
     final url = getMapMarkerUrl(
       mapType: mapType,

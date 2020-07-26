@@ -51,7 +51,7 @@ class AvailableMap {
   Future<void> showMarker({
     @required Coords coords,
     @required String title,
-    @required String description,
+    String description,
   }) {
     return MapLauncher.showMarker(
       mapType: mapType,
