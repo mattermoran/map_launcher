@@ -116,6 +116,19 @@ String getMapDirectionsUrl({
     case MapType.mapswithme:
       // Couldn't get //route to work properly as of 2020/07
       // so just using the marker method for now
+      // return Utils.buildUrl(
+      //   url: 'mapsme://route',
+      //   queryParams: {
+      //     'dll': '${destination.latitude},${destination.longitude}',
+      //     'daddr': destinationTitle,
+      //     'sll': Utils.nullOrValue(
+      //       origin,
+      //       '${origin?.latitude},${origin?.longitude}',
+      //     ),
+      //     'saddr': originTitle,
+      //     'type': Utils.getMapsMeDirectionsMode(directionsMode),
+      //   },
+      // );
       return Utils.buildUrl(
         url: 'mapsme://map',
         queryParams: {
@@ -124,19 +137,28 @@ String getMapDirectionsUrl({
           'n': destinationTitle
         },
       );
-    // return Utils.buildUrl(
-    //   url: 'mapsme://route',
-    //   queryParams: {
-    //     'dll': '${destination.latitude},${destination.longitude}',
-    //     'daddr': destinationTitle,
-    //     'sll': Utils.nullOrValue(
-    //       origin,
-    //       '${origin?.latitude},${origin?.longitude}',
-    //     ),
-    //     'saddr': originTitle,
-    //     'type': 'vehicle',
-    //   },
-    // );
+
+    case MapType.yandexMaps:
+      return Utils.buildUrl(
+        url: 'yandexmaps://maps.yandex.com/',
+        queryParams: {
+          'rtext':
+              '${origin?.latitude},${origin?.longitude}~${destination.latitude},${destination.longitude}',
+          'rtt': Utils.getYandexMapsDirectionsMode(directionsMode),
+        },
+      );
+
+    case MapType.yandexNavi:
+      return Utils.buildUrl(
+        url: 'yandexnavi://build_route_on_map',
+        queryParams: {
+          'lat_to': '${destination.latitude}',
+          'lon_to': '${destination.longitude}',
+          'lat_from': Utils.nullOrValue(origin, '${origin?.latitude}'),
+          'lon_from': Utils.nullOrValue(origin, '${origin?.longitude}'),
+        },
+      );
+
     default:
       return null;
   }

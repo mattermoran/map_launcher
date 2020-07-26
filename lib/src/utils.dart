@@ -60,4 +60,34 @@ class Utils {
         return 'driving';
     }
   }
+
+  static String getMapsMeDirectionsMode(DirectionsMode directionsMode) {
+    switch (directionsMode) {
+      case DirectionsMode.driving:
+        return 'vehicle';
+      case DirectionsMode.transit:
+        return 'transit';
+      case DirectionsMode.walking:
+        return 'pedestrian';
+      case DirectionsMode.bicycling:
+        return 'bicycle';
+      default:
+        return 'vehicle';
+    }
+  }
+
+  static String getYandexMapsDirectionsMode(DirectionsMode directionsMode) {
+    switch (directionsMode) {
+      case DirectionsMode.driving:
+        return 'auto';
+      case DirectionsMode.transit:
+        return 'mt';
+      case DirectionsMode.walking:
+        return 'pd';
+      case DirectionsMode.bicycling:
+        return 'auto';
+      default:
+        return 'auto';
+    }
+  }
 }
