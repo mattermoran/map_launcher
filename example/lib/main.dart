@@ -1,51 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:map_launcher/map_launcher.dart';
+import 'package:map_launcher_example/show_directions.dart';
+import 'package:map_launcher_example/show_marker.dart';
 
 void main() => runApp(MapLauncherDemo());
 
-class MapLauncherDemo extends StatelessWidget {
-  openMapsSheet(context) async {
-    try {
-      final title = "Shanghai Tower";
-      final description = "Asia's tallest building";
-      final coords = Coords(31.233568, 121.505504);
-      final availableMaps = await MapLauncher.installedMaps;
+class MapLauncherDemo extends StatefulWidget {
+  @override
+  _MapLauncherDemoState createState() => _MapLauncherDemoState();
+}
 
-      print(availableMaps);
+enum LaunchMode { marker, directions }
 
-      showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return SafeArea(
-            child: SingleChildScrollView(
-              child: Container(
-                child: Wrap(
-                  children: <Widget>[
-                    for (var map in availableMaps)
-                      ListTile(
-                        onTap: () => map.showMarker(
-                          coords: coords,
-                          title: title,
-                          description: description,
-                        ),
-                        title: Text(map.mapName),
-                        leading: Image(
-                          image: map.icon,
-                          height: 30.0,
-                          width: 30.0,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      );
-    } catch (e) {
-      print(e);
-    }
-  }
+class _MapLauncherDemoState extends State<MapLauncherDemo> {
+  int selectedTabIndex = 0;
+
+  List<Widget> widgets = [ShowMarker(), ShowDirections()];
 
   @override
   Widget build(BuildContext context) {
@@ -54,14 +24,23 @@ class MapLauncherDemo extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Map Launcher Demo'),
         ),
-        body: Center(child: Builder(
-          builder: (context) {
-            return MaterialButton(
-              onPressed: () => openMapsSheet(context),
-              child: Text('Show Maps'),
-            );
-          },
-        )),
+        body: widgets[selectedTabIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: selectedTabIndex,
+          onTap: (newTabIndex) => setState(() {
+            selectedTabIndex = newTabIndex;
+          }),
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.pin_drop),
+              title: Text('Marker'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.directions),
+              title: Text('Directions'),
+            ),
+          ],
+        ),
       ),
     );
   }

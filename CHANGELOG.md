@@ -1,3 +1,8 @@
+## 0.9.0
+
+- Add showDirections method
+- Update example app
+
 ## 0.8.2
 
 - Update flutter_svg constraint </br>

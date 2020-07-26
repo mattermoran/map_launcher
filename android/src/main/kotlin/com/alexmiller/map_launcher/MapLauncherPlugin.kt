@@ -97,7 +97,7 @@ public class MapLauncherPlugin: FlutterPlugin, MethodCallHandler {
         val installedMaps = getInstalledMaps()
         result.success(installedMaps.map { map -> map.toMap() })
       }
-      "launchMap" -> {
+      "showMarker", "showDirections" -> {
         var args = call.arguments as Map<String, String>
 
         if (!isMapAvailable(args["mapType"] as String)) {
