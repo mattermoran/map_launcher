@@ -46,7 +46,13 @@ String getMapDirectionsUrl({
       );
 
     case MapType.apple:
-      return 'http://maps.apple.com/maps?saddr=${destination.latitude},${destination.longitude}';
+      return Utils.buildUrl(
+        url: 'http://maps.apple.com/maps',
+        queryParams: {
+          'daddr': '${destination.latitude},${destination.longitude}',
+        },
+      );
+
     case MapType.amap:
       return Utils.buildUrl(
         url: Platform.isIOS ? 'iosamap://path' : 'amapuri://route/plan/',

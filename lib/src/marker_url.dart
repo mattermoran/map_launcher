@@ -11,24 +11,88 @@ String getMapMarkerUrl({
 }) {
   switch (mapType) {
     case MapType.google:
-      if (Platform.isIOS) {
-        return 'comgooglemaps://?q=${coords.latitude},${coords.longitude}($title)';
-      }
-      return 'geo:0,0?q=${coords.latitude},${coords.longitude}($title)';
+      return Utils.buildUrl(
+        url: Platform.isIOS ? 'comgooglemaps://' : 'geo:0,0',
+        queryParams: {
+          'q': '${coords.latitude},${coords.longitude}($title)',
+        },
+      );
+
     case MapType.amap:
-      return '${Platform.isIOS ? 'ios' : 'android'}amap://viewMap?sourceApplication=map_launcher&poiname=$title&lat=${coords.latitude}&lon=${coords.longitude}&zoom=18&dev=0';
+      return Utils.buildUrl(
+        url: '${Platform.isIOS ? 'ios' : 'android'}amap://viewMap',
+        queryParams: {
+          'sourceApplication': 'map_launcher',
+          'poiname': '$title',
+          'lat': '${coords.latitude}',
+          'lon': '${coords.longitude}',
+          'zoom': '18',
+          'dev': '0',
+        },
+      );
+
     case MapType.baidu:
-      return 'baidumap://map/marker?location=${coords.latitude},${coords.longitude}&title=$title&content=$description&traffic=on&src=com.map_launcher&coord_type=gcj02&zoom=18';
+      return Utils.buildUrl(
+        url: 'baidumap://map/marker',
+        queryParams: {
+          'location': '${coords.latitude},${coords.longitude}',
+          'title': title,
+          'content': description,
+          'traffic': 'on',
+          'src': 'com.map_launcher',
+          'coord_type': 'gcj02',
+          'zoom': '18',
+        },
+      );
+
     case MapType.apple:
-      return 'http://maps.apple.com/maps?saddr=${coords.latitude},${coords.longitude}';
+      return Utils.buildUrl(
+        url: 'http://maps.apple.com/maps',
+        queryParams: {
+          'saddr': '${coords.latitude},${coords.longitude}',
+        },
+      );
+
     case MapType.waze:
-      return 'waze://?ll=${coords.latitude},${coords.longitude}&zoom=10';
+      return Utils.buildUrl(
+        url: 'waze://',
+        queryParams: {
+          'll': '${coords.latitude},${coords.longitude}',
+          'z': '10',
+        },
+      );
+
     case MapType.yandexNavi:
-      return 'yandexnavi://show_point_on_map?lat=${coords.latitude}&lon=${coords.longitude}&zoom=16&no-balloon=0&desc=$title';
+      return Utils.buildUrl(
+        url: 'yandexnavi://show_point_on_map',
+        queryParams: {
+          'lat': '${coords.latitude}',
+          'lon': '${coords.longitude}',
+          'zoom': '16',
+          'no-balloon': '0',
+          'desc': '$title',
+        },
+      );
+
     case MapType.yandexMaps:
-      return 'yandexmaps://maps.yandex.ru/?pt=${coords.longitude},${coords.latitude}&z=16&l=map';
+      return Utils.buildUrl(
+        url: 'yandexmaps://maps.yandex.ru/',
+        queryParams: {
+          'pt': '${coords.longitude},${coords.latitude}',
+          'z': '16',
+          'l': 'map',
+        },
+      );
+
     case MapType.citymapper:
-      return 'citymapper://directions?endcoord=${coords.latitude},${coords.longitude}&endname=$title';
+      return Utils.buildUrl(
+        url: 'citymapper://directions',
+        queryParams: {
+          'endcoord': '${coords.latitude},${coords.longitude}',
+          'endname': '$title',
+        },
+      );
+
     case MapType.mapswithme:
       return Utils.buildUrl(
         url: 'mapsme://map',
@@ -38,6 +102,7 @@ String getMapMarkerUrl({
           'n': title
         },
       );
+
     case MapType.osmand:
       if (Platform.isIOS) {
         return Utils.buildUrl(
@@ -49,7 +114,15 @@ String getMapMarkerUrl({
           },
         );
       }
-      return 'http://osmand.net/go?lat=${coords.latitude}&lon=${coords.longitude}&z=16';
+      return Utils.buildUrl(
+        url: 'http://osmand.net/go',
+        queryParams: {
+          'lat': '${coords.latitude}',
+          'lon': '${coords.longitude}',
+          'z': '16',
+        },
+      );
+
     default:
       return null;
   }
