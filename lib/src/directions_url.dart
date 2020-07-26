@@ -112,6 +112,31 @@ String getMapDirectionsUrl({
         );
       }
       return 'osmand.navigation:q=${destination.latitude},${destination.longitude}';
+
+    case MapType.mapswithme:
+      // Couldn't get //route to work properly as of 2020/07
+      // so just using the marker method for now
+      return Utils.buildUrl(
+        url: 'mapsme://map',
+        queryParams: {
+          'v': '1',
+          'll': '${destination.latitude},${destination.longitude}',
+          'n': destinationTitle
+        },
+      );
+    // return Utils.buildUrl(
+    //   url: 'mapsme://route',
+    //   queryParams: {
+    //     'dll': '${destination.latitude},${destination.longitude}',
+    //     'daddr': destinationTitle,
+    //     'sll': Utils.nullOrValue(
+    //       origin,
+    //       '${origin?.latitude},${origin?.longitude}',
+    //     ),
+    //     'saddr': originTitle,
+    //     'type': 'vehicle',
+    //   },
+    // );
     default:
       return null;
   }

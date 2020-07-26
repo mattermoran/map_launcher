@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:map_launcher/src/models.dart';
+import 'package:map_launcher/src/utils.dart';
 
 String getMapMarkerUrl({
   @required MapType mapType,
@@ -29,12 +30,26 @@ String getMapMarkerUrl({
     case MapType.citymapper:
       return 'citymapper://directions?endcoord=${coords.latitude},${coords.longitude}&endname=$title';
     case MapType.mapswithme:
-      return "mapsme://map?v=1&ll=${coords.latitude},${coords.longitude}&n=$title";
+      return Utils.buildUrl(
+        url: 'mapsme://map',
+        queryParams: {
+          'v': '1',
+          'll': '${coords.latitude},${coords.longitude}',
+          'n': title
+        },
+      );
     case MapType.osmand:
       if (Platform.isIOS) {
-        return 'osmandmaps://navigate?lat=${coords.latitude}&lon=${coords.longitude}&title=$title';
+        return Utils.buildUrl(
+          url: 'osmandmaps://',
+          queryParams: {
+            'lat': '${coords.latitude}',
+            'lon': '${coords.longitude}',
+            'title': title,
+          },
+        );
       }
-      return 'osmand.navigation:q=${coords.latitude},${coords.longitude}';
+      return 'http://osmand.net/go?lat=${coords.latitude}&lon=${coords.longitude}&z=16';
     default:
       return null;
   }
