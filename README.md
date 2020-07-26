@@ -6,7 +6,7 @@ Map Launcher is a flutter plugin to find available maps installed on a device an
 
 |                                Marker                                 |                                Navigation                                 |
 | :-------------------------------------------------------------------: | :-----------------------------------------------------------------------: |
-| ![Marker](https://media.giphy.com/media/cKVdTT3067S3uMPCI9/giphy.gif) | ![Navigation](https://media.giphy.com/media/JRJ2rtkiP4SaK5Abir/giphy.gif) |
+| ![Marker](https://media.giphy.com/media/YNE1A6jrQQx4fArqKb/giphy.gif) | ![Navigation](https://media.giphy.com/media/gKIAdlbEzTDl6n7IOS/giphy.gif) |
 
 Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/google.svg" width="25"> Google Maps
