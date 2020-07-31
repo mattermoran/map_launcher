@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:map_launcher/map_launcher.dart';
 import 'package:map_launcher_example/show_directions.dart';
 import 'package:map_launcher_example/show_marker.dart';
 

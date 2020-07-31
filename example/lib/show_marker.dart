@@ -11,6 +11,7 @@ class _ShowMarkerState extends State<ShowMarker> {
   double latitude = 37.759392;
   double longitude = -122.5107336;
   String title = 'Ocean Beach';
+  int zoom = 18;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +52,17 @@ class _ShowMarkerState extends State<ShowMarker> {
               });
             },
           ),
+          TextFormField(
+            autocorrect: false,
+            autovalidate: false,
+            decoration: InputDecoration(labelText: 'Zoom'),
+            initialValue: zoom.toString(),
+            onChanged: (newValue) {
+              setState(() {
+                zoom = int.tryParse(newValue);
+              });
+            },
+          ),
           SizedBox(height: 20),
           MaterialButton(
             onPressed: () {
@@ -60,6 +72,7 @@ class _ShowMarkerState extends State<ShowMarker> {
                   map.showMarker(
                     coords: Coords(latitude, longitude),
                     title: title,
+                    zoom: zoom,
                   );
                 },
               );

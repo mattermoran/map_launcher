@@ -8,6 +8,7 @@ String getMapMarkerUrl({
   @required Coords coords,
   String title,
   String description,
+  int zoom = 16,
 }) {
   switch (mapType) {
     case MapType.google:
@@ -15,6 +16,7 @@ String getMapMarkerUrl({
         url: Platform.isIOS ? 'comgooglemaps://' : 'geo:0,0',
         queryParams: {
           'q': '${coords.latitude},${coords.longitude}($title)',
+          'zoom': '$zoom',
         },
       );
 
@@ -26,7 +28,7 @@ String getMapMarkerUrl({
           'poiname': '$title',
           'lat': '${coords.latitude}',
           'lon': '${coords.longitude}',
-          'zoom': '18',
+          'zoom': '$zoom',
           'dev': '0',
         },
       );
@@ -36,12 +38,13 @@ String getMapMarkerUrl({
         url: 'baidumap://map/marker',
         queryParams: {
           'location': '${coords.latitude},${coords.longitude}',
-          'title': title,
-          'content': description,
+          'title': title ?? 'Title',
+          'content': description ??
+              'Description', // baidu fails if no description provided
           'traffic': 'on',
           'src': 'com.map_launcher',
           'coord_type': 'gcj02',
-          'zoom': '18',
+          'zoom': '$zoom',
         },
       );
 
@@ -58,7 +61,7 @@ String getMapMarkerUrl({
         url: 'waze://',
         queryParams: {
           'll': '${coords.latitude},${coords.longitude}',
-          'z': '10',
+          'z': '$zoom',
         },
       );
 
@@ -68,7 +71,7 @@ String getMapMarkerUrl({
         queryParams: {
           'lat': '${coords.latitude}',
           'lon': '${coords.longitude}',
-          'zoom': '16',
+          'zoom': '$zoom',
           'no-balloon': '0',
           'desc': '$title',
         },
@@ -79,7 +82,7 @@ String getMapMarkerUrl({
         url: 'yandexmaps://maps.yandex.ru/',
         queryParams: {
           'pt': '${coords.longitude},${coords.latitude}',
-          'z': '16',
+          'z': '$zoom',
           'l': 'map',
         },
       );
@@ -119,7 +122,7 @@ String getMapMarkerUrl({
         queryParams: {
           'lat': '${coords.latitude}',
           'lon': '${coords.longitude}',
-          'z': '16',
+          'z': '$zoom',
         },
       );
 

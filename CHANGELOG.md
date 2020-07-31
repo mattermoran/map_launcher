@@ -1,3 +1,7 @@
+## 0.10.0
+
+- Add zoom parameter
+
 ## 0.9.0
 
 - Add showDirections method

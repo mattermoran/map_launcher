@@ -38,12 +38,14 @@ class MapLauncher {
     @required Coords coords,
     @required String title,
     String description,
+    int zoom,
   }) async {
     final url = getMapMarkerUrl(
       mapType: mapType,
       coords: coords,
       title: title,
       description: description,
+      zoom: zoom,
     );
 
     final Map<String, String> args = {

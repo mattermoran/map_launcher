@@ -26,7 +26,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^0.9.0
+  map_launcher: ^0.10.0
 ```
 
 ### For iOS add url schemes in Info.plist file
@@ -79,9 +79,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 
 ```
 
-
 ## API
-
 
 ### Show Marker
 
@@ -91,21 +89,22 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `coords`      | `Coords(lat, long)` | yes      | -       |
 | `title`       | `String`            | no       | `''`    |
 | `description` | `String`            | no       | `''`    |
-
+| `zoom`        | `Int`               | no       | 16      |
 
 ##### Maps
-| `mapType`     | `coords`                                                         | `title`                                        | `description` |
-| ------------- | ---------------------------------------------------------------- | ---------------------------------------------- | ------------- |
-| `.google`     | ✓                                                                | iOS only <br /> see Known Issues section below | ✗             |
-| `.apple`      | ✓                                                                | ✓                                              | ✗             |
-| `.amap`       | ✓                                                                | ✓                                              | ✓             |
-| `.baidu`      | ✓                                                                | ✓                                              | ✓             |
-| `.waze`       | ✓                                                                | ✗                                              | ✗             |
-| `.yandexMaps` | ✓                                                                | ✗                                              | ✗             |
-| `.yandexNavi` | ✓                                                                | ✓                                              | ✗             |
-| `.citymapper` | ✓ <br /> does not support marker <br /> shows directions instead | ✓                                              | ✗             |
-| `.mapswithme` | ✓                                                                | ✓                                              | ✗             |
-| `.osmand`     | ✓                                                                | iOS only                                       | ✗             |
+
+| `mapType`     | `coords`                                                         | `title`                                        | `description` | `zoom`       |
+| ------------- | ---------------------------------------------------------------- | ---------------------------------------------- | ------------- | ------------ |
+| `.google`     | ✓                                                                | iOS only <br /> see Known Issues section below | ✗             | ✓            |
+| `.apple`      | ✓                                                                | ✓                                              | ✗             | ✗            |
+| `.amap`       | ✓                                                                | ✓                                              | ✓             | Android only |
+| `.baidu`      | ✓                                                                | ✓                                              | ✓             | ✓            |
+| `.waze`       | ✓                                                                | ✗                                              | ✗             | ✓            |
+| `.yandexMaps` | ✓                                                                | ✗                                              | ✗             | ✓            |
+| `.yandexNavi` | ✓                                                                | ✓                                              | ✗             | ✓            |
+| `.citymapper` | ✓ <br /> does not support marker <br /> shows directions instead | ✓                                              | ✗             | ✗            |
+| `.mapswithme` | ✓                                                                | ✓                                              | ✗             | ✗            |
+| `.osmand`     | ✓                                                                | iOS only                                       | ✗             | Android only |
 
 ### Show Directions
 
@@ -118,8 +117,8 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `originTitle`      | `String`            | no       | `'Origin'`       |
 | `directionsMode`   | `DirectionsMode`    | no       | `.driving`       |
 
-
 ##### Maps
+
 | `mapType`     | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` |
 | ------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- |
 | `.google`     | ✓             | ✗                  | ✓                            | ✗             | ✓                |
@@ -133,9 +132,8 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.mapswithme` | ✓             | ✓                  | only shows marker            | ✗             | ✗                |
 | `.osmand`     | ✓             | iOS only           | always uses current location | ✗             | ✗                |
 
-
-
 ## Example
+
 ### Using with bottom sheet
 
 ```dart
@@ -204,7 +202,6 @@ class MapLauncherDemo extends StatelessWidget {
   }
 }
 ```
-
 
 ## Known issues
 
