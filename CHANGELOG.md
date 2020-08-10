@@ -1,3 +1,7 @@
+## 0.11.0
+
+- Add waypoints for Google Maps
+
 ## 0.10.0
 
 - Add zoom parameter

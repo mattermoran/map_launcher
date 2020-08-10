@@ -65,6 +65,7 @@ class MapLauncher {
     String destinationTitle,
     Coords origin,
     String originTitle,
+    List<Coords> waypoints,
     DirectionsMode directionsMode = DirectionsMode.driving,
   }) async {
     final url = getMapDirectionsUrl(
@@ -73,6 +74,7 @@ class MapLauncher {
       destinationTitle: destinationTitle,
       origin: origin,
       originTitle: originTitle,
+      waypoints: waypoints,
       directionsMode: directionsMode,
     );
 

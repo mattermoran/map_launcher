@@ -11,25 +11,10 @@ String getMapDirectionsUrl({
   @required Coords origin,
   @required String originTitle,
   @required DirectionsMode directionsMode,
+  @required List<Coords> waypoints,
 }) {
   switch (mapType) {
     case MapType.google:
-      if (Platform.isIOS) {
-        return Utils.buildUrl(
-          url: 'comgooglemaps://',
-          queryParams: {
-            'daddr': '${destination.latitude},${destination.longitude}',
-            'saddr': Utils.nullOrValue(
-              origin,
-              '${origin?.latitude},${origin?.longitude}',
-            ),
-            // google maps is very inconsistent about their default
-            // between platforms so fallback to .driving
-            'directionsmode': Utils.enumToString(directionsMode),
-          },
-        );
-      }
-
       return Utils.buildUrl(
         url: 'https://www.google.com/maps/dir/',
         queryParams: {
@@ -39,8 +24,9 @@ String getMapDirectionsUrl({
             origin,
             '${origin?.latitude},${origin?.longitude}',
           ),
-          // google maps is very inconsistent about their default
-          // between platforms so fallback to .driving
+          'waypoints': waypoints
+              ?.map((coords) => '${coords.latitude},${coords.longitude}')
+              ?.join('|'),
           'travelmode': Utils.enumToString(directionsMode),
         },
       );

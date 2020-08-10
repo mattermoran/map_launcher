@@ -68,6 +68,7 @@ class AvailableMap {
     String destinationTitle,
     Coords origin,
     String originTitle,
+    List<Coords> waypoints,
     DirectionsMode directionsMode,
   }) {
     return MapLauncher.showDirections(
@@ -76,6 +77,7 @@ class AvailableMap {
       destinationTitle: destinationTitle,
       origin: origin,
       originTitle: originTitle,
+      waypoints: waypoints,
       directionsMode: directionsMode,
     );
   }

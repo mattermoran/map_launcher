@@ -26,7 +26,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^0.10.0
+  map_launcher: ^0.11.0
 ```
 
 ### For iOS add url schemes in Info.plist file
@@ -108,29 +108,30 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 
 ### Show Directions
 
-| option             | type                | required | default          |
-| ------------------ | ------------------- | -------- | ---------------- |
-| `mapType`          | `MapType`           | yes      | -                |
-| `destination`      | `Coords(lat, long)` | yes      | -                |
-| `destinationTitle` | `String`            | no       | `'Destination'`  |
-| `origin`           | `Coords(lat, long)` | no       | Current Location |
-| `originTitle`      | `String`            | no       | `'Origin'`       |
-| `directionsMode`   | `DirectionsMode`    | no       | `.driving`       |
+| option             | type                      | required | default          |
+| ------------------ | ------------------------- | -------- | ---------------- |
+| `mapType`          | `MapType`                 | yes      | -                |
+| `destination`      | `Coords(lat, long)`       | yes      | -                |
+| `destinationTitle` | `String`                  | no       | `'Destination'`  |
+| `origin`           | `Coords(lat, long)`       | no       | Current Location |
+| `originTitle`      | `String`                  | no       | `'Origin'`       |
+| `directionsMode`   | `DirectionsMode`          | no       | `.driving`       |
+| `waypoints`        | `List<Coords(lat, long)>` | no       | `null`           |
 
 ##### Maps
 
-| `mapType`     | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` |
-| ------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- |
-| `.google`     | ✓             | ✗                  | ✓                            | ✗             | ✓                |
-| `.apple`      | ✓             | ✓                  | ✓                            | ✓             | ✓                |
-| `.amap`       | ✓             | ✓                  | ✓                            | ✓             | ✓                |
-| `.baidu`      | ✓             | ✓                  | ✓                            | ✓             | ✓                |
-| `.waze`       | ✓             | ✗                  | always uses current location | ✗             | ✗                |
-| `.yandexMaps` | ✓             | ✓                  | ✓                            | ✓             | ✓                |
-| `.yandexNavi` | ✓             | ✓                  | ✓                            | ✓             | ✓                |
-| `.citymapper` | ✓             | ✓                  | ✓                            | ✓             | ✓                |
-| `.mapswithme` | ✓             | ✓                  | only shows marker            | ✗             | ✗                |
-| `.osmand`     | ✓             | iOS only           | always uses current location | ✗             | ✗                |
+| `mapType`     | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` | `waypoints` |
+| ------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- | ----------- |
+| `.google`     | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓           |
+| `.apple`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
+| `.amap`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
+| `.baidu`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
+| `.waze`       | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗           |
+| `.yandexMaps` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
+| `.yandexNavi` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
+| `.citymapper` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
+| `.mapswithme` | ✓             | ✓                  | only shows marker            | ✗             | ✗                | ✗           |
+| `.osmand`     | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗           |
 
 ## Example
 
