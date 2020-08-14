@@ -14,6 +14,7 @@ enum MapType {
   citymapper,
   mapswithme,
   osmand,
+  doubleGis,
 }
 
 enum DirectionsMode {

@@ -19,6 +19,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/citymapper.svg" width="25"> Citymapper
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapswithme.svg" width="25"> Maps.me
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.svg" width="25"> OsmAnd
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/doubleGis.svg" width="25"> 2GIS
 
 ## Get started
 
@@ -26,7 +27,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^0.11.0
+  map_launcher: ^0.12.0
 ```
 
 ### For iOS add url schemes in Info.plist file
@@ -43,6 +44,7 @@ dependencies:
     <string>citymapper</string>
     <string>mapsme</string>
     <string>osmandmaps</string>
+    <string>dgis</string>
 </array>
 ```
 

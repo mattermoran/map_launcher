@@ -126,6 +126,22 @@ String getMapMarkerUrl({
         },
       );
 
+    case MapType.doubleGis:
+      if (Platform.isIOS) {
+        return Utils.buildUrl(
+          url: 'dgis://2gis.ru/geo/${coords.longitude},${coords.latitude}',
+          queryParams: {},
+        );
+      }
+
+      // android app does not seem to support marker by coordinates
+      // so falling back to directions
+      return Utils.buildUrl(
+        url:
+            'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.longitude},${coords.latitude}',
+        queryParams: {},
+      );
+
     default:
       return null;
   }

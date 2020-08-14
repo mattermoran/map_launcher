@@ -14,6 +14,7 @@ private enum MapType: String {
   case citymapper
   case mapswithme
   case osmand
+  case doubleGis
 
   func type() -> String {
     return self.rawValue
@@ -50,7 +51,8 @@ private let maps: [Map] = [
     Map(mapName: "Yandex Maps", mapType: MapType.yandexMaps, urlPrefix: "yandexmaps://"),
     Map(mapName: "Citymapper", mapType: MapType.citymapper, urlPrefix: "citymapper://"),
     Map(mapName: "MAPS.ME", mapType: MapType.mapswithme, urlPrefix: "mapswithme://"),
-    Map(mapName: "OsmAnd", mapType: MapType.osmand, urlPrefix: "osmandmaps://")
+    Map(mapName: "OsmAnd", mapType: MapType.osmand, urlPrefix: "osmandmaps://"),
+    Map(mapName: "2GIS", mapType: MapType.doubleGis, urlPrefix: "dgis://")
 ]
 
 private func getMapByRawMapType(type: String) -> Map {
@@ -106,10 +108,10 @@ private func showMarker(mapType: MapType, url: String, title: String, latitude: 
 private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originTitle: String?, originLatitude: String?, originLongitude: String?, directionsMode: String?) {
     switch mapType {
     case MapType.apple:
-        
+
         let destinationMapItem = getMapItem(latitude: destinationLatitude, longitude: destinationLongitude);
         destinationMapItem.name = destinationTitle ?? "Destination"
-        
+
         let hasOrigin = originLatitude != nil && originLatitude != nil
         var originMapItem: MKMapItem {
             if !hasOrigin {
@@ -119,7 +121,7 @@ private func showDirections(mapType: MapType, url: String, destinationTitle: Str
             origin.name = originTitle ?? "Origin"
             return origin
         }
-        
+
 
         MKMapItem.openMaps(
             with: [originMapItem, destinationMapItem],
@@ -172,15 +174,15 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
       let args = call.arguments as! NSDictionary
       let mapType = args["mapType"] as! String
       let url = args["url"] as! String
-        
+
       let destinationTitle = args["destinationTitle"] as? String
       let destinationLatitude = args["destinationLatitude"] as! String
       let destinationLongitude = args["destinationLongitude"] as! String
-        
+
       let originTitle = args["originTitle"] as? String
       let originLatitude = args["originLatitude"] as? String
       let originLongitude = args["originLongitude"] as? String
-        
+
       let directionsMode = args["directionsMode"] as? String
 
       let map = getMapByRawMapType(type: mapType)

@@ -90,4 +90,17 @@ class Utils {
         return 'auto';
     }
   }
+
+  static String getDoubleGisDirectionsMode(DirectionsMode directionsMode) {
+    switch (directionsMode) {
+      case DirectionsMode.driving:
+        return 'car';
+      case DirectionsMode.transit:
+        return 'bus';
+      case DirectionsMode.walking:
+        return 'pedestrian';
+      default:
+        return 'auto';
+    }
+  }
 }

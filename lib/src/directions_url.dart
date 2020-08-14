@@ -151,6 +151,13 @@ String getMapDirectionsUrl({
         },
       );
 
+    case MapType.doubleGis:
+      return Utils.buildUrl(
+        url:
+            'dgis://2gis.ru/routeSearch/rsType/${Utils.getDoubleGisDirectionsMode(directionsMode)}/${origin == null ? '' : 'from/${origin.longitude},${origin.latitude}/'}to/${destination.longitude},${destination.latitude}',
+        queryParams: {},
+      );
+
     default:
       return null;
   }

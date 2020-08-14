@@ -144,7 +144,9 @@ class _ShowDirectionsState extends State<ShowDirections> {
                         destinationLongitude,
                       ),
                       destinationTitle: destinationTitle,
-                      origin: Coords(originLatitude, originLongitude),
+                      origin: originLatitude == null || originLongitude == null
+                          ? null
+                          : Coords(originLatitude, originLongitude),
                       originTitle: originTitle,
                       waypoints: waypoints,
                       directionsMode: directionsMode,

@@ -14,7 +14,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
-private enum class MapType { google, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand }
+private enum class MapType { google, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand, doubleGis }
 
 private class MapModel(val mapType: MapType, val mapName: String, val packageName: String) {
   fun toMap(): Map<String, String> {
@@ -52,7 +52,8 @@ public class MapLauncherPlugin: FlutterPlugin, MethodCallHandler {
     MapModel(MapType.yandexMaps, "Yandex Maps", "ru.yandex.yandexmaps"),
     MapModel(MapType.citymapper, "Citymapper", "com.citymapper.app.release"),
     MapModel(MapType.mapswithme, "MAPS.ME", "com.mapswithme.maps.pro"),
-    MapModel(MapType.osmand, "OsmAnd", "net.osmand")
+    MapModel(MapType.osmand, "OsmAnd", "net.osmand"),
+    MapModel(MapType.doubleGis, "2GIS", "ru.dublgis.dgismobile")
   )
 
   private fun getInstalledMaps(): List<MapModel> {

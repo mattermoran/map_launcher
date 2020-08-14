@@ -1,3 +1,7 @@
+## 0.12.0
+
+- Add support for 2GIS
+
 ## 0.11.0
 
 - Add waypoints for Google Maps
