@@ -1,3 +1,8 @@
+## 0.12.2
+
+- Add import fallback for `#import <map_launcher/map_launcher-Swift.h>`
+- Thanks to @fisherjoe
+
 ## 0.12.1
 
 - Fix default zoom level
