@@ -1,3 +1,7 @@
+## 0.12.1
+
+- Fix default zoom level
+
 ## 0.12.0
 
 - Add support for 2GIS

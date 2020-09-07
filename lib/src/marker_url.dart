@@ -8,15 +8,16 @@ String getMapMarkerUrl({
   @required Coords coords,
   String title,
   String description,
-  int zoom = 16,
+  int zoom,
 }) {
+  final zoomLevel = zoom ?? 16;
   switch (mapType) {
     case MapType.google:
       return Utils.buildUrl(
         url: Platform.isIOS ? 'comgooglemaps://' : 'geo:0,0',
         queryParams: {
           'q': '${coords.latitude},${coords.longitude}($title)',
-          'zoom': '$zoom',
+          'zoom': '$zoomLevel',
         },
       );
 
@@ -28,7 +29,7 @@ String getMapMarkerUrl({
           'poiname': '$title',
           'lat': '${coords.latitude}',
           'lon': '${coords.longitude}',
-          'zoom': '$zoom',
+          'zoom': '$zoomLevel',
           'dev': '0',
         },
       );
@@ -44,7 +45,7 @@ String getMapMarkerUrl({
           'traffic': 'on',
           'src': 'com.map_launcher',
           'coord_type': 'gcj02',
-          'zoom': '$zoom',
+          'zoom': '$zoomLevel',
         },
       );
 
@@ -61,7 +62,7 @@ String getMapMarkerUrl({
         url: 'waze://',
         queryParams: {
           'll': '${coords.latitude},${coords.longitude}',
-          'z': '$zoom',
+          'z': '$zoomLevel',
         },
       );
 
@@ -71,7 +72,7 @@ String getMapMarkerUrl({
         queryParams: {
           'lat': '${coords.latitude}',
           'lon': '${coords.longitude}',
-          'zoom': '$zoom',
+          'zoom': '$zoomLevel',
           'no-balloon': '0',
           'desc': '$title',
         },
@@ -82,7 +83,7 @@ String getMapMarkerUrl({
         url: 'yandexmaps://maps.yandex.ru/',
         queryParams: {
           'pt': '${coords.longitude},${coords.latitude}',
-          'z': '$zoom',
+          'z': '$zoomLevel',
           'l': 'map',
         },
       );
@@ -122,7 +123,7 @@ String getMapMarkerUrl({
         queryParams: {
           'lat': '${coords.latitude}',
           'lon': '${coords.longitude}',
-          'z': '$zoom',
+          'z': '$zoomLevel',
         },
       );
 
