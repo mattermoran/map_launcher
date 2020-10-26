@@ -42,7 +42,7 @@ dependencies:
     <string>yandexmaps</string>
     <string>yandexnavi</string>
     <string>citymapper</string>
-    <string>mapsme</string>
+    <string>mapswithme</string>
     <string>osmandmaps</string>
     <string>dgis</string>
 </array>
