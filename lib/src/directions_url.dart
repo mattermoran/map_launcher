@@ -31,6 +31,23 @@ String getMapDirectionsUrl({
         },
       );
 
+    case MapType.googleGo:
+      return Utils.buildUrl(
+        url: 'https://www.google.com/maps/dir/',
+        queryParams: {
+          'api': '1',
+          'destination': '${destination.latitude},${destination.longitude}',
+          'origin': Utils.nullOrValue(
+            origin,
+            '${origin?.latitude},${origin?.longitude}',
+          ),
+          'waypoints': waypoints
+              ?.map((coords) => '${coords.latitude},${coords.longitude}')
+              ?.join('|'),
+          'travelmode': Utils.enumToString(directionsMode),
+        },
+      );
+
     case MapType.apple:
       return Utils.buildUrl(
         url: 'http://maps.apple.com/maps',

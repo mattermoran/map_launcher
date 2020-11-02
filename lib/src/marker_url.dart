@@ -21,6 +21,15 @@ String getMapMarkerUrl({
         },
       );
 
+    case MapType.googleGo:
+      return Utils.buildUrl(
+        url: Platform.isIOS ? 'comgooglemapslite://' : 'geo:0,0',
+        queryParams: {
+          'q': '${coords.latitude},${coords.longitude}($title)',
+          'zoom': '$zoomLevel',
+        },
+      );
+
     case MapType.amap:
       return Utils.buildUrl(
         url: '${Platform.isIOS ? 'ios' : 'android'}amap://viewMap',
