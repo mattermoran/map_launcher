@@ -23,7 +23,7 @@ String getMapMarkerUrl({
 
     case MapType.googleGo:
       return Utils.buildUrl(
-        url: Platform.isIOS ? 'comgooglemapslite://' : 'geo:0,0',
+        url: Platform.isIOS ? 'comgooglemapslite://' : 'http://maps.google.com/maps',
         queryParams: {
           'q': '${coords.latitude},${coords.longitude}($title)',
           'zoom': '$zoomLevel',
