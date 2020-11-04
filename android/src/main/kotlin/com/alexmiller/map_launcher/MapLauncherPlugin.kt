@@ -75,20 +75,9 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
-    private fun launchGoogleMapsGo(url: String) {
-        context?.let {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            if (intent.resolveActivity(it.packageManager) != null) {
-                it.startActivity(intent)
-            }
-        }
-    }
-
     private fun launchMap(mapType: MapType, url: String, result: Result) {
         when (mapType) {
             MapType.google -> launchGoogleMaps(url)
-            MapType.googleGo -> launchGoogleMapsGo(url)
             else -> {
                 context?.let {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
