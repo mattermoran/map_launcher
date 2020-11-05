@@ -1,3 +1,10 @@
+## 1.0.0
+
+- BREAKING CHANGE: not depending on flutter_svg anymore. See README for migration
+- Add support for Google Maps GO
+- Under the hood changes
+- Thanks to @andoni97, @Pavel-Sulimau, @grinder15 for contribution
+
 ## 0.12.2
 
 - Add import fallback for `#import <map_launcher/map_launcher-Swift.h>`

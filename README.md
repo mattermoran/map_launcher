@@ -11,6 +11,7 @@ Map Launcher is a flutter plugin to find available maps installed on a device an
 Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/google.svg" width="25"> Google Maps
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/apple.svg" width="25"> Apple Maps (iOS only)
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/google.svg" width="25"> Google Maps GO (Android only)
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/baidu.svg" width="25"> Baidu Maps
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/amap.svg" width="25"> Amap (Gaode Maps)
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/waze.svg" width="25"> Waze
@@ -21,13 +22,38 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.svg" width="25"> OsmAnd
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/doubleGis.svg" width="25"> 2GIS
 
+## Migrating to v1
+
+Breaking change: map_launcher does not depend on flutter_svg anymore which means you will have to add flutter_svg in your project if you want to use images.
+
+This should allow you to use any version of flutter_svg and it also fixes bunch of issues related to that like [#45](https://github.com/mattermoran/map_launcher/issues/45), [#40](https://github.com/mattermoran/map_launcher/issues/40), etc
+
+The `icon` property from `AvailableMap` now returns `String` instead of `ImageProvider` so to get it working all you have to do is to go from
+
+```dart
+Image(
+  image: map.icon,
+)
+```
+
+to
+
+```dart
+import 'package:flutter_svg/flutter_svg.dart';
+
+SvgPicture.asset(
+  map.icon,
+)
+```
+
 ## Get started
 
 ### Add dependency
 
 ```yaml
 dependencies:
-  map_launcher: ^0.12.2
+  map_launcher: ^1.0.0
+  flutter_svg: # only if you want to use icons as they are svgs
 ```
 
 ### For iOS add url schemes in Info.plist file
@@ -99,6 +125,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | ------------- | ------------------------------------------------------------------------ | ---------------------------------------------- | ------------- | ------------ |
 | `.google`     | ✓                                                                        | iOS only <br /> see Known Issues section below | ✗             | ✓            |
 | `.apple`      | ✓                                                                        | ✓                                              | ✗             | ✗            |
+| `.googleGo`   | ✓                                                                        | ✗                                              | ✗             | ✓            |
 | `.amap`       | ✓                                                                        | ✓                                              | ✓             | Android only |
 | `.baidu`      | ✓                                                                        | ✓                                              | ✓             | ✓            |
 | `.waze`       | ✓                                                                        | ✗                                              | ✗             | ✓            |
@@ -123,19 +150,20 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 
 ##### Maps
 
-| `mapType`     | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` | `waypoints` |
-| ------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- | ----------- |
-| `.google`     | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓           |
-| `.apple`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
-| `.amap`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
-| `.baidu`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
-| `.waze`       | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗           |
-| `.yandexMaps` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
-| `.yandexNavi` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
-| `.citymapper` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗           |
-| `.mapswithme` | ✓             | ✓                  | only shows marker            | ✗             | ✗                | ✗           |
-| `.osmand`     | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗           |
-| `.doubleGis`  | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗           |
+| `mapType`     | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` | `waypoints`                                  |
+| ------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- | -------------------------------------------- |
+| `.google`     | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓ (up to 8 on iOS and unlimited? on android) |
+| `.apple`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
+| `.googleGo`   | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓                                            |
+| `.amap`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
+| `.baidu`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
+| `.waze`       | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            |
+| `.yandexMaps` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
+| `.yandexNavi` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
+| `.citymapper` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
+| `.mapswithme` | ✓             | ✓                  | only shows marker            | ✗             | ✗                | ✗                                            |
+| `.osmand`     | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗                                            |
+| `.doubleGis`  | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            |
 
 ## Example
 
@@ -144,6 +172,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 ```dart
 import 'package:flutter/material.dart';
 import 'package:map_launcher/map_launcher.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 void main() => runApp(MapLauncherDemo());
 
@@ -169,8 +198,8 @@ class MapLauncherDemo extends StatelessWidget {
                           title: title,
                         ),
                         title: Text(map.mapName),
-                        leading: Image(
-                          image: map.icon,
+                        leading: SvgPicture.asset(
+                          map.icon,
                           height: 30.0,
                           width: 30.0,
                         ),
