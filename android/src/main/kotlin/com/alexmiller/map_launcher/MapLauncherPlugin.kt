@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
-private enum class MapType { google, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand, doubleGis }
+private enum class MapType { google, googleGo, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand, doubleGis }
 
 private class MapModel(val mapType: MapType, val mapName: String, val packageName: String) {
     fun toMap(): Map<String, String> {
@@ -41,6 +41,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
 
     private val maps = listOf(
             MapModel(MapType.google, "Google Maps", "com.google.android.apps.maps"),
+            MapModel(MapType.googleGo, "Google Maps Go", "com.google.android.apps.mapslite"),
             MapModel(MapType.amap, "Amap", "com.autonavi.minimap"),
             MapModel(MapType.baidu, "Baidu Maps", "com.baidu.BaiduMap"),
             MapModel(MapType.waze, "Waze", "com.waze"),
@@ -76,7 +77,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
 
     private fun launchMap(mapType: MapType, url: String, result: Result) {
         when (mapType) {
-          MapType.google -> launchGoogleMaps(url)
+            MapType.google -> launchGoogleMaps(url)
             else -> {
                 context?.let {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -95,27 +96,27 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
-          "getInstalledMaps" -> {
-            val installedMaps = getInstalledMaps()
-            result.success(installedMaps.map { map -> map.toMap() })
-          }
-          "showMarker", "showDirections" -> {
-            val args = call.arguments as Map<*, *>
-
-            if (!isMapAvailable(args["mapType"] as String)) {
-              result.error("MAP_NOT_AVAILABLE", "Map is not installed on a device", null)
-              return
+            "getInstalledMaps" -> {
+                val installedMaps = getInstalledMaps()
+                result.success(installedMaps.map { map -> map.toMap() })
             }
+            "showMarker", "showDirections" -> {
+                val args = call.arguments as Map<*, *>
 
-            val mapType = MapType.valueOf(args["mapType"] as String)
-            val url = args["url"] as String
+                if (!isMapAvailable(args["mapType"] as String)) {
+                    result.error("MAP_NOT_AVAILABLE", "Map is not installed on a device", null)
+                    return
+                }
 
-            launchMap(mapType, url, result)
-          }
-          "isMapAvailable" -> {
-            val args = call.arguments as Map<*, *>
-            result.success(isMapAvailable(args["mapType"] as String))
-          }
+                val mapType = MapType.valueOf(args["mapType"] as String)
+                val url = args["url"] as String
+
+                launchMap(mapType, url, result)
+            }
+            "isMapAvailable" -> {
+                val args = call.arguments as Map<*, *>
+                result.success(isMapAvailable(args["mapType"] as String))
+            }
             else -> result.notImplemented()
         }
     }

@@ -6,6 +6,7 @@ import 'package:map_launcher/src/utils.dart';
 enum MapType {
   apple,
   google,
+  googleGo,
   amap,
   baidu,
   waze,
