@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:map_launcher/src/map_launcher.dart';
-import 'package:map_launcher/src/svg_provider.dart';
 import 'package:map_launcher/src/utils.dart';
 
 enum MapType {
@@ -35,7 +34,7 @@ class Coords {
 class AvailableMap {
   String mapName;
   MapType mapType;
-  ImageProvider icon;
+  String icon;
 
   AvailableMap({this.mapName, this.mapType, this.icon});
 
@@ -43,10 +42,7 @@ class AvailableMap {
     return AvailableMap(
       mapName: json['mapName'],
       mapType: Utils.enumFromString(MapType.values, json['mapType']),
-      icon: SvgImage(
-        'assets/icons/${json['mapType']}.svg',
-        package: 'map_launcher',
-      ),
+      icon: 'packages/map_launcher/assets/icons/${json['mapType']}.svg',
     );
   }
 
