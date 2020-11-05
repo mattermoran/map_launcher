@@ -68,7 +68,6 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
         context?.let {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            intent.setPackage("com.google.android.apps.maps")
             if (intent.resolveActivity(it.packageManager) != null) {
                 it.startActivity(intent)
             }
@@ -76,19 +75,14 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     private fun launchMap(mapType: MapType, url: String, result: Result) {
-        when (mapType) {
-            MapType.google -> launchGoogleMaps(url)
-            else -> {
-                context?.let {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    val foundMap = maps.find { map -> map.mapType == mapType }
-                    if (foundMap != null) {
-                        intent.setPackage(foundMap.packageName)
-                    }
-                    it.startActivity(intent)
-                }
+        context?.let {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val foundMap = maps.find { map -> map.mapType == mapType }
+            if (foundMap != null) {
+                intent.setPackage(foundMap.packageName)
             }
+            it.startActivity(intent)
         }
         result.success(null)
     }
