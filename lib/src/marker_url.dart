@@ -14,10 +14,11 @@ String getMapMarkerUrl({
   switch (mapType) {
     case MapType.google:
       return Utils.buildUrl(
-        url: Platform.isIOS ? 'comgooglemaps://' : 'geo:0,0',
+        url: Platform.isIOS ? 'comgooglemaps://' : 'geo:${coords.latitude},${coords.longitude}',
         queryParams: {
-          'q': '${coords.latitude},${coords.longitude}($title)',
+          'q': '$title',
           'zoom': '$zoomLevel',
+          'center': Platform.isIOS ? '${coords.latitude},${coords.longitude}' : ''
         },
       );
 
