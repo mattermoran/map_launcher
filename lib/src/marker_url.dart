@@ -16,7 +16,7 @@ String getMapMarkerUrl({
       return Utils.buildUrl(
         url: Platform.isIOS ? 'comgooglemaps://' : 'geo:${coords.latitude},${coords.longitude}',
         queryParams: {
-          'q': '$title',
+          'q': title != null && title != '' ? '$title' : '${coords.latitude},${coords.longitude}',
           'zoom': '$zoomLevel',
           'center': Platform.isIOS ? '${coords.latitude},${coords.longitude}' : ''
         },
