@@ -103,4 +103,19 @@ class Utils {
         return 'auto';
     }
   }
+
+  static String getTencentDirectionsMode(DirectionsMode directionsMode) {
+    switch (directionsMode) {
+      case DirectionsMode.driving:
+        return 'drive';
+      case DirectionsMode.transit:
+        return 'bus';
+      case DirectionsMode.walking:
+        return 'walk';
+      case DirectionsMode.bicycling:
+        return 'bike';
+      default:
+        return 'auto';
+    }
+  }
 }

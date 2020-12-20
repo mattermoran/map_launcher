@@ -9,6 +9,7 @@ String getMapMarkerUrl({
   String title,
   String description,
   int zoom,
+  String apiKey,
 }) {
   final zoomLevel = zoom ?? 16;
   switch (mapType) {
@@ -150,6 +151,16 @@ String getMapMarkerUrl({
         url:
             'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.longitude},${coords.latitude}',
         queryParams: {},
+      );
+
+    case MapType.tencent:
+      return Utils.buildUrl(
+        url: 'qqmap://map/marker',
+        queryParams: {
+          'marker':
+              'coord:${coords.latitude},${coords.longitude}${title != null ? 'title:$title' : ''}',
+          'referer': apiKey,
+        },
       );
 
     default:

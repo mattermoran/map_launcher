@@ -12,6 +12,7 @@ String getMapDirectionsUrl({
   @required String originTitle,
   @required DirectionsMode directionsMode,
   @required List<Coords> waypoints,
+  String apiKey,
 }) {
   switch (mapType) {
     case MapType.google:
@@ -173,6 +174,19 @@ String getMapDirectionsUrl({
         url:
             'dgis://2gis.ru/routeSearch/rsType/${Utils.getDoubleGisDirectionsMode(directionsMode)}/${origin == null ? '' : 'from/${origin.longitude},${origin.latitude}/'}to/${destination.longitude},${destination.latitude}',
         queryParams: {},
+      );
+
+    case MapType.tencent:
+      return Utils.buildUrl(
+        url: 'qqmap://map/routeplan',
+        queryParams: {
+          'from': originTitle,
+          'fromcoord': '${origin?.latitude},${origin?.longitude}',
+          'to': destinationTitle,
+          'tocoord': '${destination.latitude},${destination.longitude}',
+          'type': Utils.getTencentDirectionsMode(directionsMode),
+          'referer': apiKey,
+        },
       );
 
     default:
