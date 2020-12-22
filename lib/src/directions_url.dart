@@ -12,7 +12,7 @@ String getMapDirectionsUrl({
   @required String originTitle,
   @required DirectionsMode directionsMode,
   @required List<Coords> waypoints,
-  String apiKey,
+  Map<String, String> extraParams,
 }) {
   switch (mapType) {
     case MapType.google:
@@ -29,6 +29,7 @@ String getMapDirectionsUrl({
               ?.map((coords) => '${coords.latitude},${coords.longitude}')
               ?.join('|'),
           'travelmode': Utils.enumToString(directionsMode),
+          ...(extraParams ?? {}),
         },
       );
 
@@ -46,6 +47,7 @@ String getMapDirectionsUrl({
               ?.map((coords) => '${coords.latitude},${coords.longitude}')
               ?.join('|'),
           'travelmode': Utils.enumToString(directionsMode),
+          ...(extraParams ?? {}),
         },
       );
 
@@ -54,6 +56,7 @@ String getMapDirectionsUrl({
         url: 'http://maps.apple.com/maps',
         queryParams: {
           'daddr': '${destination.latitude},${destination.longitude}',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -70,6 +73,7 @@ String getMapDirectionsUrl({
           'sname': originTitle,
           't': Utils.getAmapDirectionsMode(directionsMode),
           'dev': '0',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -86,6 +90,7 @@ String getMapDirectionsUrl({
           'coord_type': 'gcj02',
           'mode': Utils.getBaiduDirectionsMode(directionsMode),
           'src': 'com.map_launcher',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -96,6 +101,7 @@ String getMapDirectionsUrl({
           'll': '${destination.latitude},${destination.longitude}',
           'z': '10',
           'navigate': 'yes',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -108,6 +114,7 @@ String getMapDirectionsUrl({
           '${origin?.latitude},${origin?.longitude}',
         ),
         'startname': originTitle,
+        ...(extraParams ?? {}),
       });
 
     case MapType.osmand:
@@ -118,6 +125,7 @@ String getMapDirectionsUrl({
             'lat': '${destination.latitude}',
             'lon': '${destination.longitude}',
             'title': destinationTitle,
+            ...(extraParams ?? {}),
           },
         );
       }
@@ -144,7 +152,8 @@ String getMapDirectionsUrl({
         queryParams: {
           'v': '1',
           'll': '${destination.latitude},${destination.longitude}',
-          'n': destinationTitle
+          'n': destinationTitle,
+          ...(extraParams ?? {}),
         },
       );
 
@@ -155,6 +164,7 @@ String getMapDirectionsUrl({
           'rtext':
               '${origin?.latitude},${origin?.longitude}~${destination.latitude},${destination.longitude}',
           'rtt': Utils.getYandexMapsDirectionsMode(directionsMode),
+          ...(extraParams ?? {}),
         },
       );
 
@@ -173,7 +183,9 @@ String getMapDirectionsUrl({
       return Utils.buildUrl(
         url:
             'dgis://2gis.ru/routeSearch/rsType/${Utils.getDoubleGisDirectionsMode(directionsMode)}/${origin == null ? '' : 'from/${origin.longitude},${origin.latitude}/'}to/${destination.longitude},${destination.latitude}',
-        queryParams: {},
+        queryParams: {
+          ...(extraParams ?? {}),
+        },
       );
 
     case MapType.tencent:
@@ -185,7 +197,7 @@ String getMapDirectionsUrl({
           'to': destinationTitle,
           'tocoord': '${destination.latitude},${destination.longitude}',
           'type': Utils.getTencentDirectionsMode(directionsMode),
-          'referer': apiKey,
+          ...(extraParams ?? {}),
         },
       );
 

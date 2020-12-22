@@ -9,7 +9,7 @@ String getMapMarkerUrl({
   String title,
   String description,
   int zoom,
-  String apiKey,
+  Map<String, String> extraParams,
 }) {
   final zoomLevel = zoom ?? 16;
   switch (mapType) {
@@ -19,6 +19,7 @@ String getMapMarkerUrl({
         queryParams: {
           'q': '${coords.latitude},${coords.longitude}($title)',
           'zoom': '$zoomLevel',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -28,6 +29,7 @@ String getMapMarkerUrl({
         queryParams: {
           'q': '${coords.latitude},${coords.longitude}($title)',
           'zoom': '$zoomLevel',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -41,6 +43,7 @@ String getMapMarkerUrl({
           'lon': '${coords.longitude}',
           'zoom': '$zoomLevel',
           'dev': '0',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -56,6 +59,7 @@ String getMapMarkerUrl({
           'src': 'com.map_launcher',
           'coord_type': 'gcj02',
           'zoom': '$zoomLevel',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -64,6 +68,7 @@ String getMapMarkerUrl({
         url: 'http://maps.apple.com/maps',
         queryParams: {
           'saddr': '${coords.latitude},${coords.longitude}',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -73,6 +78,7 @@ String getMapMarkerUrl({
         queryParams: {
           'll': '${coords.latitude},${coords.longitude}',
           'z': '$zoomLevel',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -85,6 +91,7 @@ String getMapMarkerUrl({
           'zoom': '$zoomLevel',
           'no-balloon': '0',
           'desc': '$title',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -95,6 +102,7 @@ String getMapMarkerUrl({
           'pt': '${coords.longitude},${coords.latitude}',
           'z': '$zoomLevel',
           'l': 'map',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -104,6 +112,7 @@ String getMapMarkerUrl({
         queryParams: {
           'endcoord': '${coords.latitude},${coords.longitude}',
           'endname': '$title',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -113,7 +122,8 @@ String getMapMarkerUrl({
         queryParams: {
           'v': '1',
           'll': '${coords.latitude},${coords.longitude}',
-          'n': title
+          'n': title,
+          ...(extraParams ?? {}),
         },
       );
 
@@ -125,6 +135,7 @@ String getMapMarkerUrl({
             'lat': '${coords.latitude}',
             'lon': '${coords.longitude}',
             'title': title,
+            ...(extraParams ?? {}),
           },
         );
       }
@@ -134,6 +145,7 @@ String getMapMarkerUrl({
           'lat': '${coords.latitude}',
           'lon': '${coords.longitude}',
           'z': '$zoomLevel',
+          ...(extraParams ?? {}),
         },
       );
 
@@ -141,7 +153,9 @@ String getMapMarkerUrl({
       if (Platform.isIOS) {
         return Utils.buildUrl(
           url: 'dgis://2gis.ru/geo/${coords.longitude},${coords.latitude}',
-          queryParams: {},
+          queryParams: {
+            ...(extraParams ?? {}),
+          },
         );
       }
 
@@ -150,7 +164,9 @@ String getMapMarkerUrl({
       return Utils.buildUrl(
         url:
             'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.longitude},${coords.latitude}',
-        queryParams: {},
+        queryParams: {
+          ...(extraParams ?? {}),
+        },
       );
 
     case MapType.tencent:
@@ -159,7 +175,7 @@ String getMapMarkerUrl({
         queryParams: {
           'marker':
               'coord:${coords.latitude},${coords.longitude}${title != null ? ';title:$title' : ''}',
-          'referer': apiKey,
+          ...(extraParams ?? {}),
         },
       );
 

@@ -53,7 +53,7 @@ SvgPicture.asset(
 
 ```yaml
 dependencies:
-  map_launcher: ^1.1.0
+  map_launcher: ^1.1.1
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 
@@ -113,32 +113,32 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 
 ### Show Marker
 
-| option        | type                | required | default |
-| ------------- | ------------------- | -------- | ------- |
-| `mapType`     | `MapType`           | yes      | -       |
-| `coords`      | `Coords(lat, long)` | yes      | -       |
-| `title`       | `String`            | no       | `''`    |
-| `description` | `String`            | no       | `''`    |
-| `zoom`        | `Int`               | no       | 16      |
-| `apiKey`      | `String`            | no       | `''`    |
+| option        | type                  | required | default |
+| ------------- | --------------------- | -------- | ------- |
+| `mapType`     | `MapType`             | yes      | -       |
+| `coords`      | `Coords(lat, long)`   | yes      | -       |
+| `title`       | `String`              | no       | `''`    |
+| `description` | `String`              | no       | `''`    |
+| `zoom`        | `Int`                 | no       | 16      |
+| `extraParams` | `Map<String, String>` | no       | `{}`    |
 
 ##### Maps
 
-| `mapType`     | `coords`                                                                 | `title`                                        | `description` | `zoom`       |
-| ------------- | ------------------------------------------------------------------------ | ---------------------------------------------- | ------------- | ------------ |
-| `.google`     | ✓                                                                        | iOS only <br /> see Known Issues section below | ✗             | ✓            |
-| `.apple`      | ✓                                                                        | ✓                                              | ✗             | ✗            |
-| `.googleGo`   | ✓                                                                        | ✗                                              | ✗             | ✓            |
-| `.amap`       | ✓                                                                        | ✓                                              | ✓             | Android only |
-| `.baidu`      | ✓                                                                        | ✓                                              | ✓             | ✓            |
-| `.waze`       | ✓                                                                        | ✗                                              | ✗             | ✓            |
-| `.yandexMaps` | ✓                                                                        | ✗                                              | ✗             | ✓            |
-| `.yandexNavi` | ✓                                                                        | ✓                                              | ✗             | ✓            |
-| `.citymapper` | ✓ <br /> does not support marker <br /> shows directions instead         | ✓                                              | ✗             | ✗            |
-| `.mapswithme` | ✓                                                                        | ✓                                              | ✗             | ✗            |
-| `.osmand`     | ✓                                                                        | iOS only                                       | ✗             | Android only |
-| `.doubleGis`  | ✓ <br /> android does not support marker <br /> shows directions instead | ✗                                              | ✗             | ✗            |
-| `.tencent`    | ✓                                                                        | ✓                                              | ✗             | ✗            |
+| `mapType`     | `coords`                                                                 | `title`                                        | `description` | `zoom`       | `extraParams` |
+| ------------- | ------------------------------------------------------------------------ | ---------------------------------------------- | ------------- | ------------ | ------------- |
+| `.google`     | ✓                                                                        | iOS only <br /> see Known Issues section below | ✗             | ✓            | ✓             |
+| `.apple`      | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
+| `.googleGo`   | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
+| `.amap`       | ✓                                                                        | ✓                                              | ✓             | Android only | ✓             |
+| `.baidu`      | ✓                                                                        | ✓                                              | ✓             | ✓            | ✓             |
+| `.waze`       | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
+| `.yandexMaps` | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
+| `.yandexNavi` | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
+| `.citymapper` | ✓ <br /> does not support marker <br /> shows directions instead         | ✓                                              | ✗             | ✗            | ✓             |
+| `.mapswithme` | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
+| `.osmand`     | ✓                                                                        | iOS only                                       | ✗             | Android only | ✓             |
+| `.doubleGis`  | ✓ <br /> android does not support marker <br /> shows directions instead | ✗                                              | ✗             | ✗            | ✓             |
+| `.tencent`    | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
 
 ### Show Directions
 
@@ -151,25 +151,36 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `originTitle`      | `String`                  | no       | `'Origin'`       |
 | `directionsMode`   | `DirectionsMode`          | no       | `.driving`       |
 | `waypoints`        | `List<Coords(lat, long)>` | no       | `null`           |
-| `apiKey`           | `String`                  | no       | `''`           |
+| `extraParams`      | `Map<String, String>`     | no       | `{}`             |
 
 ##### Maps
 
-| `mapType`     | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` | `waypoints`                                  |
-| ------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- | -------------------------------------------- |
-| `.google`     | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓ (up to 8 on iOS and unlimited? on android) |
-| `.apple`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
-| `.googleGo`   | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓                                            |
-| `.amap`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
-| `.baidu`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
-| `.waze`       | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            |
-| `.yandexMaps` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
-| `.yandexNavi` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
-| `.citymapper` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
-| `.mapswithme` | ✓             | ✓                  | only shows marker            | ✗             | ✗                | ✗                                            |
-| `.osmand`     | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗                                            |
-| `.doubleGis`  | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            |
-| `.tencent`    | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
+| `mapType`     | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` | `waypoints`                                  | `extraParams` |
+| ------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- | -------------------------------------------- | ------------- |
+| `.google`     | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓ (up to 8 on iOS and unlimited? on android) | ✓             |
+| `.apple`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.googleGo`   | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓                                            | ✓             |
+| `.amap`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.baidu`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.waze`       | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.yandexMaps` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.yandexNavi` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.citymapper` | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.mapswithme` | ✓             | ✓                  | only shows marker            | ✗             | ✗                | ✗                                            | ✓             |
+| `.osmand`     | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.doubleGis`  | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            | ✓             |
+| `.tencent`    | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+
+
+### Extra Params
+It's possible to pass some map specific query params like api keys etc using `extraParams` option
+
+Here are known params for some maps:
+
+| `mapType`          | `extraParams`                             |
+| ------------------ | ----------------------------------------- |
+| `.tencent`         | `{ 'referer': '' }`                       |
+| `.yandexNavi`      | `{ 'client': '', 'signature': '' }`       |
 
 ## Example
 

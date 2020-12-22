@@ -39,7 +39,7 @@ class MapLauncher {
     @required String title,
     String description,
     int zoom,
-    String apiKey,
+    Map<String, String> extraParams,
   }) async {
     final url = getMapMarkerUrl(
       mapType: mapType,
@@ -47,7 +47,7 @@ class MapLauncher {
       title: title,
       description: description,
       zoom: zoom,
-      apiKey: apiKey,
+      extraParams: extraParams,
     );
 
     final Map<String, String> args = {
@@ -69,7 +69,7 @@ class MapLauncher {
     String originTitle,
     List<Coords> waypoints,
     DirectionsMode directionsMode = DirectionsMode.driving,
-    String apiKey,
+    Map<String, String> extraParams,
   }) async {
     final url = getMapDirectionsUrl(
       mapType: mapType,
@@ -79,7 +79,7 @@ class MapLauncher {
       originTitle: originTitle,
       waypoints: waypoints,
       directionsMode: directionsMode,
-      apiKey: apiKey,
+      extraParams: extraParams,
     );
 
     final Map<String, String> args = {

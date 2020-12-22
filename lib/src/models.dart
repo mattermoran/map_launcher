@@ -52,7 +52,7 @@ class AvailableMap {
     @required String title,
     String description,
     int zoom,
-    String apiKey,
+    Map<String, String> extraParams,
   }) {
     return MapLauncher.showMarker(
       mapType: mapType,
@@ -60,7 +60,7 @@ class AvailableMap {
       title: title,
       description: description,
       zoom: zoom,
-      apiKey: apiKey,
+      extraParams: extraParams,
     );
   }
 
@@ -71,7 +71,7 @@ class AvailableMap {
     String originTitle,
     List<Coords> waypoints,
     DirectionsMode directionsMode,
-    String apiKey,
+    Map<String, String> extraParams,
   }) {
     return MapLauncher.showDirections(
       mapType: mapType,
@@ -81,7 +81,7 @@ class AvailableMap {
       originTitle: originTitle,
       waypoints: waypoints,
       directionsMode: directionsMode,
-      apiKey: apiKey,
+      extraParams: extraParams,
     );
   }
 

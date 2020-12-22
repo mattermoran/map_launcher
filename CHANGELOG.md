@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Add `extraParams` option to support passing additional query parameters that might be needed like api keys etc
+
 ## 1.1.0
 
 - Add support for Tencent (QQ Maps)
