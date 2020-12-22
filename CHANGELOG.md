@@ -1,3 +1,7 @@
+## 1.1.0
+
+- Add support for Tencent (QQ Maps)
+
 ## 1.0.0
 
 - BREAKING CHANGE: not depending on flutter_svg anymore. See README for migration

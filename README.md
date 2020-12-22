@@ -21,6 +21,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapswithme.svg" width="25"> Maps.me
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.svg" width="25"> OsmAnd
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/doubleGis.svg" width="25"> 2GIS
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tencent.svg" width="25"> Tencent (QQ Maps)
 
 ## Migrating to v1
 
@@ -52,7 +53,7 @@ SvgPicture.asset(
 
 ```yaml
 dependencies:
-  map_launcher: ^1.0.0
+  map_launcher: ^1.1.0
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 
@@ -71,6 +72,7 @@ dependencies:
     <string>mapswithme</string>
     <string>osmandmaps</string>
     <string>dgis</string>
+    <string>qqmap</string>
 </array>
 ```
 
@@ -118,6 +120,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `title`       | `String`            | no       | `''`    |
 | `description` | `String`            | no       | `''`    |
 | `zoom`        | `Int`               | no       | 16      |
+| `apiKey`      | `String`            | no       | `''`    |
 
 ##### Maps
 
@@ -135,6 +138,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.mapswithme` | ✓                                                                        | ✓                                              | ✗             | ✗            |
 | `.osmand`     | ✓                                                                        | iOS only                                       | ✗             | Android only |
 | `.doubleGis`  | ✓ <br /> android does not support marker <br /> shows directions instead | ✗                                              | ✗             | ✗            |
+| `.tencent`    | ✓                                                                        | ✓                                              | ✗             | ✗            |
 
 ### Show Directions
 
@@ -147,6 +151,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `originTitle`      | `String`                  | no       | `'Origin'`       |
 | `directionsMode`   | `DirectionsMode`          | no       | `.driving`       |
 | `waypoints`        | `List<Coords(lat, long)>` | no       | `null`           |
+| `apiKey`           | `String`                  | no       | `''`           |
 
 ##### Maps
 
@@ -164,6 +169,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.mapswithme` | ✓             | ✓                  | only shows marker            | ✗             | ✗                | ✗                                            |
 | `.osmand`     | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗                                            |
 | `.doubleGis`  | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            |
+| `.tencent`    | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            |
 
 ## Example
 
