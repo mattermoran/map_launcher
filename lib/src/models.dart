@@ -15,6 +15,7 @@ enum MapType {
   mapswithme,
   osmand,
   doubleGis,
+  tencent,
 }
 
 enum DirectionsMode {
@@ -51,6 +52,7 @@ class AvailableMap {
     @required String title,
     String description,
     int zoom,
+    String apiKey,
   }) {
     return MapLauncher.showMarker(
       mapType: mapType,
@@ -58,6 +60,7 @@ class AvailableMap {
       title: title,
       description: description,
       zoom: zoom,
+      apiKey: apiKey,
     );
   }
 
@@ -68,6 +71,7 @@ class AvailableMap {
     String originTitle,
     List<Coords> waypoints,
     DirectionsMode directionsMode,
+    String apiKey,
   }) {
     return MapLauncher.showDirections(
       mapType: mapType,
@@ -77,6 +81,7 @@ class AvailableMap {
       originTitle: originTitle,
       waypoints: waypoints,
       directionsMode: directionsMode,
+      apiKey: apiKey,
     );
   }
 

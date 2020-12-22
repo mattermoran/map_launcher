@@ -158,7 +158,7 @@ String getMapMarkerUrl({
         url: 'qqmap://map/marker',
         queryParams: {
           'marker':
-              'coord:${coords.latitude},${coords.longitude}${title != null ? 'title:$title' : ''}',
+              'coord:${coords.latitude},${coords.longitude}${title != null ? ';title:$title' : ''}',
           'referer': apiKey,
         },
       );
