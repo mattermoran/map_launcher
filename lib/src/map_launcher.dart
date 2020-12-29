@@ -82,18 +82,22 @@ class MapLauncher {
       extraParams: extraParams,
     );
 
-    final Map<String, String> args = {
+    Map<String, String> args = {
       'mapType': Utils.enumToString(mapType),
       'url': Uri.encodeFull(url),
       'destinationTitle': destinationTitle,
       'destinationLatitude': destination.latitude.toString(),
       'destinationLongitude': destination.longitude.toString(),
       'destinationtitle': destinationTitle,
-      'originLatitude': origin?.latitude?.toString(),
-      'originLongitude': origin?.longitude?.toString(),
       'origintitle': originTitle,
       'directionsMode': Utils.enumToString(directionsMode),
     };
+
+    if (origin?.latitude != null && origin?.longitude != null) {
+      args['originLatitude'] = origin?.latitude?.toString();
+      args['originLongitude'] = origin?.longitude?.toString();
+    }
+
     return _channel.invokeMethod('showDirections', args);
   }
 
