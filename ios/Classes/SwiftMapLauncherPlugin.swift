@@ -53,8 +53,8 @@ private let maps: [Map] = [
     Map(mapName: "Citymapper", mapType: MapType.citymapper, urlPrefix: "citymapper://"),
     Map(mapName: "MAPS.ME", mapType: MapType.mapswithme, urlPrefix: "mapswithme://"),
     Map(mapName: "OsmAnd", mapType: MapType.osmand, urlPrefix: "osmandmaps://"),
-    Map(mapName: "2GIS", mapType: MapType.doubleGis, urlPrefix: "qqmap://"),
-    Map(mapName: "Tencent (QQ Maps)", mapType: MapType.tencent, urlPrefix: "dgis://")
+    Map(mapName: "2GIS", mapType: MapType.doubleGis, urlPrefix: "dgis://"),
+    Map(mapName: "Tencent (QQ Maps)", mapType: MapType.tencent, urlPrefix: "qqmap://")
 ]
 
 private func getMapByRawMapType(type: String) -> Map {

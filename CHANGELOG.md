@@ -1,3 +1,7 @@
+## 1.1.2
+
+- Fix Tencent Maps and 2GIS url scheme on ios #56
+
 ## 1.1.1
 
 - Add `extraParams` option to support passing additional query parameters that might be needed like api keys etc
