@@ -1,15 +1,14 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:map_launcher/src/models.dart';
 import 'package:map_launcher/src/utils.dart';
 
-String getMapMarkerUrl({
-  @required MapType mapType,
-  @required Coords coords,
-  String title,
-  String description,
-  int zoom,
-  Map<String, String> extraParams,
+String? getMapMarkerUrl({
+  required MapType? mapType,
+  required Coords coords,
+  String? title,
+  String? description,
+  int? zoom,
+  Map<String, String>? extraParams,
 }) {
   final zoomLevel = zoom ?? 16;
   switch (mapType) {

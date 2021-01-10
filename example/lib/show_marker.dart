@@ -21,29 +21,29 @@ class _ShowMarkerState extends State<ShowMarker> {
         children: <Widget>[
           TextFormField(
             autocorrect: false,
-            autovalidate: false,
+            autovalidateMode: AutovalidateMode.disabled,
             decoration: InputDecoration(labelText: 'Latitude'),
             initialValue: latitude.toString(),
             onChanged: (newValue) {
               setState(() {
-                latitude = double.tryParse(newValue);
+                latitude = double.tryParse(newValue) ?? 0;
               });
             },
           ),
           TextFormField(
             autocorrect: false,
-            autovalidate: false,
+            autovalidateMode: AutovalidateMode.disabled,
             decoration: InputDecoration(labelText: 'Longitude'),
             initialValue: longitude.toString(),
             onChanged: (newValue) {
               setState(() {
-                longitude = double.tryParse(newValue);
+                longitude = double.tryParse(newValue) ?? 0;
               });
             },
           ),
           TextFormField(
             autocorrect: false,
-            autovalidate: false,
+            autovalidateMode: AutovalidateMode.disabled,
             decoration: InputDecoration(labelText: 'Title'),
             initialValue: title,
             onChanged: (newValue) {
@@ -54,12 +54,12 @@ class _ShowMarkerState extends State<ShowMarker> {
           ),
           TextFormField(
             autocorrect: false,
-            autovalidate: false,
+            autovalidateMode: AutovalidateMode.disabled,
             decoration: InputDecoration(labelText: 'Zoom'),
             initialValue: zoom.toString(),
             onChanged: (newValue) {
               setState(() {
-                zoom = int.tryParse(newValue);
+                zoom = int.tryParse(newValue) ?? 0;
               });
             },
           ),

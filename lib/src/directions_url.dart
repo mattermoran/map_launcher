@@ -1,18 +1,16 @@
 import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:map_launcher/src/models.dart';
 import 'package:map_launcher/src/utils.dart';
 
 String getMapDirectionsUrl({
-  @required MapType mapType,
-  @required Coords destination,
-  @required String destinationTitle,
-  @required Coords origin,
-  @required String originTitle,
-  @required DirectionsMode directionsMode,
-  @required List<Coords> waypoints,
-  Map<String, String> extraParams,
+  required MapType mapType,
+  required Coords destination,
+  String? destinationTitle,
+  Coords? origin,
+  String? originTitle,
+  DirectionsMode directionsMode = DirectionsMode.driving,
+  List<Coords>? waypoints,
+  Map<String, String>? extraParams,
 }) {
   switch (mapType) {
     case MapType.google:
@@ -27,7 +25,7 @@ String getMapDirectionsUrl({
           ),
           'waypoints': waypoints
               ?.map((coords) => '${coords.latitude},${coords.longitude}')
-              ?.join('|'),
+              .join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),
         },
@@ -45,7 +43,7 @@ String getMapDirectionsUrl({
           ),
           'waypoints': waypoints
               ?.map((coords) => '${coords.latitude},${coords.longitude}')
-              ?.join('|'),
+              .join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),
         },
@@ -200,8 +198,5 @@ String getMapDirectionsUrl({
           ...(extraParams ?? {}),
         },
       );
-
-    default:
-      return null;
   }
 }
