@@ -1,6 +1,11 @@
 # Map Launcher
 
 [![pub package](https://img.shields.io/pub/v/map_launcher.svg)](https://pub.dartlang.org/packages/map_launcher)
+[![likes](https://badges.bar/map_launcher/likes)](https://pub.dev/packages/map_launcher/score)
+[![popularity](https://badges.bar/map_launcher/popularity)](https://pub.dev/packages/map_launcher/score)
+[![pub points](https://badges.bar/map_launcher/pub%20points)](https://pub.dev/packages/map_launcher/score)
+[![GitHub stars](https://img.shields.io/github/stars/mattermoran/map_launcher?logo=github)](https://github.com/mattermoran/map_launcher/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/mattermoran/map_launcher?logo=github)](https://github.com/mattermoran/map_launcher/network)
 
 Map Launcher is a flutter plugin to find available maps installed on a device and launch them with a marker or show directions.
 
@@ -53,7 +58,7 @@ SvgPicture.asset(
 
 ```yaml
 dependencies:
-  map_launcher: ^1.1.2
+  map_launcher: ^1.1.3
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 

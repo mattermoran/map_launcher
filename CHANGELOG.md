@@ -1,3 +1,8 @@
+## 1.1.3
+
+- Fix Android 11 not showing installed maps #58
+- Thanks to @BasPhair, @olsisaqe
+
 ## 1.1.2
 
 - Fix Tencent Maps and 2GIS url scheme on ios #56
