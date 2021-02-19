@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:map_launcher/src/map_launcher.dart';
 import 'package:map_launcher/src/utils.dart';
 
@@ -37,22 +36,27 @@ class AvailableMap {
   MapType mapType;
   String icon;
 
-  AvailableMap({this.mapName, this.mapType, this.icon});
+  AvailableMap({required this.mapName, required this.mapType, required this.icon});
 
-  static AvailableMap fromJson(json) {
-    return AvailableMap(
-      mapName: json['mapName'],
-      mapType: Utils.enumFromString(MapType.values, json['mapType']),
-      icon: 'packages/map_launcher/assets/icons/${json['mapType']}.svg',
-    );
+  static AvailableMap? fromJson(json) {
+    final MapType? mapType = Utils.enumFromString(MapType.values, json['mapType']);
+    if(mapType != null) {
+      return AvailableMap(
+        mapName: json['mapName'],
+        mapType: mapType,
+        icon: 'packages/map_launcher/assets/icons/${json['mapType']}.svg',
+      );
+    } else {
+      return null;
+    }
   }
 
   Future<void> showMarker({
-    @required Coords coords,
-    @required String title,
-    String description,
-    int zoom,
-    Map<String, String> extraParams,
+    required Coords coords,
+    required String title,
+    String? description,
+    int? zoom,
+    Map<String, String>? extraParams,
   }) {
     return MapLauncher.showMarker(
       mapType: mapType,
@@ -65,13 +69,13 @@ class AvailableMap {
   }
 
   Future<void> showDirections({
-    @required Coords destination,
-    String destinationTitle,
-    Coords origin,
-    String originTitle,
-    List<Coords> waypoints,
-    DirectionsMode directionsMode,
-    Map<String, String> extraParams,
+    required Coords destination,
+    String? destinationTitle,
+    Coords? origin,
+    String? originTitle,
+    List<Coords>? waypoints,
+    DirectionsMode directionsMode = DirectionsMode.driving,
+    Map<String, String>? extraParams,
   }) {
     return MapLauncher.showDirections(
       mapType: mapType,

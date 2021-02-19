@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:map_launcher/src/directions_url.dart';
 import 'package:map_launcher/src/marker_url.dart';
@@ -20,10 +18,10 @@ class MapLauncher {
 
   @Deprecated('use showMarker instead')
   static Future<dynamic> launchMap({
-    @required MapType mapType,
-    @required Coords coords,
-    @required String title,
-    String description,
+    required MapType mapType,
+    required Coords coords,
+    required String title,
+    String? description,
   }) {
     return showMarker(
       mapType: mapType,
@@ -34,14 +32,14 @@ class MapLauncher {
   }
 
   static Future<dynamic> showMarker({
-    @required MapType mapType,
-    @required Coords coords,
-    @required String title,
-    String description,
-    int zoom,
-    Map<String, String> extraParams,
+    required MapType mapType,
+    required Coords coords,
+    required String title,
+    String? description,
+    int? zoom,
+    Map<String, String>? extraParams,
   }) async {
-    final url = getMapMarkerUrl(
+    final String url = getMapMarkerUrl(
       mapType: mapType,
       coords: coords,
       title: title,
@@ -50,7 +48,7 @@ class MapLauncher {
       extraParams: extraParams,
     );
 
-    final Map<String, String> args = {
+    final Map<String, String?> args = {
       'mapType': Utils.enumToString(mapType),
       'url': Uri.encodeFull(url),
       'title': title,
@@ -62,14 +60,14 @@ class MapLauncher {
   }
 
   static Future<dynamic> showDirections({
-    @required MapType mapType,
-    @required Coords destination,
-    String destinationTitle,
-    Coords origin,
-    String originTitle,
-    List<Coords> waypoints,
-    DirectionsMode directionsMode = DirectionsMode.driving,
-    Map<String, String> extraParams,
+    required MapType mapType,
+    required Coords destination,
+    String? destinationTitle,
+    Coords? origin,
+    String? originTitle,
+    List<Coords>? waypoints,
+    DirectionsMode? directionsMode = DirectionsMode.driving,
+    Map<String, String>? extraParams,
   }) async {
     final url = getMapDirectionsUrl(
       mapType: mapType,
@@ -82,22 +80,22 @@ class MapLauncher {
       extraParams: extraParams,
     );
 
-    final Map<String, String> args = {
+    final Map<String, String?> args = {
       'mapType': Utils.enumToString(mapType),
       'url': Uri.encodeFull(url),
       'destinationTitle': destinationTitle,
       'destinationLatitude': destination.latitude.toString(),
       'destinationLongitude': destination.longitude.toString(),
       'destinationtitle': destinationTitle,
-      'originLatitude': origin?.latitude?.toString(),
-      'originLongitude': origin?.longitude?.toString(),
+      'originLatitude': origin?.latitude.toString(),
+      'originLongitude': origin?.longitude.toString(),
       'origintitle': originTitle,
       'directionsMode': Utils.enumToString(directionsMode),
     };
     return _channel.invokeMethod('showDirections', args);
   }
 
-  static Future<bool> isMapAvailable(MapType mapType) async {
+  static Future<bool?> isMapAvailable(MapType mapType) async {
     return _channel.invokeMethod(
       'isMapAvailable',
       {'mapType': Utils.enumToString(mapType)},

@@ -1,29 +1,29 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:map_launcher/src/models.dart';
 
 class Utils {
-  static String enumToString(o) {
+  static String? enumToString(o) {
     if (o == null) return null;
     return o.toString().split('.').last;
   }
 
-  static T enumFromString<T>(Iterable<T> values, String value) {
-    return values.firstWhere(
-      (type) => type.toString().split('.').last == value,
-      orElse: () => null,
+  static T? enumFromString<T>(Iterable<T> values, String? value) {
+    return values.firstWhereOrNull(
+      (type) => type.toString().split('.').last == value
     );
   }
 
-  static String nullOrValue(dynamic nullable, String value) {
+  static String? nullOrValue(dynamic nullable, String value) {
     if (nullable == null) return null;
     return value;
   }
 
   static String buildUrl({
-    @required String url,
-    @required Map<String, String> queryParams,
+    required String url,
+    required Map<String, String?> queryParams,
   }) {
-    return queryParams.entries.fold('$url?', (previousValue, element) {
+    return queryParams.entries.fold('$url?', (dynamic previousValue, element) {
       if (element.value == null || element.value == '') {
         return previousValue;
       }
@@ -31,7 +31,7 @@ class Utils {
     }).replaceFirst('&', '');
   }
 
-  static String getAmapDirectionsMode(DirectionsMode directionsMode) {
+  static String getAmapDirectionsMode(DirectionsMode? directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:
         return '0';
@@ -46,7 +46,7 @@ class Utils {
     }
   }
 
-  static String getBaiduDirectionsMode(DirectionsMode directionsMode) {
+  static String getBaiduDirectionsMode(DirectionsMode? directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:
         return 'driving';
@@ -76,7 +76,7 @@ class Utils {
     }
   }
 
-  static String getYandexMapsDirectionsMode(DirectionsMode directionsMode) {
+  static String getYandexMapsDirectionsMode(DirectionsMode? directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:
         return 'auto';
@@ -91,7 +91,7 @@ class Utils {
     }
   }
 
-  static String getDoubleGisDirectionsMode(DirectionsMode directionsMode) {
+  static String getDoubleGisDirectionsMode(DirectionsMode? directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:
         return 'car';
@@ -104,7 +104,7 @@ class Utils {
     }
   }
 
-  static String getTencentDirectionsMode(DirectionsMode directionsMode) {
+  static String getTencentDirectionsMode(DirectionsMode? directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:
         return 'drive';
