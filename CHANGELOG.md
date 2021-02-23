@@ -1,9 +1,4 @@
-## 1.1.3+1
-- Add warning for v1.1.3
-
-
 ## 1.1.3
-Breaking change! See [here](https://github.com/mattermoran/map_launcher/issues/60#issuecomment-771388357) for migration
 
 - Fix Android 11 not showing installed maps #58
 - Thanks to @BasPhair, @olsisaqe
