@@ -201,6 +201,31 @@ String getMapDirectionsUrl({
         },
       );
 
+    case MapType.kakao:
+      return Utils.buildUrl(
+        url: "kakaomap://route",
+        queryParams: {
+          "sp": "${origin.latitude},${origin.longitude}",
+          "ep": "${destination.latitude},${destination.longitude}",
+          "by": Utils.enumToString(directionsMode),
+        },
+      );
+
+    case MapType.naver:
+      return Utils.buildUrl(
+        url: "http://map.naver.com/index.nhn",
+        queryParams: {
+          "slng": "${origin.longitude}",
+          "slat": "${origin.latitude}",
+          "stext": originTitle,
+          "elng": "${destination.longitude}",
+          "elat": "${destination.latitude}",
+          "etext": destinationTitle,
+          "menu": "route",
+          "pathType": Utils.enumToString(directionsMode),
+        },
+      );
+
     default:
       return null;
   }
