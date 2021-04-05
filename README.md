@@ -28,6 +28,11 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/doubleGis.svg" width="25"> 2GIS
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tencent.svg" width="25"> Tencent (QQ Maps)
 
+## Breaking Change in v1.1.3
+Because of the changes in Android 11 you may need to adjust your gradle version if it's failing to build. You can find solution [here](https://github.com/mattermoran/map_launcher/issues/60#issuecomment-771388357)
+
+
+
 ## Migrating to v1
 
 Breaking change: map_launcher does not depend on flutter_svg anymore which means you will have to add flutter_svg in your project if you want to use images.
@@ -58,7 +63,7 @@ SvgPicture.asset(
 
 ```yaml
 dependencies:
-  map_launcher: ^2.0.0-nullsafety
+  map_launcher: ^2.0.0
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 
