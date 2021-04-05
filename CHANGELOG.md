@@ -1,3 +1,6 @@
+## 2.0.0+1
+- Fix formatting
+
 ## 2.0.0
 - Stable null safety
 
