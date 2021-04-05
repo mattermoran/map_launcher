@@ -32,11 +32,11 @@ class _MapLauncherDemoState extends State<MapLauncherDemo> {
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.pin_drop),
-              title: Text('Marker'),
+              label: 'Marker',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.directions),
-              title: Text('Directions'),
+              label: 'Directions',
             ),
           ],
         ),

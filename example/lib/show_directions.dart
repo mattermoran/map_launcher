@@ -3,7 +3,7 @@ import 'package:map_launcher/map_launcher.dart';
 import 'package:map_launcher_example/maps_sheet.dart';
 
 class ShowDirections extends StatefulWidget {
-  const ShowDirections({Key key}) : super(key: key);
+  const ShowDirections({Key? key}) : super(key: key);
 
   @override
   _ShowDirectionsState createState() => _ShowDirectionsState();
@@ -37,29 +37,29 @@ class _ShowDirectionsState extends State<ShowDirections> {
             FormTitle('Destination'),
             TextFormField(
               autocorrect: false,
-              autovalidate: false,
+              autovalidateMode: AutovalidateMode.disabled,
               decoration: InputDecoration(labelText: 'Destination Latitude'),
               initialValue: destinationLatitude.toString(),
               onChanged: (newValue) {
                 setState(() {
-                  destinationLatitude = double.tryParse(newValue);
+                  destinationLatitude = double.tryParse(newValue) ?? 0;
                 });
               },
             ),
             TextFormField(
               autocorrect: false,
-              autovalidate: false,
+              autovalidateMode: AutovalidateMode.disabled,
               decoration: InputDecoration(labelText: 'Destination Longitude'),
               initialValue: destinationLongitude.toString(),
               onChanged: (newValue) {
                 setState(() {
-                  destinationLongitude = double.tryParse(newValue);
+                  destinationLongitude = double.tryParse(newValue) ?? 0;
                 });
               },
             ),
             TextFormField(
               autocorrect: false,
-              autovalidate: false,
+              autovalidateMode: AutovalidateMode.disabled,
               decoration: InputDecoration(labelText: 'Destination Title'),
               initialValue: destinationTitle,
               onChanged: (newValue) {
@@ -71,33 +71,33 @@ class _ShowDirectionsState extends State<ShowDirections> {
             FormTitle('Origin'),
             TextFormField(
               autocorrect: false,
-              autovalidate: false,
+              autovalidateMode: AutovalidateMode.disabled,
               decoration: InputDecoration(
                 labelText: 'Origin Latitude (uses current location if empty)',
               ),
               initialValue: originLatitude.toString(),
               onChanged: (newValue) {
                 setState(() {
-                  originLatitude = double.tryParse(newValue);
+                  originLatitude = double.tryParse(newValue) ?? 0;
                 });
               },
             ),
             TextFormField(
               autocorrect: false,
-              autovalidate: false,
+              autovalidateMode: AutovalidateMode.disabled,
               decoration: InputDecoration(
                 labelText: 'Origin Longitude (uses current location if empty)',
               ),
               initialValue: originLongitude.toString(),
               onChanged: (newValue) {
                 setState(() {
-                  originLongitude = double.tryParse(newValue);
+                  originLongitude = double.tryParse(newValue) ?? 0;
                 });
               },
             ),
             TextFormField(
               autocorrect: false,
-              autovalidate: false,
+              autovalidateMode: AutovalidateMode.disabled,
               decoration: InputDecoration(labelText: 'Origin Title'),
               initialValue: originTitle,
               onChanged: (newValue) {
@@ -121,7 +121,7 @@ class _ShowDirectionsState extends State<ShowDirections> {
                 value: directionsMode,
                 onChanged: (newValue) {
                   setState(() {
-                    directionsMode = newValue;
+                    directionsMode = newValue as DirectionsMode;
                   });
                 },
                 items: DirectionsMode.values.map((directionsMode) {
@@ -144,9 +144,7 @@ class _ShowDirectionsState extends State<ShowDirections> {
                         destinationLongitude,
                       ),
                       destinationTitle: destinationTitle,
-                      origin: originLatitude == null || originLongitude == null
-                          ? null
-                          : Coords(originLatitude, originLongitude),
+                      origin: Coords(originLatitude, originLongitude),
                       originTitle: originTitle,
                       waypoints: waypoints,
                       directionsMode: directionsMode,
@@ -165,7 +163,7 @@ class _ShowDirectionsState extends State<ShowDirections> {
 
 class FormTitle extends StatelessWidget {
   final String title;
-  final Widget trailing;
+  final Widget? trailing;
 
   FormTitle(this.title, {this.trailing});
 
@@ -186,7 +184,7 @@ class FormTitle extends StatelessWidget {
               ),
             ),
             Spacer(),
-            if (trailing != null) trailing,
+            if (trailing != null) trailing!,
           ],
         ),
       ],
@@ -198,7 +196,7 @@ class WaypointsForm extends StatelessWidget {
   final List<Coords> waypoints;
   final void Function(List<Coords> waypoints) onWaypointsUpdated;
 
-  WaypointsForm({@required this.waypoints, @required this.onWaypointsUpdated});
+  WaypointsForm({required this.waypoints, required this.onWaypointsUpdated});
 
   void updateWaypoint(Coords waypoint, int index) {
     final tempWaypoints = [...waypoints];
@@ -224,28 +222,28 @@ class WaypointsForm extends StatelessWidget {
             ),
             TextFormField(
               autocorrect: false,
-              autovalidate: false,
+              autovalidateMode: AutovalidateMode.disabled,
               decoration: InputDecoration(
                 labelText: 'Waypoint #${waypointIndex + 1} latitude',
               ),
               initialValue: waypoint.latitude.toString(),
               onChanged: (newValue) {
                 updateWaypoint(
-                  Coords(double.tryParse(newValue), waypoint.longitude),
+                  Coords(double.tryParse(newValue) ?? 0, waypoint.longitude),
                   waypointIndex,
                 );
               },
             ),
             TextFormField(
               autocorrect: false,
-              autovalidate: false,
+              autovalidateMode: AutovalidateMode.disabled,
               decoration: InputDecoration(
                 labelText: 'Waypoint #$waypointIndex longitude',
               ),
               initialValue: waypoint.longitude.toString(),
               onChanged: (newValue) {
                 updateWaypoint(
-                  Coords(waypoint.latitude, double.tryParse(newValue)),
+                  Coords(waypoint.latitude, double.tryParse(newValue) ?? 0),
                   waypointIndex,
                 );
               },
