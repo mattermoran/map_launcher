@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:flutter/material.dart';
 import 'package:map_launcher/src/models.dart';
 
 class Utils {

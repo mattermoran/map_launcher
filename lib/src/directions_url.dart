@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:map_launcher/src/models.dart';
 import 'package:map_launcher/src/utils.dart';
 
