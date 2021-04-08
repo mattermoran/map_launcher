@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:map_launcher/src/models.dart';
 
 class Utils {
@@ -7,10 +6,9 @@ class Utils {
     return o.toString().split('.').last;
   }
 
-  static T? enumFromString<T>(Iterable<T> values, String? value) {
-    return values.firstWhereOrNull(
-      (type) => type.toString().split('.').last == value
-    );
+  static T enumFromString<T>(Iterable<T> values, String? value) {
+    return values
+        .firstWhere((type) => type.toString().split('.').last == value);
   }
 
   static String? nullOrValue(dynamic nullable, String value) {

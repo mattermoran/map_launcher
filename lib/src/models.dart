@@ -36,11 +36,16 @@ class AvailableMap {
   MapType mapType;
   String icon;
 
-  AvailableMap({required this.mapName, required this.mapType, required this.icon});
+  AvailableMap({
+    required this.mapName,
+    required this.mapType,
+    required this.icon,
+  });
 
   static AvailableMap? fromJson(json) {
-    final MapType? mapType = Utils.enumFromString(MapType.values, json['mapType']);
-    if(mapType != null) {
+    final MapType? mapType =
+        Utils.enumFromString(MapType.values, json['mapType']);
+    if (mapType != null) {
       return AvailableMap(
         mapName: json['mapName'],
         mapType: mapType,
