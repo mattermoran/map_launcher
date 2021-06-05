@@ -198,5 +198,15 @@ String getMapDirectionsUrl({
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.here:
+      return Utils.buildUrl(
+        url:
+            'https://share.here.com/r/${origin?.latitude},${origin?.longitude},$originTitle/${destination.latitude},${destination.longitude}',
+        queryParams: {
+          'm': Utils.getHereDirectionsMode(directionsMode),
+          ...(extraParams ?? {}),
+        },
+      );
   }
 }
