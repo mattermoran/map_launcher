@@ -27,7 +27,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.svg" width="25"> OsmAnd
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/doubleGis.svg" width="25"> 2GIS
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tencent.svg" width="25"> Tencent (QQ Maps)
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/here.svg" width="25"> HERE WeGO
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/here.svg" width="25"> HERE WeGo
 
 ## Breaking Change in v1.1.3
 Because of the changes in Android 11 you may need to adjust your gradle version if it's failing to build. You can find solution [here](https://github.com/mattermoran/map_launcher/issues/60#issuecomment-771388357)
