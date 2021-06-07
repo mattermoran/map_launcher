@@ -84,6 +84,7 @@ dependencies:
     <string>osmandmaps</string>
     <string>dgis</string>
     <string>qqmap</string>
+    <string>here-location</string>
 </array>
 ```
 

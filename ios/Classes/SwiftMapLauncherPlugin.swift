@@ -56,7 +56,7 @@ private let maps: [Map] = [
     Map(mapName: "OsmAnd", mapType: MapType.osmand, urlPrefix: "osmandmaps://"),
     Map(mapName: "2GIS", mapType: MapType.doubleGis, urlPrefix: "dgis://"),
     Map(mapName: "Tencent (QQ Maps)", mapType: MapType.tencent, urlPrefix: "qqmap://"),
-    Map(mapName: "HERE WeGo", mapType: MapType.here, urlPrefix: "")
+    Map(mapName: "HERE WeGo", mapType: MapType.here, urlPrefix: "here-location://")
 ]
 
 private func getMapByRawMapType(type: String) -> Map {
