@@ -49,7 +49,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             MapModel(MapType.yandexMaps, "Yandex Maps", "ru.yandex.yandexmaps"),
             MapModel(MapType.citymapper, "Citymapper", "com.citymapper.app.release"),
             MapModel(MapType.mapswithme, "MAPS.ME", "com.mapswithme.maps.pro"),
-            MapModel(MapType.osmand, "OsmAnd", "net.osmand"),
+            MapModel(MapType.osmand, "OsmAnd", "net.osmand.plus"),
             MapModel(MapType.doubleGis, "2GIS", "ru.dublgis.dgismobile"),
             MapModel(MapType.tencent, "Tencent (QQ Maps)", "com.tencent.map")
     )
