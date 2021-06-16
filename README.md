@@ -25,7 +25,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/citymapper.svg" width="25"> Citymapper
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapswithme.svg" width="25"> Maps.me
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.svg" width="25"> OsmAnd
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmandplus.svg" width="25"> OsmAnd+
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmandplus.svg" width="25"> OsmAnd+ (Android only)
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/doubleGis.svg" width="25"> 2GIS
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tencent.svg" width="25"> Tencent (QQ Maps)
 

@@ -14,7 +14,6 @@ private enum MapType: String {
   case citymapper
   case mapswithme
   case osmand
-  case osmandplus
   case doubleGis
   case tencent
 
@@ -54,7 +53,6 @@ private let maps: [Map] = [
     Map(mapName: "Citymapper", mapType: MapType.citymapper, urlPrefix: "citymapper://"),
     Map(mapName: "MAPS.ME", mapType: MapType.mapswithme, urlPrefix: "mapswithme://"),
     Map(mapName: "OsmAnd", mapType: MapType.osmand, urlPrefix: "osmandmaps://"),
-    Map(mapName: "OsmAnd+", mapType: MapType.osmandplus, urlPrefix: "osmandmaps://"),
     Map(mapName: "2GIS", mapType: MapType.doubleGis, urlPrefix: "dgis://"),
     Map(mapName: "Tencent (QQ Maps)", mapType: MapType.tencent, urlPrefix: "qqmap://")
 ]
