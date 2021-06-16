@@ -116,6 +116,7 @@ String getMapDirectionsUrl({
       });
 
     case MapType.osmand:
+    case MapType.osmandplus:
       if (Platform.isIOS) {
         return Utils.buildUrl(
           url: 'osmandmaps://navigate',
