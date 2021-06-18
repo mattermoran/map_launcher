@@ -12,6 +12,7 @@
         <package android:name="com.citymapper.app.release" />
         <package android:name="com.mapswithme.maps.pro" />
         <package android:name="net.osmand" />
+        <package android:name="net.osmand.plus" />
         <package android:name="ru.dublgis.dgismobile" />
         <package android:name="com.tencent.map" />
     </queries>

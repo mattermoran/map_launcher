@@ -13,6 +13,7 @@ enum MapType {
   citymapper,
   mapswithme,
   osmand,
+  osmandplus,
   doubleGis,
   tencent,
 }
