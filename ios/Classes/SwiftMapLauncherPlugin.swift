@@ -102,7 +102,7 @@ private func showMarker(mapType: MapType, url: String, title: String, latitude: 
         mapItem.name = title
         mapItem.openInMaps(launchOptions: options)
     default:
-        UIApplication.shared.openURL(URL(string:url)!)
+        UIApplication.shared.open(URL(string:url)!, options: [:], completionHandler: nil)
 
     }
 }
@@ -130,7 +130,7 @@ private func showDirections(mapType: MapType, url: String, destinationTitle: Str
             launchOptions: [MKLaunchOptionsDirectionsModeKey: getDirectionsMode(directionsMode: directionsMode)]
         )
     default:
-        UIApplication.shared.openURL(URL(string:url)!)
+        UIApplication.shared.open(URL(string:url)!, options: [:], completionHandler: nil)
 
     }
 }
