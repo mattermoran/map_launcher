@@ -115,4 +115,19 @@ class Utils {
         return 'auto';
     }
   }
+
+  static String getHereDirectionsMode(DirectionsMode? directionsMode) {
+    switch (directionsMode) {
+      case DirectionsMode.driving:
+        return 'd';
+      case DirectionsMode.transit:
+        return 'pt';
+      case DirectionsMode.walking:
+        return 'w';
+      case DirectionsMode.bicycling:
+        return 'b';
+      default:
+        return 'd';
+    }
+  }
 }

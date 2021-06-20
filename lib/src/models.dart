@@ -16,6 +16,7 @@ enum MapType {
   osmandplus,
   doubleGis,
   tencent,
+  here,
 }
 
 enum DirectionsMode {

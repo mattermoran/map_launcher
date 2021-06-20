@@ -179,5 +179,15 @@ String getMapMarkerUrl({
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.here:
+      return Utils.buildUrl(
+        url:
+            'https://share.here.com/l/${coords.latitude},${coords.longitude},$title',
+        queryParams: {
+          'z': '$zoomLevel',
+          ...(extraParams ?? {}),
+        },
+      );
   }
 }
