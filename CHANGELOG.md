@@ -1,3 +1,10 @@
+## 2.1.0
+- Add OSMAnd+ #82 (@bridystone)
+- Add Here WeGo #77 (@aleksandr-m)
+- Add zoom level for OSMAnd on iOS #79 (@bridystone)
+- Fix deprecation compiler warning in Xcode #78 (@bridystone)
+- Bump minimum iOS version to 10
+
 ## 2.0.0+1
 - Fix formatting
 
