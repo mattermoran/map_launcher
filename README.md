@@ -65,7 +65,7 @@ SvgPicture.asset(
 
 ```yaml
 dependencies:
-  map_launcher: ^2.0.0
+  map_launcher: ^2.1.0
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 
@@ -149,8 +149,8 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.yandexNavi` | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
 | `.citymapper` | ✓ <br /> does not support marker <br /> shows directions instead         | ✓                                              | ✗             | ✗            | ✓             |
 | `.mapswithme` | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
-| `.osmand`     | ✓                                                                        | iOS only                                       | ✗             | Android only | ✓             |
-| `.osmandplus` | ✓                                                                        | iOS only                                       | ✗             | Android only | ✓             |
+| `.osmand`     | ✓                                                                        | iOS only                                       | ✗             | ✓            | ✓             |
+| `.osmandplus` | ✓                                                                        | iOS only                                       | ✗             | ✓            | ✓             |
 | `.doubleGis`  | ✓ <br /> android does not support marker <br /> shows directions instead | ✗                                              | ✗             | ✗            | ✓             |
 | `.tencent`    | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
 | `.here`       | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
