@@ -134,6 +134,7 @@ String getMapMarkerUrl({
           queryParams: {
             'lat': '${coords.latitude}',
             'lon': '${coords.longitude}',
+            'z': '$zoomLevel',
             'title': title,
             ...(extraParams ?? {}),
           },
