@@ -127,12 +127,14 @@ String getMapMarkerUrl({
       );
 
     case MapType.osmand:
+    case MapType.osmandplus:
       if (Platform.isIOS) {
         return Utils.buildUrl(
           url: 'osmandmaps://',
           queryParams: {
             'lat': '${coords.latitude}',
             'lon': '${coords.longitude}',
+            'z': '$zoomLevel',
             'title': title,
             ...(extraParams ?? {}),
           },
