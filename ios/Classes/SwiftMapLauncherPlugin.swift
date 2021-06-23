@@ -59,8 +59,8 @@ private let maps: [Map] = [
     Map(mapName: "HERE WeGo", mapType: MapType.here, urlPrefix: "here-location://")
 ]
 
-private func getMapByRawMapType(type: String) -> Map {
-    return maps.first(where: { $0.mapType.type() == type })!
+private func getMapByRawMapType(type: String) -> Map? {
+    return maps.first(where: { $0.mapType.type() == type })
 }
 
 private func getMapItem(latitude: String, longitude: String) -> MKMapItem {
@@ -138,7 +138,11 @@ private func showDirections(mapType: MapType, url: String, destinationTitle: Str
 }
 
 
-private func isMapAvailable(map: Map) -> Bool {
+private func isMapAvailable(map: Map?) -> Bool {
+    // maptype is not available on iOS
+    guard let map = map else {
+      return false
+    }
     if map.mapType == MapType.apple {
         return true
     }
