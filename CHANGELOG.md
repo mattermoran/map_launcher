@@ -1,3 +1,6 @@
+## 2.1.1
+- Fix iOS crash when using unsupported MapTypes #83 (@bridystone)
+
 ## 2.1.0
 - Add OSMAnd+ #82 (@bridystone)
 - Add Here WeGo #77 (@aleksandr-m)
