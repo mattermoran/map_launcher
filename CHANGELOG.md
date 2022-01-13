@@ -1,3 +1,6 @@
+## 2.1.2
+- Replace jcenter with mavenCentral #100
+
 ## 2.1.1
 - Fix iOS crash when using unsupported MapTypes #83 (@bridystone)
 
