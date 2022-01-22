@@ -53,7 +53,8 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             MapModel(MapType.osmandplus, "OsmAnd+", "net.osmand.plus"),
             MapModel(MapType.doubleGis, "2GIS", "ru.dublgis.dgismobile"),
             MapModel(MapType.tencent, "Tencent (QQ Maps)", "com.tencent.map"),
-            MapModel(MapType.here, "HERE WeGo", "com.here.app.maps")
+            MapModel(MapType.here, "HERE WeGo", "com.here.app.maps"),
+            MapModel(MapType.mapyCz, "Mapy CZ", "cz.seznam.mapy")
     )
 
     private fun getInstalledMaps(): List<MapModel> {
