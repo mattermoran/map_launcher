@@ -189,5 +189,15 @@ String getMapMarkerUrl({
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.mapyCz:
+      return Utils.buildUrl(
+        url: 'https://mapy.cz/zakladni',
+        queryParams: {
+          'id': '${coords.longitude},${coords.latitude}',
+          'z': '$zoomLevel',
+          'source': 'coor',
+        },
+      );
   }
 }

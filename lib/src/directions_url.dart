@@ -209,5 +209,14 @@ String getMapDirectionsUrl({
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.mapyCz:
+      return Utils.buildUrl(
+        url: 'https://mapy.cz/zakladni',
+        queryParams: {
+          'id': '${destination.longitude},${destination.latitude}',
+          'source': 'coor',
+        },
+      );
   }
 }
