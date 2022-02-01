@@ -29,6 +29,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/doubleGis.svg" width="25"> 2GIS
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tencent.svg" width="25"> Tencent (QQ Maps)
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/here.svg" width="25"> HERE WeGo
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/petal.svg" width="25"> Petal Maps (Android only)
 
 ## Breaking Change in v1.1.3
 Because of the changes in Android 11 you may need to adjust your gradle version if it's failing to build. You can find solution [here](https://github.com/mattermoran/map_launcher/issues/60#issuecomment-771388357)
@@ -154,6 +155,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.doubleGis`  | ✓ <br /> android does not support marker <br /> shows directions instead | ✗                                              | ✗             | ✗            | ✓             |
 | `.tencent`    | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
 | `.here`       | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
+| `.petalMaps`  | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
 
 ### Show Directions
 
@@ -187,6 +189,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.doubleGis`  | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            | ✓             |
 | `.tencent`    | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.here`       | ✓             | ✗                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.petalMaps`  | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 
 
 ### Extra Params

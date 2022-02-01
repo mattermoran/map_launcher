@@ -17,6 +17,7 @@ enum MapType {
   doubleGis,
   tencent,
   here,
+  petal,
 }
 
 enum DirectionsMode {
