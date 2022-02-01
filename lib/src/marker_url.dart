@@ -189,5 +189,15 @@ String getMapMarkerUrl({
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.petal:
+      return Utils.buildUrl(
+        url: 'petalmaps://poidetail',
+        queryParams: {
+          'marker': '${coords.latitude},${coords.longitude}',
+          'z': '$zoomLevel',
+          ...(extraParams ?? {}),
+        },
+      );
   }
 }

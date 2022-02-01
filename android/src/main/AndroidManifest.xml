@@ -16,6 +16,7 @@
         <package android:name="ru.dublgis.dgismobile" />
         <package android:name="com.tencent.map" />
         <package android:name="com.here.app.maps" />
+        <package android:name="com.huawei.maps.app" />
     </queries>
 
 </manifest>
