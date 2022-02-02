@@ -1,3 +1,6 @@
+## 2.2.0
+- Add Petal maps #103 (@mericgerceker)
+
 ## 2.1.2
 - Replace jcenter with mavenCentral #100
 
