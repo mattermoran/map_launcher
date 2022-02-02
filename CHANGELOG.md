@@ -1,3 +1,6 @@
+## 2.2.1
+- Update Petal maps icon
+
 ## 2.2.0
 - Add Petal maps #103 (@mericgerceker)
 
