@@ -1,3 +1,6 @@
+## 2.2.1+1
+- Update README with information that title should now work in Google Maps for Android starting from v11.12
+
 ## 2.2.1
 - Update Petal maps icon
 
