@@ -212,7 +212,8 @@ String getMapDirectionsUrl({
 
     case MapType.petal:
       return Utils.buildUrl(url: 'petalmaps://route', queryParams: {
-        'daddr': '${destination.latitude},${destination.longitude} (${destinationTitle ?? 'Destination'})',
+        'daddr':
+            '${destination.latitude},${destination.longitude} (${destinationTitle ?? 'Destination'})',
         'saddr': Utils.nullOrValue(
           origin,
           '${origin?.latitude},${origin?.longitude} (${originTitle ?? 'Origin'})',
