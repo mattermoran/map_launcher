@@ -1,3 +1,8 @@
+## 2.2.1+2
+- Add dartdoc comments
+- Update `directions_url.dart` formatting
+- Update broken link in the README
+
 ## 2.2.1+1
 - Update README with information that title should now work in Google Maps for Android starting from v11.12
 
