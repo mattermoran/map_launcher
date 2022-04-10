@@ -9,6 +9,7 @@ import 'package:map_launcher/src/utils.dart';
 class MapLauncher {
   static const MethodChannel _channel = const MethodChannel('map_launcher');
 
+  /// Returns list of installed map apps on the device.
   static Future<List<AvailableMap>> get installedMaps async {
     final maps = await _channel.invokeMethod('getInstalledMaps');
     return List<AvailableMap>.from(
@@ -31,6 +32,8 @@ class MapLauncher {
     );
   }
 
+  /// Opens map app specified in [mapType]
+  /// and shows marker at [coords]
   static Future<dynamic> showMarker({
     required MapType mapType,
     required Coords coords,
@@ -59,6 +62,8 @@ class MapLauncher {
     return _channel.invokeMethod('showMarker', args);
   }
 
+  /// Opens map app specified in [mapType]
+  /// and shows directions to [destination]
   static Future<dynamic> showDirections({
     required MapType mapType,
     required Coords destination,
@@ -95,6 +100,7 @@ class MapLauncher {
     return _channel.invokeMethod('showDirections', args);
   }
 
+  /// Returns boolean indicating if map app is installed
   static Future<bool?> isMapAvailable(MapType mapType) async {
     return _channel.invokeMethod(
       'isMapAvailable',

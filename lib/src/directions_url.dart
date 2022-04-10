@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:map_launcher/src/models.dart';
 import 'package:map_launcher/src/utils.dart';
 
+/// Returns a url that is used by [showDirections]
 String getMapDirectionsUrl({
   required MapType mapType,
   required Coords destination,
