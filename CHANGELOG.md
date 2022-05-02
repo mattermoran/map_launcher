@@ -1,3 +1,6 @@
+## 2.2.2
+- Fix `originTitle` on `showDirections` method
+
 ## 2.2.1+2
 - Add dartdoc comments
 - Update `directions_url.dart` formatting
