@@ -20,6 +20,18 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>comgooglemaps</string>
+		<string>baidumap</string>
+		<string>iosamap</string>
+		<string>waze</string>
+		<string>yandexnavi</string>
+		<string>yandexmaps</string>
+		<string>citymapper</string>
+		<string>mapswithme</string>
+		<string>osmandmaps</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -41,17 +53,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-			<string>comgooglemaps</string>
-			<string>baidumap</string>
-			<string>iosamap</string>
-			<string>waze</string>
-			<string>yandexnavi</string>
-			<string>yandexmaps</string>
-			<string>citymapper</string>
-			<string>mapswithme</string>
-			<string>osmandmaps</string>
-	</array>
 </dict>
 </plist>

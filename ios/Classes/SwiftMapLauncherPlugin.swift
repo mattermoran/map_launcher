@@ -70,7 +70,7 @@ func launchMap(mapType: MapType, url: String, title: String, latitude: String, l
         mapItem.name = title
         mapItem.openInMaps(launchOptions: options)
     default:
-        UIApplication.shared.openURL(URL(string:url)!)
+        UIApplication.shared.open(URL(string:url)!)
 
     }
 }

@@ -4,14 +4,14 @@ version: 0.6.0
 homepage: https://github.com/mattermoran/map_launcher
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.10.0"
+  sdk: '>=2.7.0 <3.0.0'
+  flutter: '>=1.10.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  intl: any
-  flutter_svg: any
+  intl: ^0.17.0
+  flutter_svg: ^1.0.3
 
 dev_dependencies:
   flutter_test:
