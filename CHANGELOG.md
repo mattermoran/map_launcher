@@ -1,3 +1,6 @@
+## 2.2.3
+- Fix empty title in Google Maps
+
 ## 2.2.2
 - Fix `originTitle` on `showDirections` method
 
