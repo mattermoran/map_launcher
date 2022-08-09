@@ -226,15 +226,19 @@ String getMapDirectionsUrl({
     case MapType.tomtomgo:
       if (Platform.isIOS) {
         return Utils.buildUrl(
-            url: 'tomtomgo://x-callback-url/navigate',
-            queryParams: {'destination': '${destination.latitude},${destination.longitude}', ...(extraParams ?? {})});
-      } else {
-        return Utils.buildUrl(
-            url: 'google.navigation:',
-            queryParams: {
-              'q': '${destination.latitude},${destination.longitude}',
-              ...(extraParams ?? {}),
-            }).replaceFirst('?', ''); // the TomTom Go app cannot handle the ? at the start of the query
+          url: 'tomtomgo://x-callback-url/navigate',
+          queryParams: {
+            'destination': '${destination.latitude},${destination.longitude}',
+            ...(extraParams ?? {}),
+          },
+        );
       }
+      return Utils.buildUrl(
+        url: 'google.navigation:',
+        queryParams: {
+          'q': '${destination.latitude},${destination.longitude}',
+          ...(extraParams ?? {}),
+        },
+      ).replaceFirst('?', ''); // the TomTom Go app cannot handle the ? at the start of the query
   }
 }
