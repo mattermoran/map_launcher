@@ -230,8 +230,11 @@ String getMapDirectionsUrl({
             queryParams: {'destination': '${destination.latitude},${destination.longitude}', ...(extraParams ?? {})});
       } else {
         return Utils.buildUrl(
-            url: 'google.navigation:q=${destination.latitude},${destination.longitude}',
-            queryParams: {...extraParams ?? {}});
+            url: 'google.navigation:',
+            queryParams: {
+              'q': '${destination.latitude},${destination.longitude}',
+              ...(extraParams ?? {}),
+            }).replaceFirst('?', ''); // the TomTom Go app cannot handle the ? at the start of the query
       }
   }
 }

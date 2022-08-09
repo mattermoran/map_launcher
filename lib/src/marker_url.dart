@@ -211,6 +211,7 @@ String getMapMarkerUrl({
             queryParams: {'destination': '${coords.latitude},${coords.longitude}', ...(extraParams ?? {})});
       } else {
         return Utils.buildUrl(url: 'geo:${coords.latitude},${coords.longitude}', queryParams: {
+          'q': '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
           ...(extraParams ?? {}),
         });
       }
