@@ -222,5 +222,16 @@ String getMapDirectionsUrl({
         'type': Utils.getTencentDirectionsMode(directionsMode),
         ...(extraParams ?? {}),
       });
+
+    case MapType.tomtomgo:
+      if (Platform.isIOS) {
+        return Utils.buildUrl(
+            url: 'tomtomgo://x-callback-url/navigate',
+            queryParams: {'destination': '${destination.latitude},${destination.longitude}', ...(extraParams ?? {})});
+      } else {
+        return Utils.buildUrl(
+            url: 'google.navigation:q=${destination.latitude},${destination.longitude}',
+            queryParams: {...extraParams ?? {}});
+      }
   }
 }
