@@ -202,5 +202,24 @@ String getMapMarkerUrl({
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.tomtomgo:
+      if (Platform.isIOS) {
+        // currently uses the navigate endpoint on iOS, even when just showing a marker
+        return Utils.buildUrl(
+          url: 'tomtomgo://x-callback-url/navigate',
+          queryParams: {
+            'destination': '${coords.latitude},${coords.longitude}',
+            ...(extraParams ?? {}),
+          },
+        );
+      }
+      return Utils.buildUrl(
+        url: 'geo:${coords.latitude},${coords.longitude}',
+        queryParams: {
+          'q': '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
+          ...(extraParams ?? {}),
+        },
+      );
   }
 }

@@ -19,6 +19,7 @@ enum MapType {
   tencent,
   here,
   petal,
+  tomtomgo,
 }
 
 /// Defines the supported modes of transportation for [showDirections]
