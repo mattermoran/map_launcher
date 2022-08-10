@@ -67,7 +67,7 @@ SvgPicture.asset(
 
 ```yaml
 dependencies:
-  map_launcher: ^2.2.3
+  map_launcher: ^2.3.0
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 

@@ -1,3 +1,7 @@
+
+## 2.3.0
+- Add TomTom Go #125 (@frankvollebregt)
+
 ## 2.2.3
 - Fix empty title in Google Maps
 
