@@ -1,9 +1,9 @@
 # Map Launcher
 
-[![pub package](https://img.shields.io/pub/v/map_launcher.svg)](https://pub.dartlang.org/packages/map_launcher)
-[![likes](https://badges.bar/map_launcher/likes)](https://pub.dev/packages/map_launcher/score)
-[![popularity](https://badges.bar/map_launcher/popularity)](https://pub.dev/packages/map_launcher/score)
-[![pub points](https://badges.bar/map_launcher/pub%20points)](https://pub.dev/packages/map_launcher/score)
+[![pub package](https://img.shields.io/pub/v/map_launcher)](https://pub.dartlang.org/packages/map_launcher)
+[![likes](https://img.shields.io/pub/likes/map_launcher)](https://pub.dev/packages/map_launcher/score)
+[![popularity](https://img.shields.io/pub/popularity/map_launcher)](https://pub.dev/packages/map_launcher/score)
+[![pub points](https://img.shields.io/pub/points/map_launcher)](https://pub.dev/packages/map_launcher/score)
 [![GitHub stars](https://img.shields.io/github/stars/mattermoran/map_launcher?logo=github)](https://github.com/mattermoran/map_launcher/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/mattermoran/map_launcher?logo=github)](https://github.com/mattermoran/map_launcher/network)
 
@@ -31,35 +31,6 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/here.svg" width="25"> HERE WeGo
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/petal.svg" width="25"> Petal Maps (Android only)
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tomtomgo.svg" width="25"> TomTom Go
-
-## Breaking Change in v1.1.3
-Because of the changes in Android 11 you may need to adjust your gradle version if it's failing to build. You can find solution [here](https://github.com/mattermoran/map_launcher/issues/60#issuecomment-771388357)
-
-
-
-## Migrating to v1
-
-Breaking change: map_launcher does not depend on flutter_svg anymore which means you will have to add flutter_svg in your project if you want to use images.
-
-This should allow you to use any version of flutter_svg and it also fixes bunch of issues related to that like [#45](https://github.com/mattermoran/map_launcher/issues/45), [#40](https://github.com/mattermoran/map_launcher/issues/40), etc
-
-The `icon` property from `AvailableMap` now returns `String` instead of `ImageProvider` so to get it working all you have to do is to go from
-
-```dart
-Image(
-  image: map.icon,
-)
-```
-
-to
-
-```dart
-import 'package:flutter_svg/flutter_svg.dart';
-
-SvgPicture.asset(
-  map.icon,
-)
-```
 
 ## Get started
 

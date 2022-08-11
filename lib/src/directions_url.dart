@@ -239,6 +239,7 @@ String getMapDirectionsUrl({
           'q': '${destination.latitude},${destination.longitude}',
           ...(extraParams ?? {}),
         },
-      ).replaceFirst('?', ''); // the TomTom Go app cannot handle the ? at the start of the query
+        // the TomTom Go app cannot handle the ? at the start of the query
+      ).replaceFirst('?', '');
   }
 }
