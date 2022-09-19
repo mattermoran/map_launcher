@@ -1,3 +1,6 @@
+## 2.4.0
+- Bump kotlin version to 1.5.31
+
 ## 2.3.0+1
 - Cleanup
 
