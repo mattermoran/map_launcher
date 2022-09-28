@@ -109,7 +109,7 @@ private func showMarker(mapType: MapType, url: String, title: String, latitude: 
     if #available(iOS 10.0, *) {
     UIApplication.shared.open(URL(string:url)!, options: [:], completionHandler: nil)
      } else {
-    UIApplication.shared.openURL(URL(string:url)!, options: [:], completionHandler: nil)
+    UIApplication.shared.openURL(URL(string:url)!)
       }
 
     }
@@ -141,7 +141,7 @@ private func showDirections(mapType: MapType, url: String, destinationTitle: Str
     if #available(iOS 10.0, *) {
     UIApplication.shared.open(URL(string:url)!, options: [:], completionHandler: nil)
      } else {
-    UIApplication.shared.openURL(URL(string:url)!, options: [:], completionHandler: nil)
+    UIApplication.shared.openURL(URL(string:url)!)
       }
 
     }
