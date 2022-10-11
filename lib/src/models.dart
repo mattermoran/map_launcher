@@ -28,6 +28,7 @@ enum DirectionsMode {
   walking,
   transit,
   bicycling,
+  TWO_WHEELER
 }
 
 /// Class that holds latitude and longitude coordinates
