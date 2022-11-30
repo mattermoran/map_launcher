@@ -64,9 +64,20 @@ class MapLauncher {
 
   /// Opens map app specified in [mapType]
   /// and shows directions to [destination]
+  ///
+  /// [destination], the coordinates of the destination. When it is `null`, use
+  /// [destinationTitle] to search destination, currently only some maps support it.
+  ///
+  /// - [MapType.apple], supported
+  /// - [MapType.google], supported
+  /// - [MapType.googleGo], supported
+  /// - [MapType.amap], supported
+  /// - [MapType.baidu], supported
+  /// - [MapType.tencent], partially supported, you need to manually click the input box to search.
+  /// - others map not tested, fallback to [Coords.zero]
   static Future<dynamic> showDirections({
     required MapType mapType,
-    required Coords destination,
+    required Coords? destination,
     String? destinationTitle,
     Coords? origin,
     String? originTitle,
@@ -85,13 +96,14 @@ class MapLauncher {
       extraParams: extraParams,
     );
 
-    final Map<String, String?> args = {
+    final Map<String, dynamic> args = {
       'mapType': Utils.enumToString(mapType),
       'url': Uri.encodeFull(url),
+      // On iOS, MapKit does not support destination being null, use `UIApplication.shared.open()` instead.
+      'perfectUseMapKit': destination != null,
       'destinationTitle': destinationTitle,
-      'destinationLatitude': destination.latitude.toString(),
-      'destinationLongitude': destination.longitude.toString(),
-      'destinationtitle': destinationTitle,
+      'destinationLatitude': (destination?.latitude ?? 0.0).toString(),
+      'destinationLongitude': (destination?.longitude ?? 0.0).toString(),
       'originLatitude': origin?.latitude.toString(),
       'originLongitude': origin?.longitude.toString(),
       'originTitle': originTitle,
