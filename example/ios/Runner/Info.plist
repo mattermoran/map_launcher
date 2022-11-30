@@ -56,5 +56,7 @@
 			<string>qqmap</string>
 			<string>here-location</string>
 	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 </dict>
 </plist>
