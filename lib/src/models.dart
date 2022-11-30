@@ -101,10 +101,12 @@ enum DirectionsMode {
 
 /// Class that holds latitude and longitude coordinates
 class Coords {
+  static const zero = Coords(0.0, 0.0);
+
   final double latitude;
   final double longitude;
 
-  Coords(this.latitude, this.longitude);
+  const Coords(this.latitude, this.longitude);
 }
 
 /// Class that holds lat/lng coordinates and optional title
@@ -166,7 +168,7 @@ class AvailableMap {
 
   /// Launches current map and shows directions to `destination`
   Future<void> showDirections({
-    required Coords destination,
+    required Coords? destination,
     String? destinationTitle,
     Coords? origin,
     String? originTitle,
