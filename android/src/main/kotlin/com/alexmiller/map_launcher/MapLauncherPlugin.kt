@@ -59,8 +59,11 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     )
 
     private fun getInstalledMaps(): List<MapModel> {
-        val installedApps = context?.packageManager?.getInstalledApplications(0) ?: return listOf()
-        return maps.filter { map -> installedApps.any { app -> app.packageName == map.packageName } }
+        val installedPackageNames = (context?.packageManager?.getInstalledApplications(0) ?: emptyList())
+            .filter { it.enabled }
+            .map { it.packageName }
+            .toHashSet()
+        return maps.filter { map -> installedPackageNames.contains(map.packageName) }
     }
 
 

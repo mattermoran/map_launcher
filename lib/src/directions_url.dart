@@ -5,7 +5,7 @@ import 'package:map_launcher/src/utils.dart';
 /// Returns a url that is used by [showDirections]
 String getMapDirectionsUrl({
   required MapType mapType,
-  required Coords destination,
+  required Coords? destination,
   String? destinationTitle,
   Coords? origin,
   String? originTitle,
@@ -14,30 +14,16 @@ String getMapDirectionsUrl({
   Map<String, String>? extraParams,
 }) {
   switch (mapType) {
-    case MapType.google:
-      return Utils.buildUrl(
-        url: 'https://www.google.com/maps/dir/',
-        queryParams: {
-          'api': '1',
-          'destination': '${destination.latitude},${destination.longitude}',
-          'origin': Utils.nullOrValue(
-            origin,
-            '${origin?.latitude},${origin?.longitude}',
-          ),
-          'waypoints': waypoints
-              ?.map((coords) => '${coords.latitude},${coords.longitude}')
-              .join('|'),
-          'travelmode': Utils.enumToString(directionsMode),
-          ...(extraParams ?? {}),
-        },
-      );
-
     case MapType.googleGo:
+    case MapType.google:
+      // https://developers.google.com/maps/documentation/urls/get-started#directions-action
       return Utils.buildUrl(
         url: 'https://www.google.com/maps/dir/',
         queryParams: {
           'api': '1',
-          'destination': '${destination.latitude},${destination.longitude}',
+          'destination': destination != null
+              ? '${destination.latitude},${destination.longitude}'
+              : destinationTitle,
           'origin': Utils.nullOrValue(
             origin,
             '${origin?.latitude},${origin?.longitude}',
@@ -49,23 +35,32 @@ String getMapDirectionsUrl({
           ...(extraParams ?? {}),
         },
       );
-
     case MapType.apple:
+      // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
+      // https://itnext.io/apple-maps-url-schemes-e1d3ac7340af
       return Utils.buildUrl(
-        url: 'http://maps.apple.com/maps',
+        url: Platform.isIOS ? 'maps://' : 'http://maps.apple.com/maps',
         queryParams: {
-          'daddr': '${destination.latitude},${destination.longitude}',
+          'dirflg': Utils.getAppleDirectionsMode(directionsMode),
+          'saddr': origin != null
+              ? '${origin.latitude},${origin.longitude}'
+              : originTitle,
+          'daddr': destination != null
+              ? '${destination.latitude},${destination.longitude}'
+              : destinationTitle,
           ...(extraParams ?? {}),
         },
       );
 
     case MapType.amap:
+      // Android: https://lbs.amap.com/api/amap-mobile/guide/android/route
+      // iOS: https://lbs.amap.com/api/amap-mobile/guide/ios/route
       return Utils.buildUrl(
         url: Platform.isIOS ? 'iosamap://path' : 'amapuri://route/plan/',
         queryParams: {
           'sourceApplication': 'applicationName',
-          'dlat': '${destination.latitude}',
-          'dlon': '${destination.longitude}',
+          'dlat': destination?.latitude.toString(),
+          'dlon': destination?.longitude.toString(),
           'dname': destinationTitle,
           'slat': Utils.nullOrValue(origin, '${origin?.latitude}'),
           'slon': Utils.nullOrValue(origin, '${origin?.longitude}'),
@@ -77,15 +72,20 @@ String getMapDirectionsUrl({
       );
 
     case MapType.baidu:
+      // Android: https://lbsyun.baidu.com/index.php?title=uri/api/android#:~:text=URL%E6%8E%A5%E5%8F%A3%EF%BC%9A-,baidumap%3A//map/direction,-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E
+      // iOS: https://lbsyun.baidu.com/index.php?title=uri/api/ios#:~:text=%E6%9C%8D%E5%8A%A1%E5%9C%B0%E5%9D%80-,baidumap%3A//map/direction,-//%20iOS%E6%9C%8D%E5%8A%A1%E5%9C%B0%E5%9D%80
+      String? loc(Coords? coords, String? title) =>
+          title != null && coords != null
+              ? 'name:$title|latlng:${coords.latitude},${coords.longitude}'
+              : coords != null
+                  ? '${coords.latitude},${coords.longitude}'
+                  : title;
+
       return Utils.buildUrl(
         url: 'baidumap://map/direction',
         queryParams: {
-          'destination':
-              'name: ${destinationTitle ?? 'Destination'}|latlng:${destination.latitude},${destination.longitude}',
-          'origin': Utils.nullOrValue(
-            origin,
-            'name: ${originTitle ?? 'Origin'}|latlng:${origin?.latitude},${origin?.longitude}',
-          ),
+          'destination': loc(destination, destinationTitle),
+          'origin': loc(origin, originTitle),
           'coord_type': 'gcj02',
           'mode': Utils.getBaiduDirectionsMode(directionsMode),
           'src': 'com.map_launcher',
@@ -94,6 +94,7 @@ String getMapDirectionsUrl({
       );
 
     case MapType.waze:
+      destination ??= Coords.zero; // Not tested, fallback to zero.
       return Utils.buildUrl(
         url: 'waze://',
         queryParams: {
@@ -105,6 +106,7 @@ String getMapDirectionsUrl({
       );
 
     case MapType.citymapper:
+      destination ??= Coords.zero; // Not tested, fallback to zero.
       return Utils.buildUrl(url: 'citymapper://directions', queryParams: {
         'endcoord': '${destination.latitude},${destination.longitude}',
         'endname': destinationTitle,
@@ -118,6 +120,7 @@ String getMapDirectionsUrl({
 
     case MapType.osmand:
     case MapType.osmandplus:
+      destination ??= Coords.zero; // Not tested, fallback to zero.
       if (Platform.isIOS) {
         return Utils.buildUrl(
           url: 'osmandmaps://navigate',
@@ -147,6 +150,7 @@ String getMapDirectionsUrl({
       //     'type': Utils.getMapsMeDirectionsMode(directionsMode),
       //   },
       // );
+      destination ??= Coords.zero; // Not tested, fallback to zero.
       return Utils.buildUrl(
         url: 'mapsme://map',
         queryParams: {
@@ -158,6 +162,7 @@ String getMapDirectionsUrl({
       );
 
     case MapType.yandexMaps:
+      destination ??= Coords.zero; // Not tested, fallback to zero.
       return Utils.buildUrl(
         url: 'yandexmaps://maps.yandex.com/',
         queryParams: {
@@ -169,6 +174,7 @@ String getMapDirectionsUrl({
       );
 
     case MapType.yandexNavi:
+      destination ??= Coords.zero; // Not tested, fallback to zero.
       return Utils.buildUrl(
         url: 'yandexnavi://build_route_on_map',
         queryParams: {
@@ -180,6 +186,7 @@ String getMapDirectionsUrl({
       );
 
     case MapType.doubleGis:
+      destination ??= Coords.zero; // Not tested, fallback to zero.
       return Utils.buildUrl(
         url:
             'dgis://2gis.ru/routeSearch/rsType/${Utils.getDoubleGisDirectionsMode(directionsMode)}/${origin == null ? '' : 'from/${origin.longitude},${origin.latitude}/'}to/${destination.longitude},${destination.latitude}',
@@ -189,19 +196,26 @@ String getMapDirectionsUrl({
       );
 
     case MapType.tencent:
+      // When destination is null, you need to manually click the input box to search.
+      // https://lbs.qq.com/webApi/uriV1/uriGuide/uriMobileRoute
       return Utils.buildUrl(
         url: 'qqmap://map/routeplan',
         queryParams: {
           'from': originTitle,
-          'fromcoord': '${origin?.latitude},${origin?.longitude}',
+          'fromcoord': origin != null //
+              ? '${origin.latitude},${origin.longitude}'
+              : null,
           'to': destinationTitle,
-          'tocoord': '${destination.latitude},${destination.longitude}',
+          'tocoord': destination != null
+              ? '${destination.latitude},${destination.longitude}'
+              : null,
           'type': Utils.getTencentDirectionsMode(directionsMode),
           ...(extraParams ?? {}),
         },
       );
 
     case MapType.here:
+      destination ??= Coords.zero; // Not tested, fallback to zero.
       return Utils.buildUrl(
         url:
             'https://share.here.com/r/${origin?.latitude},${origin?.longitude},$originTitle/${destination.latitude},${destination.longitude}',
@@ -212,6 +226,7 @@ String getMapDirectionsUrl({
       );
 
     case MapType.petal:
+      destination ??= Coords.zero; // Not tested, fallback to zero.
       return Utils.buildUrl(url: 'petalmaps://route', queryParams: {
         'daddr':
             '${destination.latitude},${destination.longitude} (${destinationTitle ?? 'Destination'})',
@@ -224,6 +239,7 @@ String getMapDirectionsUrl({
       });
 
     case MapType.tomtomgo:
+      destination ??= Coords.zero; // Not tested, fallback to zero.
       if (Platform.isIOS) {
         return Utils.buildUrl(
           url: 'tomtomgo://x-callback-url/navigate',

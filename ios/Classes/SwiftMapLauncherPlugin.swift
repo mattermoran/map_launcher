@@ -93,9 +93,8 @@ private func getDirectionsMode(directionsMode: String?) -> String {
     }
 }
 
-private func showMarker(mapType: MapType, url: String, title: String, latitude: String, longitude: String) {
-    switch mapType {
-    case MapType.apple:
+private func showMarker(mapType: MapType, url: String, title: String, latitude: String, longitude: String, perfectUseMapKit: Bool) {
+    if (mapType == MapType.apple && perfectUseMapKit) {
         let coordinate = CLLocationCoordinate2DMake(Double(latitude)!, Double(longitude)!)
         let region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.02))
         let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
@@ -105,16 +104,13 @@ private func showMarker(mapType: MapType, url: String, title: String, latitude: 
             MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: region.span)]
         mapItem.name = title
         mapItem.openInMaps(launchOptions: options)
-    default:
+    } else {
         UIApplication.shared.open(URL(string:url)!, options: [:], completionHandler: nil)
-
     }
 }
 
-private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originTitle: String?, originLatitude: String?, originLongitude: String?, directionsMode: String?) {
-    switch mapType {
-    case MapType.apple:
-
+private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originTitle: String?, originLatitude: String?, originLongitude: String?, directionsMode: String?, perfectUseMapKit: Bool) {
+    if (mapType == MapType.apple && perfectUseMapKit) {
         let destinationMapItem = getMapItem(latitude: destinationLatitude, longitude: destinationLongitude);
         destinationMapItem.name = destinationTitle ?? "Destination"
 
@@ -133,9 +129,8 @@ private func showDirections(mapType: MapType, url: String, destinationTitle: Str
             with: [originMapItem, destinationMapItem],
             launchOptions: [MKLaunchOptionsDirectionsModeKey: getDirectionsMode(directionsMode: directionsMode)]
         )
-    default:
+    } else {
         UIApplication.shared.open(URL(string:url)!, options: [:], completionHandler: nil)
-
     }
 }
 
@@ -171,6 +166,7 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
       let title = args["title"] as! String
       let latitude = args["latitude"] as! String
       let longitude = args["longitude"] as! String
+      let perfectUseMapKit = (args["perfectUseMapKit"] as? NSNumber)?.boolValue ?? true
 
       let map = getMapByRawMapType(type: mapType)
       if (!isMapAvailable(map: map)) {
@@ -178,12 +174,20 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
         return;
       }
 
-      showMarker(mapType: MapType(rawValue: mapType)!, url: url, title: title, latitude: latitude, longitude: longitude)
+      showMarker(
+        mapType: MapType(rawValue: mapType)!,
+        url: url,
+        title: title,
+        latitude: latitude,
+        longitude: longitude,
+        perfectUseMapKit: perfectUseMapKit
+      )
 
     case "showDirections":
       let args = call.arguments as! NSDictionary
       let mapType = args["mapType"] as! String
       let url = args["url"] as! String
+      let perfectUseMapKit = (args["perfectUseMapKit"] as? NSNumber)?.boolValue ?? true
 
       let destinationTitle = args["destinationTitle"] as? String
       let destinationLatitude = args["destinationLatitude"] as! String
@@ -210,7 +214,8 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
         originTitle: originTitle,
         originLatitude: originLatitude,
         originLongitude: originLongitude,
-        directionsMode: directionsMode
+        directionsMode: directionsMode,
+        perfectUseMapKit: perfectUseMapKit
       )
 
     case "isMapAvailable":
