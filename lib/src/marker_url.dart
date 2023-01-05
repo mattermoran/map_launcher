@@ -222,5 +222,19 @@ String getMapMarkerUrl({
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.flitsmeister:
+      if (Platform.isIOS) {
+        return Utils.buildUrl(
+          url: 'flitsmeister://',
+          queryParams: {
+            'geo': '${coords.latitude},${coords.longitude}',
+            ...(extraParams ?? {}),
+          },
+        );
+      }
+      return Utils.buildUrl(
+        url: 'geo:${coords.latitude},${coords.longitude}',
+      );
   }
 }

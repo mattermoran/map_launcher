@@ -241,5 +241,19 @@ String getMapDirectionsUrl({
         },
         // the TomTom Go app cannot handle the ? at the start of the query
       ).replaceFirst('?', '');
+
+    case MapType.flitsmeister:
+      if (Platform.isIOS) {
+        return Utils.buildUrl(
+          url: 'flitsmeister://',
+          queryParams: {
+            'geo': '${destination.latitude},${destination.longitude}',
+            ...(extraParams ?? {}),
+          },
+        );
+      }
+      return Utils.buildUrl(
+        url: 'geo:${destination.latitude},${destination.longitude}',
+      );
   }
 }
