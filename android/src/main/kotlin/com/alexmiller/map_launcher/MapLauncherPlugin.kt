@@ -56,7 +56,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             MapModel(MapType.here, "HERE WeGo", "com.here.app.maps"),
             MapModel(MapType.petal, "Petal Maps", "com.huawei.maps.app"),
             MapModel(MapType.tomtomgo, "TomTom Go", "com.tomtom.gplay.navapp"),
-            MapModel(MapType.flitsmeister, "Flitsmeister", "nl.flitsmeister")
+            MapModel(MapType.flitsmeister, "Flitsmeister", "rw.sp.flitsmeister")
     )
 
     private fun getInstalledMaps(): List<MapModel> {
