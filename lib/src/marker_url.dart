@@ -235,6 +235,10 @@ String getMapMarkerUrl({
       }
       return Utils.buildUrl(
         url: 'geo:${coords.latitude},${coords.longitude}',
+        queryParams: {
+          'q': '${coords.latitude},${coords.longitude}',
+          ...(extraParams ?? {}),
+        },
       );
   }
 }

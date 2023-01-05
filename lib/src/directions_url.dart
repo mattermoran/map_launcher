@@ -254,6 +254,10 @@ String getMapDirectionsUrl({
       }
       return Utils.buildUrl(
         url: 'geo:${destination.latitude},${destination.longitude}',
+        queryParams: {
+          'q': '${destination.latitude},${destination.longitude}',
+          ...(extraParams ?? {}),
+        },
       );
   }
 }
