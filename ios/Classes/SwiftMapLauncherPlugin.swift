@@ -111,7 +111,7 @@ private func showMarker(mapType: MapType, url: String, title: String, latitude: 
     }
 }
 
-private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originTitle: String?, originLatitude: String?, originLongitude: String?, directionsMode: String?) {
+private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originTitle: String?, originLatitude: String?, originLongitude: String?, directionsMode: String?, waypoints: [[String: String]]?) {
     switch mapType {
     case MapType.apple:
 
@@ -127,10 +127,12 @@ private func showDirections(mapType: MapType, url: String, destinationTitle: Str
             origin.name = originTitle ?? "Origin"
             return origin
         }
+        
+        let waypointMapItems = waypoints == nil ? [MKMapItem]() : waypoints!.map { getMapItem(latitude: $0["latitude"]!, longitude: $0["longitude"]!) }
 
 
         MKMapItem.openMaps(
-            with: [originMapItem, destinationMapItem],
+            with: [originMapItem] + waypointMapItems + [destinationMapItem],
             launchOptions: [MKLaunchOptionsDirectionsModeKey: getDirectionsMode(directionsMode: directionsMode)]
         )
     default:
@@ -195,6 +197,8 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
 
       let directionsMode = args["directionsMode"] as? String
 
+      let waypoints = args["waypoints"] as? [[String: String]]
+
       let map = getMapByRawMapType(type: mapType)
       if (!isMapAvailable(map: map)) {
         result(FlutterError(code: "MAP_NOT_AVAILABLE", message: "Map is not installed on a device", details: nil))
@@ -210,7 +214,8 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
         originTitle: originTitle,
         originLatitude: originLatitude,
         originLongitude: originLongitude,
-        directionsMode: directionsMode
+        directionsMode: directionsMode,
+        waypoints: waypoints
       )
 
     case "isMapAvailable":
