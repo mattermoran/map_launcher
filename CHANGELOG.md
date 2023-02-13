@@ -1,3 +1,6 @@
+## 2.5.0
+- Add support for waypoints on Apple Maps
+
 ## 2.4.0
 - Bump kotlin version to 1.5.31
 

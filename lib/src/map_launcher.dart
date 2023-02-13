@@ -85,7 +85,7 @@ class MapLauncher {
       extraParams: extraParams,
     );
 
-    final Map<String, String?> args = {
+    final Map<String, dynamic> args = {
       'mapType': Utils.enumToString(mapType),
       'url': Uri.encodeFull(url),
       'destinationTitle': destinationTitle,
@@ -96,6 +96,12 @@ class MapLauncher {
       'originLongitude': origin?.longitude.toString(),
       'originTitle': originTitle,
       'directionsMode': Utils.enumToString(directionsMode),
+      'waypoints': (waypoints ?? [])
+          .map((waypoint) => {
+                'latitude': waypoint.latitude.toString(),
+                'longitude': waypoint.longitude.toString(),
+              })
+          .toList(),
     };
     return _channel.invokeMethod('showDirections', args);
   }
