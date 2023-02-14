@@ -1,3 +1,6 @@
+## 2.5.0+1
+- Update screenshots
+
 ## 2.5.0
 - Add support for waypoints on Apple Maps
 
