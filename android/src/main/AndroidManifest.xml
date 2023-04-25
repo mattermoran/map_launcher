@@ -23,6 +23,9 @@
         <package android:name="com.sygic.truck"/>
         <package android:name="nl.flitsmeister" />
         <package android:name="nl.flitsmeister.flux" />
+        <package android:name="com.nhn.android.nmap" />
+        <package android:name="net.daum.android.map" />
+        <package android:name="com.skt.tmap.ku" />
     </queries>
 
 </manifest>
