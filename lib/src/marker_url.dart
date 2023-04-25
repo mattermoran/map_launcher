@@ -222,5 +222,33 @@ String getMapMarkerUrl({
           ...(extraParams ?? {}),
         },
       );
+    case MapType.naver:
+      return Utils.buildUrl(
+        url: 'nmap://place',
+        queryParams: {
+          'lat': '${coords.latitude}',
+          'lng': '${coords.longitude}',
+          'zoom': '$zoomLevel',
+          'name': title,
+        },
+      );
+
+    case MapType.kakao:
+      return Utils.buildUrl(
+        url: 'kakaomap://look',
+        queryParams: {
+          'p': '${coords.latitude},${coords.longitude}',
+        },
+      );
+   
+   case MapType.tmap:
+      return Utils.buildUrl(
+        url: 'tmap://',
+        queryParams: {
+          'rGoName': '$title',
+          'rGoY': '${coords.longitude}',
+          'rGoX': '${coords.longitude}',
+        },
+      );
   }
 }

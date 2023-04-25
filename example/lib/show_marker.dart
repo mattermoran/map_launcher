@@ -9,8 +9,8 @@ class ShowMarker extends StatefulWidget {
 }
 
 class _ShowMarkerState extends State<ShowMarker> {
-  double latitude = 37.759392;
-  double longitude = -122.5107336;
+  double latitude = 37.5519;
+  double longitude = 126.9918;
   String title = 'Ocean Beach';
   int zoom = 18;
 

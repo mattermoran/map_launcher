@@ -20,6 +20,9 @@ enum MapType {
   here,
   petal,
   tomtomgo,
+  naver,
+  kakao,
+  tmap,
 }
 
 /// Defines the supported modes of transportation for [showDirections]

@@ -17,6 +17,9 @@
         <package android:name="com.tencent.map" />
         <package android:name="com.here.app.maps" />
         <package android:name="com.huawei.maps.app" />
+        <package android:name="com.nhn.android.nmap" />
+        <package android:name="net.daum.android.map" />
+        <package android:name="com.skt.tmap.ku" />
     </queries>
 
 </manifest>

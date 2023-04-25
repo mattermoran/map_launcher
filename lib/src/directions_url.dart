@@ -241,5 +241,10 @@ String getMapDirectionsUrl({
         },
         // the TomTom Go app cannot handle the ? at the start of the query
       ).replaceFirst('?', '');
+
+    case MapType.naver:
+    case MapType.kakao:
+    case MapType.tmap:
+      throw UnimplementedError();
   }
 }

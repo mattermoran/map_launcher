@@ -55,6 +55,11 @@
 			<string>dgis</string>
 			<string>qqmap</string>
 			<string>here-location</string>
+			<string>nmap</string>
+			<string>kakaomap</string>
+			<string>tmap</string>
 	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 </dict>
 </plist>
