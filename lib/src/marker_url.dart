@@ -230,6 +230,7 @@ String getMapMarkerUrl({
           'lng': '${coords.longitude}',
           'zoom': '$zoomLevel',
           'name': title,
+          ...(extraParams ?? {}),
         },
       );
 
@@ -238,16 +239,18 @@ String getMapMarkerUrl({
         url: 'kakaomap://look',
         queryParams: {
           'p': '${coords.latitude},${coords.longitude}',
+          ...(extraParams ?? {}),
         },
       );
-   
-   case MapType.tmap:
+
+    case MapType.tmap:
       return Utils.buildUrl(
-        url: 'tmap://',
+        url: 'tmap://viewmap',
         queryParams: {
-          'rGoName': '$title',
-          'rGoY': '${coords.longitude}',
-          'rGoX': '${coords.longitude}',
+          'name': '$title',
+          'x': '${coords.longitude}',
+          'y': '${coords.latitude}',
+          ...(extraParams ?? {}),
         },
       );
   }
