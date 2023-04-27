@@ -244,10 +244,10 @@ String getMapDirectionsUrl({
 
     case MapType.naver:
       return Utils.buildUrl(
-        url: 'nmap://route',
+        url: 'nmap://route/car',
         queryParams: {
-          'slat': '${origin?.latitude}',
-          'slng': '${origin?.longitude}',
+          'slat': origin?.latitude.toString(),
+          'slng': origin?.longitude.toString(),
           'sname': originTitle,
           'dlat': '${destination.latitude}',
           'dlng': '${destination.longitude}',
@@ -255,12 +255,14 @@ String getMapDirectionsUrl({
           ...(extraParams ?? {}),
         },
       );
-
+      
     case MapType.kakao:
       return Utils.buildUrl(
         url: 'kakaomap://route',
         queryParams: {
-          'sp': '${origin?.latitude},${origin?.longitude}',
+          'sp': origin == null
+              ? null
+              : '${origin.latitude},${origin.longitude}',
           'ep': '${destination.latitude},${destination.longitude}',
           ...(extraParams ?? {}),
         },
@@ -271,8 +273,8 @@ String getMapDirectionsUrl({
         url: 'tmap://route',
         queryParams: {
           'startname': originTitle,
-          'startx': '${destination.longitude}',
-          'starty': '${destination.latitude}',
+          'startx': origin?.longitude.toString(),
+          'starty': origin?.latitude.toString(),
           'goalname': destinationTitle,
           'goaly': '${destination.latitude}',
           'goalx': '${destination.longitude}',
