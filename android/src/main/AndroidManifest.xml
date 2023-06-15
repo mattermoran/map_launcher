@@ -17,6 +17,7 @@
         <package android:name="com.tencent.map" />
         <package android:name="com.here.app.maps" />
         <package android:name="com.huawei.maps.app" />
+        <package android:name="com.alk.copilot.mapviewer" />
     </queries>
 
 </manifest>

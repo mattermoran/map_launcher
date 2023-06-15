@@ -31,6 +31,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/here.svg" width="25"> HERE WeGo
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/petal.svg" width="25"> Petal Maps (Android only)
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tomtomgo.svg" width="25"> TomTom Go
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/copilot.svg" width="25"> CoPilot
 
 ## Get started
 
@@ -60,6 +61,7 @@ dependencies:
     <string>qqmap</string>
     <string>here-location</string>
     <string>tomtomgo</string>
+    <string>copilot</string>
 </array>
 ```
 
@@ -112,7 +114,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 ##### Maps
 
 | `mapType`     | `coords`                                                                 | `title`                                        | `description` | `zoom`       | `extraParams` |
-| ------------- | ------------------------------------------------------------------------ | ---------------------------------------------- | ------------- | ------------ | ------------- |
+|---------------|--------------------------------------------------------------------------|------------------------------------------------|---------------|--------------|---------------|
 | `.google`     | ✓                                                                        | iOS only <br /> see Known Issues section below | ✗             | ✓            | ✓             |
 | `.apple`      | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
 | `.googleGo`   | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
@@ -130,6 +132,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.here`       | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
 | `.petalMaps`  | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
 | `.tomtomgo`   | ✓ <br /> iOS does not support marker <br /> shows directions instead     | ✗                                              | ✗             | ✗            | ✓             |
+| `.copilot`    | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
 
 ### Show Directions
 
@@ -147,7 +150,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 ##### Maps
 
 | `mapType`     | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` | `waypoints`                                  | `extraParams` |
-| ------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- | -------------------------------------------- | ------------- |
+|---------------|---------------|--------------------|------------------------------|---------------|------------------|----------------------------------------------|---------------|
 | `.google`     | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓ (up to 8 on iOS and unlimited? on android) | ✓             |
 | `.apple`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.googleGo`   | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓                                            | ✓             |
@@ -165,6 +168,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.here`       | ✓             | ✗                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.petalMaps`  | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.tomtomgo`   | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.copilot`    | ✓             | ✓                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
 
 ### Extra Params
 It's possible to pass some map specific query params like api keys etc using `extraParams` option

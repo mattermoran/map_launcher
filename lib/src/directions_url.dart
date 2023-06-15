@@ -241,5 +241,20 @@ String getMapDirectionsUrl({
         },
         // the TomTom Go app cannot handle the ? at the start of the query
       ).replaceFirst('?', '');
+
+    case MapType.copilot:
+      // Documentation:
+      // https://developer.trimblemaps.com/copilot-navigation/v10-19/feature-guide/advanced-features/url-launch/
+      return Utils.buildUrl(
+        url: 'copilot://mydestination',
+        queryParams: {
+          'type': 'LOCATION',
+          'action': 'GOTO',
+          'name': destinationTitle ?? '',
+          'lat': "${destination.latitude}",
+          'long': "${destination.longitude}",
+          ...(extraParams ?? {}),
+        },
+      );
   }
 }
