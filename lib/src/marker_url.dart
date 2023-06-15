@@ -233,7 +233,6 @@ String getMapMarkerUrl({
           'action': 'VIEW',
           'marker': '${coords.latitude},${coords.longitude}',
           'name': title ?? '',
-          'z': '$zoomLevel',
           ...(extraParams ?? {}),
         },
       );
