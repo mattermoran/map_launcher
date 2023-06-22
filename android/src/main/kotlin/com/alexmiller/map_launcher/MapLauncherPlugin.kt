@@ -25,7 +25,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "map_launcher")
         this.context = flutterPluginBinding.applicationContext
-        channel?.setMethodCallHandler(this)
+        channel.setMethodCallHandler(this)
     }
 
     private val maps = listOf(
