@@ -38,7 +38,6 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             MapModel(MapType.yandexMaps, "Yandex Maps", "ru.yandex.yandexmaps", "yandexmaps://"),
             MapModel(MapType.citymapper, "Citymapper", "com.citymapper.app.release", "citymapper://"),
             MapModel(MapType.mapswithme, "MAPS.ME", "com.mapswithme.maps.pro", "mapswithme://"),
-            MapModel(MapType.copilot, "CoPilot", "com.alk.copilot.mapviewer", "copilot://"),
             MapModel(MapType.osmand, "OsmAnd", "net.osmand", "osmandmaps://"),
             MapModel(MapType.osmandplus, "OsmAnd+", "net.osmand.plus", "osmandmaps://"),
             MapModel(MapType.doubleGis, "2GIS", "ru.dublgis.dgismobile", "dgis://"),
@@ -46,6 +45,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             MapModel(MapType.here, "HERE WeGo", "com.here.app.maps", "here-location://"),
             MapModel(MapType.petal, "Petal Maps", "com.huawei.maps.app", "petalmaps://"),
             MapModel(MapType.tomtomgo, "TomTom Go", "com.tomtom.gplay.navapp", "tomtomgo://"),
+            MapModel(MapType.copilot, "CoPilot", "com.alk.copilot.mapviewer", "copilot://"),
     )
 
     private fun getInstalledMaps(): List<MapModel> {
