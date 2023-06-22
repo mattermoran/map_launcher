@@ -222,5 +222,19 @@ String getMapMarkerUrl({
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.copilot:
+      // Documentation:
+      // https://developer.trimblemaps.com/copilot-navigation/v10-19/feature-guide/advanced-features/url-launch/
+      return Utils.buildUrl(
+        url: 'copilot://mydestination',
+        queryParams: {
+          'type': 'LOCATION',
+          'action': 'VIEW',
+          'marker': '${coords.latitude},${coords.longitude}',
+          'name': title ?? '',
+          ...(extraParams ?? {}),
+        },
+      );
   }
 }
