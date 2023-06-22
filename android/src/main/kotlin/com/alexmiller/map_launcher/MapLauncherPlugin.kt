@@ -70,7 +70,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     private fun launchGoogleMaps(url: String) {
-        context?.let {
+        context.let {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             if (intent.resolveActivity(it.packageManager) != null) {
@@ -80,7 +80,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     private fun launchMap(mapType: MapType, url: String, result: Result) {
-        context?.let {
+        context.let {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             val foundMap = maps.find { map -> map.mapType == mapType }
