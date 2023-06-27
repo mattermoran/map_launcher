@@ -90,7 +90,7 @@ class AvailableMap {
     String? destinationTitle,
     Coords? origin,
     String? originTitle,
-    List<Coords>? waypoints,
+    List<String>? waypoints,
     DirectionsMode directionsMode = DirectionsMode.driving,
     Map<String, String>? extraParams,
   }) {

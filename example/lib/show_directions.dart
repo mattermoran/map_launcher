@@ -10,19 +10,19 @@ class ShowDirections extends StatefulWidget {
 }
 
 class _ShowDirectionsState extends State<ShowDirections> {
-  double destinationLatitude = 37.759392;
-  double destinationLongitude = -122.5107336;
-  String destinationTitle = 'Ocean Beach';
+  double destinationLatitude = 51.085528212979256;
+  double destinationLongitude = -114.17912938148896;
+  String destinationTitle = '6326 Bowness Rd NW';
 
-  double originLatitude = 37.8078513;
-  double originLongitude = -122.404604;
-  String originTitle = 'Pier 33';
+  double originLatitude = 51.13594916447705;
+  double originLongitude = -113.96474408926466;
+  String originTitle = 'My point';
 
   // List<Coords> waypoints = [];
-  List<Coords> waypoints = [
-    Coords(37.7705112, -122.4108267),
-    // Coords(37.6988984, -122.4830961),
-    // Coords(37.7935754, -122.483654),
+  List<String> waypoints = [
+    '5920 Bowness Rd NW, Calgary, AB, Canada',
+    '5903 Bow Crescent NW',
+    '6132 Bow Crescent NW',
   ];
 
   DirectionsMode directionsMode = DirectionsMode.driving;
@@ -193,12 +193,12 @@ class FormTitle extends StatelessWidget {
 }
 
 class WaypointsForm extends StatelessWidget {
-  final List<Coords> waypoints;
-  final void Function(List<Coords> waypoints) onWaypointsUpdated;
+  final List<String> waypoints;
+  final void Function(List<String> waypoints) onWaypointsUpdated;
 
   WaypointsForm({required this.waypoints, required this.onWaypointsUpdated});
 
-  void updateWaypoint(Coords waypoint, int index) {
+  void updateWaypoint(String waypoint, int index) {
     final tempWaypoints = [...waypoints];
     tempWaypoints[index] = waypoint;
     onWaypointsUpdated(tempWaypoints);
@@ -226,28 +226,28 @@ class WaypointsForm extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Waypoint #${waypointIndex + 1} latitude',
               ),
-              initialValue: waypoint.latitude.toString(),
+              initialValue: waypoint.toString(),
               onChanged: (newValue) {
                 updateWaypoint(
-                  Coords(double.tryParse(newValue) ?? 0, waypoint.longitude),
+                  newValue,
                   waypointIndex,
                 );
               },
             ),
-            TextFormField(
-              autocorrect: false,
-              autovalidateMode: AutovalidateMode.disabled,
-              decoration: InputDecoration(
-                labelText: 'Waypoint #$waypointIndex longitude',
-              ),
-              initialValue: waypoint.longitude.toString(),
-              onChanged: (newValue) {
-                updateWaypoint(
-                  Coords(waypoint.latitude, double.tryParse(newValue) ?? 0),
-                  waypointIndex,
-                );
-              },
-            ),
+            // TextFormField(
+            //   autocorrect: false,
+            //   autovalidateMode: AutovalidateMode.disabled,
+            //   decoration: InputDecoration(
+            //     labelText: 'Waypoint #$waypointIndex longitude',
+            //   ),
+            //   initialValue: waypoint.longitude.toString(),
+            //   onChanged: (newValue) {
+            //     updateWaypoint(
+            //       Coords(waypoint.latitude, double.tryParse(newValue) ?? 0),
+            //       waypointIndex,
+            //     );
+            //   },
+            // ),
           ];
         }).expand((element) => element),
         SizedBox(height: 20),
@@ -261,7 +261,7 @@ class WaypointsForm extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              onWaypointsUpdated([...waypoints]..add(Coords(0, 0)));
+              onWaypointsUpdated([...waypoints]..add('Empty'));
             },
           ),
         ]),

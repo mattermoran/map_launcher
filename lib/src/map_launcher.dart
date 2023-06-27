@@ -70,7 +70,7 @@ class MapLauncher {
     String? destinationTitle,
     Coords? origin,
     String? originTitle,
-    List<Coords>? waypoints,
+    List<String>? waypoints,
     DirectionsMode? directionsMode = DirectionsMode.driving,
     Map<String, String>? extraParams,
   }) async {
@@ -97,11 +97,6 @@ class MapLauncher {
       'originTitle': originTitle,
       'directionsMode': Utils.enumToString(directionsMode),
       'waypoints': (waypoints ?? [])
-          .map((waypoint) => {
-                'latitude': waypoint.latitude.toString(),
-                'longitude': waypoint.longitude.toString(),
-              })
-          .toList(),
     };
     return _channel.invokeMethod('showDirections', args);
   }

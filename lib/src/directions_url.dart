@@ -10,7 +10,7 @@ String getMapDirectionsUrl({
   Coords? origin,
   String? originTitle,
   DirectionsMode? directionsMode,
-  List<Coords>? waypoints,
+  List<String>? waypoints,
   Map<String, String>? extraParams,
 }) {
   switch (mapType) {
@@ -19,14 +19,12 @@ String getMapDirectionsUrl({
         url: 'https://www.google.com/maps/dir/',
         queryParams: {
           'api': '1',
-          'destination': '${destination.latitude},${destination.longitude}',
+          'destination': '$destinationTitle',
           'origin': Utils.nullOrValue(
             origin,
             '${origin?.latitude},${origin?.longitude}',
           ),
-          'waypoints': waypoints
-              ?.map((coords) => '${coords.latitude},${coords.longitude}')
-              .join('|'),
+          'waypoints': waypoints?.join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),
         },
@@ -42,20 +40,32 @@ String getMapDirectionsUrl({
             origin,
             '${origin?.latitude},${origin?.longitude}',
           ),
-          'waypoints': waypoints
-              ?.map((coords) => '${coords.latitude},${coords.longitude}')
-              .join('|'),
+          'waypoints': waypoints?.join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),
         },
       );
 
     case MapType.apple:
+      String waypointString = '';
+      if (waypoints != null && waypoints.isNotEmpty) {
+        var encodedWaypoints =
+            waypoints.map((waypoint) => Uri.encodeComponent(waypoint)).toList();
+        waypointString = encodedWaypoints.join('+to:');
+      }
+
+      var encodedDestination =
+          Uri.encodeComponent(destinationTitle ?? 'Unknow Destination');
+
+      String param = (waypointString != '')
+          ? '?daddr=$waypointString+to:$encodedDestination&dirflg=d'
+          : '?daddr=$encodedDestination&dirflg=d';
+
       return Utils.buildUrl(
-        url: 'http://maps.apple.com/maps',
+        url: 'http://maps.apple.com/$param',
         queryParams: {
-          'daddr': '${destination.latitude},${destination.longitude}',
-          ...(extraParams ?? {}),
+          // 'daddr': '$param',
+          // ...(extraParams ?? {}),
         },
       );
 
