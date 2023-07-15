@@ -95,7 +95,7 @@ String getMapDirectionsUrl({
 
     case MapType.waze:
       return Utils.buildUrl(
-        url: 'waze://',
+        url: 'https://waze.com/ul',
         queryParams: {
           'll': '${destination.latitude},${destination.longitude}',
           'z': '10',
