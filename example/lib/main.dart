@@ -11,8 +11,6 @@ class MapLauncherDemo extends StatefulWidget {
   State<MapLauncherDemo> createState() => _MapLauncherDemoState();
 }
 
-enum LaunchMode { marker, directions }
-
 class _MapLauncherDemoState extends State<MapLauncherDemo> {
   int selectedTabIndex = 0;
 
@@ -25,6 +23,7 @@ class _MapLauncherDemoState extends State<MapLauncherDemo> {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Map Launcher Demo'),
+          centerTitle: true,
         ),
         body: widgets[selectedTabIndex],
         bottomNavigationBar: BottomNavigationBar(

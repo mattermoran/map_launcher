@@ -104,10 +104,10 @@ class MapLauncherPlugin: FlutterPlugin, MethodCallHandler {
       else -> result.notImplemented()
     }
   }
-  
+
   private fun getInstalledMaps(): List<MapModel> {
     val installedApps = context?.packageManager?.getInstalledApplications(0) ?: return listOf()
-    return maps.filter { map -> installedApps.any { app -> app.packageName == map.packageName } }
+    return maps.filter { map -> installedApps.any { app -> app.packageName == map.packageName && app.enabled } }
   }
 
   private fun isMapAvailable(type: String): Boolean {
