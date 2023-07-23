@@ -1,3 +1,12 @@
+## 3.0.0 Unreleased
+- Migrate to federated plugins structure
+- [Breaking] `MapLauncher.installedMaps` -> `MapLauncher.getInstalledMaps()`
+- [Breaking] `showMarker` now takes only one argument `MapMarkerParams`
+- [Breaking] `showDirections` now takes only one argument `MapDirectionsParams`
+- [Breaking] `map.showMarker` removed. use `MapLauncher.showMarker` instead
+- [Breaking] `map.showDirections` removed. use `MapLauncher.showDirections` instead
+
+
 ## 2.5.0+1
 - Update screenshots
 
