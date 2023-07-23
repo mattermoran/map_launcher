@@ -72,7 +72,7 @@ dependencies:
 ```dart
 import 'package:map_launcher/map_launcher.dart';
 
-final availableMaps = await MapLauncher.installedMaps;
+final availableMaps = await MapLauncher.getInstalledMaps();
 print(availableMaps); // [AvailableMap { mapName: Google Maps, mapType: google }, ...]
 
 await availableMaps.first.showMarker(
@@ -253,9 +253,6 @@ class MapLauncherDemo extends StatelessWidget {
 ```
 
 ## Known issues
-
-- *[Fixed in Google maps 11.12](https://issuetracker.google.com/issues/129726279#comment175)* Google Maps for Android have a bug that setting label for a marker doesn't work. See more on [Google Issue Tracker](https://issuetracker.google.com/issues/129726279)
-
 - On iOS it's possible to "delete" Apple Maps which actually just removes it from homescreen and does not actually delete it. Because of that Apple Maps will always show up as available on iOS. You can read more about it [here](https://stackoverflow.com/questions/39603120/how-to-check-if-apple-maps-is-installed)
 
 ## Contributing

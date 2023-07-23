@@ -5,6 +5,7 @@
 - [Breaking] `showDirections` now takes only one argument `MapDirectionsParams`
 - [Breaking] `map.showMarker` removed. use `MapLauncher.showMarker` instead
 - [Breaking] `map.showDirections` removed. use `MapLauncher.showDirections` instead
+- Update minimum versions: ios -> 13, dart -> 3
 
 
 ## 2.5.0+1
