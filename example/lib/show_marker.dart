@@ -4,8 +4,10 @@ import 'package:map_launcher/map_launcher.dart';
 import 'maps_sheet.dart';
 
 class ShowMarker extends StatefulWidget {
+  const ShowMarker({super.key});
+
   @override
-  _ShowMarkerState createState() => _ShowMarkerState();
+  State<ShowMarker> createState() => _ShowMarkerState();
 }
 
 class _ShowMarkerState extends State<ShowMarker> {
@@ -23,7 +25,7 @@ class _ShowMarkerState extends State<ShowMarker> {
           TextFormField(
             autocorrect: false,
             autovalidateMode: AutovalidateMode.disabled,
-            decoration: InputDecoration(labelText: 'Latitude'),
+            decoration: const InputDecoration(labelText: 'Latitude'),
             initialValue: latitude.toString(),
             onChanged: (newValue) {
               setState(() {
@@ -34,7 +36,7 @@ class _ShowMarkerState extends State<ShowMarker> {
           TextFormField(
             autocorrect: false,
             autovalidateMode: AutovalidateMode.disabled,
-            decoration: InputDecoration(labelText: 'Longitude'),
+            decoration: const InputDecoration(labelText: 'Longitude'),
             initialValue: longitude.toString(),
             onChanged: (newValue) {
               setState(() {
@@ -45,7 +47,7 @@ class _ShowMarkerState extends State<ShowMarker> {
           TextFormField(
             autocorrect: false,
             autovalidateMode: AutovalidateMode.disabled,
-            decoration: InputDecoration(labelText: 'Title'),
+            decoration: const InputDecoration(labelText: 'Title'),
             initialValue: title,
             onChanged: (newValue) {
               setState(() {
@@ -56,7 +58,7 @@ class _ShowMarkerState extends State<ShowMarker> {
           TextFormField(
             autocorrect: false,
             autovalidateMode: AutovalidateMode.disabled,
-            decoration: InputDecoration(labelText: 'Zoom'),
+            decoration: const InputDecoration(labelText: 'Zoom'),
             initialValue: zoom.toString(),
             onChanged: (newValue) {
               setState(() {
@@ -64,21 +66,24 @@ class _ShowMarkerState extends State<ShowMarker> {
               });
             },
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           MaterialButton(
             onPressed: () {
-              MapsSheet.show(
+              showMapsSheet(
                 context: context,
                 onMapTap: (map) {
-                  map.showMarker(
-                    coords: Coords(latitude, longitude),
-                    title: title,
-                    zoom: zoom,
+                  MapLauncher.showMarker(
+                    MapMarkerParams(
+                      mapType: map.mapType,
+                      coords: Coords(latitude, longitude),
+                      title: title,
+                      zoom: zoom,
+                    ),
                   );
                 },
               );
             },
-            child: Text('Show Maps'),
+            child: const Text('Show Maps'),
           )
         ],
       ),

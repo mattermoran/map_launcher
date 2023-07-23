@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.alexmiller.map_launcher">
+  package="dev.fluttered.map_launcher">
 
     <queries>
         <package android:name="com.google.android.apps.maps" />
@@ -19,5 +19,4 @@
         <package android:name="com.huawei.maps.app" />
         <package android:name="com.alk.copilot.mapviewer" />
     </queries>
-
 </manifest>

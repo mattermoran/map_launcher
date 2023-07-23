@@ -1,6 +1,3 @@
-import 'package:map_launcher/src/map_launcher.dart';
-import 'package:map_launcher/src/utils.dart';
-
 /// Defines the map types supported by this plugin
 enum MapType {
   apple,
@@ -52,62 +49,59 @@ class AvailableMap {
   });
 
   /// Parses json object to [AvailableMap]
-  static AvailableMap? fromJson(json) {
-    final MapType? mapType =
-        Utils.enumFromString(MapType.values, json['mapType']);
-    if (mapType != null) {
-      return AvailableMap(
-        mapName: json['mapName'],
-        mapType: mapType,
-        icon: 'packages/map_launcher/assets/icons/${json['mapType']}.svg',
-      );
-    } else {
-      return null;
-    }
-  }
-
-  /// Launches current map and shows marker at `coords`
-  Future<void> showMarker({
-    required Coords coords,
-    required String title,
-    String? description,
-    int? zoom,
-    Map<String, String>? extraParams,
-  }) {
-    return MapLauncher.showMarker(
-      mapType: mapType,
-      coords: coords,
-      title: title,
-      description: description,
-      zoom: zoom,
-      extraParams: extraParams,
+  static AvailableMap fromJson(json) {
+    final mapType = MapType.values.firstWhere(
+      (mapType) => mapType.name == json['mapType'],
     );
-  }
-
-  /// Launches current map and shows directions to `destination`
-  Future<void> showDirections({
-    required Coords destination,
-    String? destinationTitle,
-    Coords? origin,
-    String? originTitle,
-    List<Coords>? waypoints,
-    DirectionsMode directionsMode = DirectionsMode.driving,
-    Map<String, String>? extraParams,
-  }) {
-    return MapLauncher.showDirections(
+    return AvailableMap(
+      mapName: json['mapName'],
       mapType: mapType,
-      destination: destination,
-      destinationTitle: destinationTitle,
-      origin: origin,
-      originTitle: originTitle,
-      waypoints: waypoints,
-      directionsMode: directionsMode,
-      extraParams: extraParams,
+      icon: 'packages/map_launcher/assets/icons/${json['mapType']}.svg',
     );
   }
 
   @override
   String toString() {
-    return 'AvailableMap { mapName: $mapName, mapType: ${Utils.enumToString(mapType)} }';
+    return 'AvailableMap { mapName: $mapName, mapType: ${mapType.name} }';
   }
+}
+
+class MapMarkerParams {
+  MapMarkerParams({
+    required this.mapType,
+    required this.coords,
+    required this.title,
+    this.description,
+    this.zoom = 16,
+    this.extraParams = const {},
+  });
+
+  final MapType mapType;
+  final Coords coords;
+  final String title;
+  final String? description;
+  final int zoom;
+  final Map<String, String> extraParams;
+}
+
+class MapDirectionsParams {
+  MapDirectionsParams({
+    required this.mapType,
+    required this.destination,
+    this.destinationTitle,
+    this.origin,
+    this.originTitle,
+    this.waypoints,
+    this.directionsMode,
+    this.extraParams = const {},
+  });
+
+  final MapType mapType;
+  final Coords destination;
+  final String? destinationTitle;
+  final Coords? origin;
+  final String? originTitle;
+  final List<Coords>? waypoints;
+  final DirectionsMode? directionsMode;
+  final Map<String, String> extraParams;
 }

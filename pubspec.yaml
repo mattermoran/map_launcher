@@ -4,22 +4,24 @@ version: 2.5.0+1
 homepage: https://github.com/mattermoran/map_launcher
 
 environment:
-  sdk: '>=2.14.0 <3.0.0'
-  flutter: ">=1.20.0"
+  sdk: '>=3.0.6 <4.0.0'
+  flutter: ">=3.3.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  plugin_platform_interface: ^2.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^2.0.0
 
 flutter:
   plugin:
     platforms:
       android:
-        package: com.alexmiller.map_launcher
+        package: dev.fluttered.map_launcher
         pluginClass: MapLauncherPlugin
       ios:
         pluginClass: MapLauncherPlugin
