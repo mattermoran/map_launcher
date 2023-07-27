@@ -21,6 +21,8 @@ enum MapType {
   petal,
   tomtomgo,
   copilot,
+  tomtomgofleet,
+  sygic
 }
 
 /// Defines the supported modes of transportation for [showDirections]
