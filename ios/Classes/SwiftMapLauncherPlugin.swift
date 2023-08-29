@@ -20,6 +20,7 @@ private enum MapType: String {
   case tomtomgo
   case copilot
   case flitsmeister
+  case truckmeister
 
   func type() -> String {
     return self.rawValue
