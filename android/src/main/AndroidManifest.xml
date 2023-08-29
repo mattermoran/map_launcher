@@ -19,6 +19,7 @@
         <package android:name="com.huawei.maps.app" />
         <package android:name="com.alk.copilot.mapviewer" />
         <package android:name="nl.flitsmeister" />
+        <package android:name="nl.flitsmeister.flux" />
     </queries>
 
 </manifest>
