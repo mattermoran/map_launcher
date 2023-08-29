@@ -63,8 +63,9 @@ private let maps: [Map] = [
     Map(mapName: "HERE WeGo", mapType: MapType.here, urlPrefix: "here-location://"),
     Map(mapName: "TomTom Go", mapType: MapType.tomtomgo, urlPrefix: "tomtomgo://"),
     Map(mapName: "CoPilot", mapType: MapType.copilot, urlPrefix: "copilot://"),
-    Map(mapName: "Flitsmeister", mapType: MapType.flitsmeister, urlPrefix: "flitsmeister://"),
-    Map(mapName: "Truckmeister", mapType: MapType.truckmeister, urlPrefix: "truckmeister://")
+// TODO: These are disabled while we figure out how to call them properly
+//     Map(mapName: "Flitsmeister", mapType: MapType.flitsmeister, urlPrefix: "flitsmeister://"),
+//     Map(mapName: "Truckmeister", mapType: MapType.truckmeister, urlPrefix: "truckmeister://")
 ]
 
 private func getMapByRawMapType(type: String) -> Map? {
