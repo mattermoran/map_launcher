@@ -32,6 +32,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/petal.svg" width="25"> Petal Maps (Android only)
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tomtomgo.svg" width="25"> TomTom Go
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/copilot.svg" width="25"> CoPilot
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/flitsmeister.svg" width="25"> Flitsmeister
 
 ## Get started
 
@@ -62,6 +63,7 @@ dependencies:
     <string>here-location</string>
     <string>tomtomgo</string>
     <string>copilot</string>
+    <string>flitsmeister</string>
 </array>
 ```
 
@@ -133,6 +135,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.petalMaps`  | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
 | `.tomtomgo`   | ✓ <br /> iOS does not support marker <br /> shows directions instead     | ✗                                              | ✗             | ✗            | ✓             |
 | `.copilot`    | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
+| `.flitsmeister` | ✓ <br /> does not support marker <br /> shows directions instead     | ✗                                              | ✗             | ✗            | ✗             |
 
 ### Show Directions
 
@@ -169,6 +172,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.petalMaps`  | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.tomtomgo`   | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
 | `.copilot`    | ✓             | ✓                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.flitsmeister` | ✓           | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✗             |
 
 ### Extra Params
 It's possible to pass some map specific query params like api keys etc using `extraParams` option

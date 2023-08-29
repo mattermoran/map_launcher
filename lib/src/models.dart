@@ -21,6 +21,7 @@ enum MapType {
   petal,
   tomtomgo,
   copilot,
+  flitsmeister,
 }
 
 /// Defines the supported modes of transportation for [showDirections]

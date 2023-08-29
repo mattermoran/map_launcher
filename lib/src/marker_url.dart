@@ -222,7 +222,7 @@ String getMapMarkerUrl({
           ...(extraParams ?? {}),
         },
       );
-
+    
     case MapType.copilot:
       // Documentation:
       // https://developer.trimblemaps.com/copilot-navigation/v10-19/feature-guide/advanced-features/url-launch/
@@ -233,6 +233,23 @@ String getMapMarkerUrl({
           'action': 'VIEW',
           'marker': '${coords.latitude},${coords.longitude}',
           'name': title ?? '',
+        ...(extraParams ?? {}),
+        },
+      );
+    case MapType.flitsmeister:
+      if (Platform.isIOS) {
+        return Utils.buildUrl(
+          url: 'flitsmeister://',
+          queryParams: {
+            'geo': '${coords.latitude},${coords.longitude}',
+            ...(extraParams ?? {}),
+          },
+        );
+      }
+      return Utils.buildUrl(
+        url: 'geo:${coords.latitude},${coords.longitude}',
+        queryParams: {
+          'q': '${coords.latitude},${coords.longitude}',
           ...(extraParams ?? {}),
         },
       );
