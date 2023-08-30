@@ -39,6 +39,17 @@ class Coords {
   Coords(this.latitude, this.longitude);
 }
 
+/// Class that holds lat/lng coordinates and optional title
+class Waypoint {
+  final Coords coords;
+  final String? title;
+
+  Waypoint(this.coords, [this.title]);
+
+  double get latitude => coords.latitude;
+  double get longitude => coords.longitude;
+}
+
 /// Class that holds all the information needed to launch a map
 class AvailableMap {
   String mapName;
@@ -53,8 +64,7 @@ class AvailableMap {
 
   /// Parses json object to [AvailableMap]
   static AvailableMap? fromJson(json) {
-    final MapType? mapType =
-        Utils.enumFromString(MapType.values, json['mapType']);
+    final MapType? mapType = Utils.enumFromString(MapType.values, json['mapType']);
     if (mapType != null) {
       return AvailableMap(
         mapName: json['mapName'],
@@ -90,7 +100,7 @@ class AvailableMap {
     String? destinationTitle,
     Coords? origin,
     String? originTitle,
-    List<Coords>? waypoints,
+    List<Waypoint>? waypoints,
     DirectionsMode directionsMode = DirectionsMode.driving,
     Map<String, String>? extraParams,
   }) {
