@@ -20,7 +20,7 @@ class _ShowDirectionsState extends State<ShowDirections> {
 
   // List<Coords> waypoints = [];
   List<Waypoint> waypoints = [
-    Waypoint(Coords(37.7705112, -122.4108267)),
+    Waypoint(37.7705112, -122.4108267),
     // Coords(37.6988984, -122.4830961),
     // Coords(37.7935754, -122.483654),
   ];
@@ -230,7 +230,8 @@ class WaypointsForm extends StatelessWidget {
               onChanged: (newValue) {
                 updateWaypoint(
                   Waypoint(
-                    Coords(double.tryParse(newValue) ?? 0, waypoint.longitude),
+                    double.tryParse(newValue) ?? 0,
+                    waypoint.longitude,
                     waypoint.title,
                   ),
                   waypointIndex,
@@ -247,7 +248,8 @@ class WaypointsForm extends StatelessWidget {
               onChanged: (newValue) {
                 updateWaypoint(
                   Waypoint(
-                    Coords(waypoint.latitude, double.tryParse(newValue) ?? 0),
+                    waypoint.latitude,
+                    double.tryParse(newValue) ?? 0,
                     waypoint.title,
                   ),
                   waypointIndex,
@@ -263,7 +265,7 @@ class WaypointsForm extends StatelessWidget {
               initialValue: waypoint.title,
               onChanged: (newValue) {
                 updateWaypoint(
-                  Waypoint(Coords(waypoint.latitude, waypoint.longitude), newValue),
+                  Waypoint(waypoint.latitude, waypoint.longitude, newValue),
                   waypointIndex,
                 );
               },
@@ -281,7 +283,7 @@ class WaypointsForm extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              onWaypointsUpdated([...waypoints]..add(Waypoint(Coords(0, 0))));
+              onWaypointsUpdated([...waypoints]..add(Waypoint(0, 0)));
             },
           ),
         ]),

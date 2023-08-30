@@ -44,7 +44,7 @@ class Waypoint {
   final Coords coords;
   final String? title;
 
-  Waypoint(this.coords, [this.title]);
+  Waypoint(double latitude, double longitude, [this.title]) : coords = Coords(latitude, longitude);
 
   double get latitude => coords.latitude;
   double get longitude => coords.longitude;
