@@ -18,7 +18,9 @@ private enum MapType: String {
   case tencent
   case here
   case tomtomgo
+  case tomtomgofleet
   case copilot
+  case sygic
 
   func type() -> String {
     return self.rawValue
@@ -60,6 +62,8 @@ private let maps: [Map] = [
     Map(mapName: "Tencent (QQ Maps)", mapType: MapType.tencent, urlPrefix: "qqmap://"),
     Map(mapName: "HERE WeGo", mapType: MapType.here, urlPrefix: "here-location://"),
     Map(mapName: "TomTom Go", mapType: MapType.tomtomgo, urlPrefix: "tomtomgo://"),
+    Map(mapName: "TomTom Go Fleet", mapType: MapType.tomtomgofleet, urlPrefix: "tomtomgofleet://"),
+    Map(mapName: "Sygic Truck", mapType: MapType.sygic, urlPrefix: "com.sygic.aura://"),
     Map(mapName: "CoPilot", mapType: MapType.copilot, urlPrefix: "copilot://")
 ]
 

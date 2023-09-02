@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:map_launcher/src/models.dart';
 import 'package:map_launcher/src/utils.dart';
 
@@ -222,7 +223,6 @@ String getMapMarkerUrl({
           ...(extraParams ?? {}),
         },
       );
-
     case MapType.copilot:
       // Documentation:
       // https://developer.trimblemaps.com/copilot-navigation/v10-19/feature-guide/advanced-features/url-launch/
@@ -233,6 +233,25 @@ String getMapMarkerUrl({
           'action': 'VIEW',
           'marker': '${coords.latitude},${coords.longitude}',
           'name': title ?? '',
+          ...(extraParams ?? {}),
+        },
+      );
+    case MapType.tomtomgofleet:
+      return Utils.buildUrl(
+        url: 'geo:${coords.latitude},${coords.longitude}',
+        queryParams: {
+          'q':
+              '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
+          ...(extraParams ?? {}),
+        },
+      );
+    case MapType.sygic:
+      // Documentation:
+      // https://www.sygic.com/developers/professional-navigation-sdk/introduction
+      return Utils.buildUrl(
+        url:
+            'com.sygic.aura://coordinate|${coords.longitude}|${coords.latitude}|show',
+        queryParams: {
           ...(extraParams ?? {}),
         },
       );
