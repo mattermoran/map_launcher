@@ -19,8 +19,8 @@ class _ShowDirectionsState extends State<ShowDirections> {
   String originTitle = 'Pier 33';
 
   // List<Coords> waypoints = [];
-  List<Coords> waypoints = [
-    Coords(37.7705112, -122.4108267),
+  List<Waypoint> waypoints = [
+    Waypoint(37.7705112, -122.4108267),
     // Coords(37.6988984, -122.4830961),
     // Coords(37.7935754, -122.483654),
   ];
@@ -193,12 +193,12 @@ class FormTitle extends StatelessWidget {
 }
 
 class WaypointsForm extends StatelessWidget {
-  final List<Coords> waypoints;
-  final void Function(List<Coords> waypoints) onWaypointsUpdated;
+  final List<Waypoint> waypoints;
+  final void Function(List<Waypoint> waypoints) onWaypointsUpdated;
 
   WaypointsForm({required this.waypoints, required this.onWaypointsUpdated});
 
-  void updateWaypoint(Coords waypoint, int index) {
+  void updateWaypoint(Waypoint waypoint, int index) {
     final tempWaypoints = [...waypoints];
     tempWaypoints[index] = waypoint;
     onWaypointsUpdated(tempWaypoints);
@@ -229,7 +229,11 @@ class WaypointsForm extends StatelessWidget {
               initialValue: waypoint.latitude.toString(),
               onChanged: (newValue) {
                 updateWaypoint(
-                  Coords(double.tryParse(newValue) ?? 0, waypoint.longitude),
+                  Waypoint(
+                    double.tryParse(newValue) ?? 0,
+                    waypoint.longitude,
+                    waypoint.title,
+                  ),
                   waypointIndex,
                 );
               },
@@ -238,12 +242,30 @@ class WaypointsForm extends StatelessWidget {
               autocorrect: false,
               autovalidateMode: AutovalidateMode.disabled,
               decoration: InputDecoration(
-                labelText: 'Waypoint #$waypointIndex longitude',
+                labelText: 'Waypoint #${waypointIndex + 1} longitude',
               ),
               initialValue: waypoint.longitude.toString(),
               onChanged: (newValue) {
                 updateWaypoint(
-                  Coords(waypoint.latitude, double.tryParse(newValue) ?? 0),
+                  Waypoint(
+                    waypoint.latitude,
+                    double.tryParse(newValue) ?? 0,
+                    waypoint.title,
+                  ),
+                  waypointIndex,
+                );
+              },
+            ),
+            TextFormField(
+              autocorrect: false,
+              autovalidateMode: AutovalidateMode.disabled,
+              decoration: InputDecoration(
+                labelText: 'Waypoint #${waypointIndex + 1} title',
+              ),
+              initialValue: waypoint.title,
+              onChanged: (newValue) {
+                updateWaypoint(
+                  Waypoint(waypoint.latitude, waypoint.longitude, newValue),
                   waypointIndex,
                 );
               },
@@ -261,7 +283,7 @@ class WaypointsForm extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              onWaypointsUpdated([...waypoints]..add(Coords(0, 0)));
+              onWaypointsUpdated([...waypoints]..add(Waypoint(0, 0)));
             },
           ),
         ]),

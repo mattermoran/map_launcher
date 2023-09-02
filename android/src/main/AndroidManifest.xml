@@ -18,6 +18,9 @@
         <package android:name="com.here.app.maps" />
         <package android:name="com.huawei.maps.app" />
         <package android:name="com.alk.copilot.mapviewer" />
+        <package android:name="com.tomtom.gplay.navapp"/>
+        <package android:name="com.tomtom.gplay.navapp.gofleet"/>
+        <package android:name="com.sygic.truck"/>
         <package android:name="nl.flitsmeister" />
         <package android:name="nl.flitsmeister.flux" />
     </queries>

@@ -18,7 +18,9 @@ private enum MapType: String {
   case tencent
   case here
   case tomtomgo
+  case tomtomgofleet
   case copilot
+  case sygic
   case flitsmeister
   case truckmeister
 
@@ -62,7 +64,9 @@ private let maps: [Map] = [
     Map(mapName: "Tencent (QQ Maps)", mapType: MapType.tencent, urlPrefix: "qqmap://"),
     Map(mapName: "HERE WeGo", mapType: MapType.here, urlPrefix: "here-location://"),
     Map(mapName: "TomTom Go", mapType: MapType.tomtomgo, urlPrefix: "tomtomgo://"),
-    Map(mapName: "CoPilot", mapType: MapType.copilot, urlPrefix: "copilot://"),
+    Map(mapName: "TomTom Go Fleet", mapType: MapType.tomtomgofleet, urlPrefix: "tomtomgofleet://"),
+    Map(mapName: "Sygic Truck", mapType: MapType.sygic, urlPrefix: "com.sygic.aura://"),
+    Map(mapName: "CoPilot", mapType: MapType.copilot, urlPrefix: "copilot://")
 // TODO: These are disabled while we figure out how to call them properly
 //     Map(mapName: "Flitsmeister", mapType: MapType.flitsmeister, urlPrefix: "flitsmeister://"),
 //     Map(mapName: "Truckmeister", mapType: MapType.truckmeister, urlPrefix: "truckmeister://")
@@ -72,11 +76,13 @@ private func getMapByRawMapType(type: String) -> Map? {
     return maps.first(where: { $0.mapType.type() == type })
 }
 
-private func getMapItem(latitude: String, longitude: String) -> MKMapItem {
+private func getMapItem(latitude: String, longitude: String, name: String?) -> MKMapItem {
     let coordinate = CLLocationCoordinate2DMake(Double(latitude)!, Double(longitude)!)
     let destinationPlacemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
 
-    return MKMapItem(placemark: destinationPlacemark);
+    let mapItem = MKMapItem(placemark: destinationPlacemark)
+    mapItem.name = name
+    return mapItem
 }
 
 private func getDirectionsMode(directionsMode: String?) -> String {
@@ -118,25 +124,22 @@ private func showMarker(mapType: MapType, url: String, title: String, latitude: 
     }
 }
 
-private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originTitle: String?, originLatitude: String?, originLongitude: String?, directionsMode: String?, waypoints: [[String: String]]?) {
+private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originTitle: String?, originLatitude: String?, originLongitude: String?, directionsMode: String?, waypoints: [[String: String?]]?) {
     switch mapType {
     case MapType.apple:
 
-        let destinationMapItem = getMapItem(latitude: destinationLatitude, longitude: destinationLongitude);
-        destinationMapItem.name = destinationTitle ?? "Destination"
+        let destinationMapItem = getMapItem(latitude: destinationLatitude, longitude: destinationLongitude, name: destinationTitle ?? "Destination");
 
         let hasOrigin = originLatitude != nil && originLatitude != nil
         var originMapItem: MKMapItem {
             if !hasOrigin {
                 return MKMapItem.forCurrentLocation()
             }
-            let origin = getMapItem(latitude: originLatitude!, longitude: originLongitude!)
-            origin.name = originTitle ?? "Origin"
+            let origin = getMapItem(latitude: originLatitude!, longitude: originLongitude!, name: originTitle ?? "Origin")
             return origin
         }
         
-        let waypointMapItems = waypoints == nil ? [MKMapItem]() : waypoints!.map { getMapItem(latitude: $0["latitude"]!, longitude: $0["longitude"]!) }
-
+        let waypointMapItems = waypoints == nil ? [MKMapItem]() : waypoints!.map { getMapItem(latitude: $0["latitude"]!!, longitude: $0["longitude"]!!, name: $0["title"] as? String) }
 
         MKMapItem.openMaps(
             with: [originMapItem] + waypointMapItems + [destinationMapItem],
@@ -204,7 +207,7 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
 
       let directionsMode = args["directionsMode"] as? String
 
-      let waypoints = args["waypoints"] as? [[String: String]]
+      let waypoints = args["waypoints"] as? [[String: String?]]
 
       let map = getMapByRawMapType(type: mapType)
       if (!isMapAvailable(map: map)) {

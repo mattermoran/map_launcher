@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:map_launcher/src/models.dart';
 import 'package:map_launcher/src/utils.dart';
 
@@ -10,7 +11,7 @@ String getMapDirectionsUrl({
   Coords? origin,
   String? originTitle,
   DirectionsMode? directionsMode,
-  List<Coords>? waypoints,
+  List<Waypoint>? waypoints,
   Map<String, String>? extraParams,
 }) {
   switch (mapType) {
@@ -25,7 +26,7 @@ String getMapDirectionsUrl({
             '${origin?.latitude},${origin?.longitude}',
           ),
           'waypoints': waypoints
-              ?.map((coords) => '${coords.latitude},${coords.longitude}')
+              ?.map((waypoint) => '${waypoint.latitude},${waypoint.longitude}')
               .join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),
@@ -43,7 +44,7 @@ String getMapDirectionsUrl({
             '${origin?.latitude},${origin?.longitude}',
           ),
           'waypoints': waypoints
-              ?.map((coords) => '${coords.latitude},${coords.longitude}')
+              ?.map((waypoint) => '${waypoint.latitude},${waypoint.longitude}')
               .join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),
@@ -257,6 +258,26 @@ String getMapDirectionsUrl({
         },
       );
 
+    case MapType.tomtomgofleet:
+      return Utils.buildUrl(
+        url: 'google.navigation:',
+        queryParams: {
+          'q': '${destination.latitude},${destination.longitude}',
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.sygic:
+      // Documentation:
+      // https://www.sygic.com/developers/professional-navigation-sdk/introduction
+      return Utils.buildUrl(
+        url:
+            'com.sygic.aura://coordinate|${destination.longitude}|${destination.latitude}|drive',
+        queryParams: {
+          ...(extraParams ?? {}),
+        },
+      );
+
     case MapType.flitsmeister:
       if (Platform.isIOS) {
         return Utils.buildUrl(
@@ -268,11 +289,7 @@ String getMapDirectionsUrl({
         );
       }
       return Utils.buildUrl(
-        url: 'geo:${destination.latitude},${destination.longitude}',
-        queryParams: {
-          'q': '${destination.latitude},${destination.longitude}',
-          ...(extraParams ?? {}),
-        },
+        url: 'q:${destination.latitude},${destination.longitude}',
       );
 
     case MapType.truckmeister:

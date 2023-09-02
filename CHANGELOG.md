@@ -1,3 +1,7 @@
+## 3.0.0
+- BREAKING: waypoints parameter now uses `List<Waypoint>` instead of `List<Coord>``
+- Added support for waypoint labels for Apple Maps 
+
 ## 2.5.0+1
 - Update screenshots
 
