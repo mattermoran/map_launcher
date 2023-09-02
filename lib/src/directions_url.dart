@@ -242,10 +242,43 @@ String getMapDirectionsUrl({
         // the TomTom Go app cannot handle the ? at the start of the query
       ).replaceFirst('?', '');
 
+    case MapType.copilot:
+      // Documentation:
+      // https://developer.trimblemaps.com/copilot-navigation/v10-19/feature-guide/advanced-features/url-launch/
+      return Utils.buildUrl(
+        url: 'copilot://mydestination',
+        queryParams: {
+          'type': 'LOCATION',
+          'action': 'GOTO',
+          'name': destinationTitle ?? '',
+          'lat': "${destination.latitude}",
+          'long': "${destination.longitude}",
+          ...(extraParams ?? {}),
+        },
+      );
+
     case MapType.flitsmeister:
       if (Platform.isIOS) {
         return Utils.buildUrl(
           url: 'flitsmeister://',
+          queryParams: {
+            'geo': '${destination.latitude},${destination.longitude}',
+            ...(extraParams ?? {}),
+          },
+        );
+      }
+      return Utils.buildUrl(
+        url: 'geo:${destination.latitude},${destination.longitude}',
+        queryParams: {
+          'q': '${destination.latitude},${destination.longitude}',
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.truckmeister:
+      if (Platform.isIOS) {
+        return Utils.buildUrl(
+          url: 'truckmeister://',
           queryParams: {
             'geo': '${destination.latitude},${destination.longitude}',
             ...(extraParams ?? {}),
