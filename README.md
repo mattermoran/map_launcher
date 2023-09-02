@@ -39,7 +39,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^2.5.0
+  map_launcher: ^3.0.0
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 
@@ -114,7 +114,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 ##### Maps
 
 | `mapType`     | `coords`                                                                 | `title`                                        | `description` | `zoom`       | `extraParams` |
-|---------------|--------------------------------------------------------------------------|------------------------------------------------|---------------|--------------|---------------|
+| ------------- | ------------------------------------------------------------------------ | ---------------------------------------------- | ------------- | ------------ | ------------- |
 | `.google`     | ✓                                                                        | iOS only <br /> see Known Issues section below | ✗             | ✓            | ✓             |
 | `.apple`      | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
 | `.googleGo`   | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
@@ -136,23 +136,23 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 
 ### Show Directions
 
-| option             | type                      | required | default          |
-| ------------------ | ------------------------- | -------- | ---------------- |
-| `mapType`          | `MapType`                 | yes      | -                |
-| `destination`      | `Coords(lat, long)`       | yes      | -                |
-| `destinationTitle` | `String`                  | no       | `'Destination'`  |
-| `origin`           | `Coords(lat, long)`       | no       | Current Location |
-| `originTitle`      | `String`                  | no       | `'Origin'`       |
-| `directionsMode`   | `DirectionsMode`          | no       | `.driving`       |
-| `waypoints`        | `List<Coords(lat, long)>` | no       | `null`           |
-| `extraParams`      | `Map<String, String>`     | no       | `{}`             |
+| option             | type                                 | required | default          |
+| ------------------ | ------------------------------------ | -------- | ---------------- |
+| `mapType`          | `MapType`                            | yes      | -                |
+| `destination`      | `Coords(lat, long)`                  | yes      | -                |
+| `destinationTitle` | `String`                             | no       | `'Destination'`  |
+| `origin`           | `Coords(lat, long)`                  | no       | Current Location |
+| `originTitle`      | `String`                             | no       | `'Origin'`       |
+| `directionsMode`   | `DirectionsMode`                     | no       | `.driving`       |
+| `waypoints`        | `List<Waypoint(lat, long, String?)>` | no       | `null`           |
+| `extraParams`      | `Map<String, String>`                | no       | `{}`             |
 
 ##### Maps
 
 | `mapType`     | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` | `waypoints`                                  | `extraParams` |
-|---------------|---------------|--------------------|------------------------------|---------------|------------------|----------------------------------------------|---------------|
+| ------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- | -------------------------------------------- | ------------- |
 | `.google`     | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓ (up to 8 on iOS and unlimited? on android) | ✓             |
-| `.apple`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.apple`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✓             |
 | `.googleGo`   | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓                                            | ✓             |
 | `.amap`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.baidu`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |

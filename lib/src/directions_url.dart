@@ -11,7 +11,7 @@ String getMapDirectionsUrl({
   Coords? origin,
   String? originTitle,
   DirectionsMode? directionsMode,
-  List<Coords>? waypoints,
+  List<Waypoint>? waypoints,
   Map<String, String>? extraParams,
 }) {
   switch (mapType) {
@@ -26,7 +26,7 @@ String getMapDirectionsUrl({
             '${origin?.latitude},${origin?.longitude}',
           ),
           'waypoints': waypoints
-              ?.map((coords) => '${coords.latitude},${coords.longitude}')
+              ?.map((waypoint) => '${waypoint.latitude},${waypoint.longitude}')
               .join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),
@@ -44,7 +44,7 @@ String getMapDirectionsUrl({
             '${origin?.latitude},${origin?.longitude}',
           ),
           'waypoints': waypoints
-              ?.map((coords) => '${coords.latitude},${coords.longitude}')
+              ?.map((waypoint) => '${waypoint.latitude},${waypoint.longitude}')
               .join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),

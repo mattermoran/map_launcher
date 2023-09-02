@@ -70,7 +70,7 @@ class MapLauncher {
     String? destinationTitle,
     Coords? origin,
     String? originTitle,
-    List<Coords>? waypoints,
+    List<Waypoint>? waypoints,
     DirectionsMode? directionsMode = DirectionsMode.driving,
     Map<String, String>? extraParams,
   }) async {
@@ -100,6 +100,7 @@ class MapLauncher {
           .map((waypoint) => {
                 'latitude': waypoint.latitude.toString(),
                 'longitude': waypoint.longitude.toString(),
+                'title': waypoint.title,
               })
           .toList(),
     };
