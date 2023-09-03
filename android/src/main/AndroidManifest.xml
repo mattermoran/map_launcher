@@ -21,6 +21,8 @@
         <package android:name="com.tomtom.gplay.navapp"/>
         <package android:name="com.tomtom.gplay.navapp.gofleet"/>
         <package android:name="com.sygic.truck"/>
+        <package android:name="nl.flitsmeister" />
+        <package android:name="nl.flitsmeister.flux" />
     </queries>
 
 </manifest>

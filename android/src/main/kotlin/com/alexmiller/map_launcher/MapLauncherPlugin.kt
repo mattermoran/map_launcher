@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
-private enum class MapType { google, googleGo, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand, osmandplus, doubleGis, tencent, here, petal, tomtomgo, copilot, sygic, tomtomgofleet }
+private enum class MapType { google, googleGo, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand, osmandplus, doubleGis, tencent, here, petal, tomtomgo, copilot, sygic, tomtomgofleet, flitsmeister, truckmeister }
 
 private class MapModel(val mapType: MapType, val mapName: String, val packageName: String) {
     fun toMap(): Map<String, String> {
@@ -59,6 +59,8 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             MapModel(MapType.tomtomgofleet, "TomTom Go Fleet", "com.tomtom.gplay.navapp.gofleet"),
             MapModel(MapType.sygic, "Sygic Truck", "com.sygic.truck"),
             MapModel(MapType.copilot, "CoPilot", "com.alk.copilot.mapviewer")
+            MapModel(MapType.flitsmeister, "Flitsmeister", "nl.flitsmeister"),
+            MapModel(MapType.truckmeister, "Truckmeister", "nl.flitsmeister.flux")
     )
 
     private fun getInstalledMaps(): List<MapModel> {
