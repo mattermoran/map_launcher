@@ -289,7 +289,7 @@ String getMapDirectionsUrl({
         );
       }
       return Utils.buildUrl(
-        url: 'q:${destination.latitude},${destination.longitude}',
+        url: 'geo:${destination.latitude},${destination.longitude}', queryParams: {},
       );
 
     case MapType.truckmeister:

@@ -9,19 +9,18 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
 
 private enum class MapType { google, googleGo, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand, osmandplus, doubleGis, tencent, here, petal, tomtomgo, copilot, sygic, tomtomgofleet, flitsmeister, truckmeister }
 
-private class MapModel(val mapType: MapType, val mapName: String, val packageName: String) {
+private class MapModel(val mapType: MapType, val mapName: String, val packageName: String, val urlPrefix: String) {
     fun toMap(): Map<String, String> {
-        return mapOf("mapType" to mapType.name, "mapName" to mapName, "packageName" to packageName)
+        return mapOf("mapType" to mapType.name, "mapName" to mapName, "packageName" to packageName, "urlPrefix" to urlPrefix)
     }
 }
 
 class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
-    private var channel: MethodChannel? = null
-    private var context: Context? = null
+    private lateinit var channel: MethodChannel
+    private lateinit var context: Context
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "map_launcher")
@@ -30,8 +29,8 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     companion object {
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
+        fun registerWith(
+                @NonNull registrar: io.flutter.plugin.common.PluginRegistry.Registrar) {
             val mapLauncherPlugin = MapLauncherPlugin()
             mapLauncherPlugin.channel = MethodChannel(registrar.messenger(), "map_launcher")
             mapLauncherPlugin.context = registrar.context()
@@ -40,34 +39,44 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     private val maps = listOf(
-            MapModel(MapType.google, "Google Maps", "com.google.android.apps.maps"),
-            MapModel(MapType.googleGo, "Google Maps Go", "com.google.android.apps.mapslite"),
-            MapModel(MapType.amap, "Amap", "com.autonavi.minimap"),
-            MapModel(MapType.baidu, "Baidu Maps", "com.baidu.BaiduMap"),
-            MapModel(MapType.waze, "Waze", "com.waze"),
-            MapModel(MapType.yandexNavi, "Yandex Navigator", "ru.yandex.yandexnavi"),
-            MapModel(MapType.yandexMaps, "Yandex Maps", "ru.yandex.yandexmaps"),
-            MapModel(MapType.citymapper, "Citymapper", "com.citymapper.app.release"),
-            MapModel(MapType.mapswithme, "MAPS.ME", "com.mapswithme.maps.pro"),
-            MapModel(MapType.osmand, "OsmAnd", "net.osmand"),
-            MapModel(MapType.osmandplus, "OsmAnd+", "net.osmand.plus"),
-            MapModel(MapType.doubleGis, "2GIS", "ru.dublgis.dgismobile"),
-            MapModel(MapType.tencent, "Tencent (QQ Maps)", "com.tencent.map"),
-            MapModel(MapType.here, "HERE WeGo", "com.here.app.maps"),
-            MapModel(MapType.petal, "Petal Maps", "com.huawei.maps.app"),
-            MapModel(MapType.tomtomgo, "TomTom Go", "com.tomtom.gplay.navapp"),
-            MapModel(MapType.tomtomgofleet, "TomTom Go Fleet", "com.tomtom.gplay.navapp.gofleet"),
-            MapModel(MapType.sygic, "Sygic Truck", "com.sygic.truck"),
-            MapModel(MapType.copilot, "CoPilot", "com.alk.copilot.mapviewer")
-            MapModel(MapType.flitsmeister, "Flitsmeister", "nl.flitsmeister"),
-            MapModel(MapType.truckmeister, "Truckmeister", "nl.flitsmeister.flux")
+            MapModel(MapType.google, "Google Maps", "com.google.android.apps.maps", "geo://"),
+            MapModel(MapType.googleGo, "Google Maps Go", "com.google.android.apps.mapslite", "geo://"),
+            MapModel(MapType.amap, "Amap", "com.autonavi.minimap", "iosamap://"),
+            MapModel(MapType.baidu, "Baidu Maps", "com.baidu.BaiduMap", "baidumap://"),
+            MapModel(MapType.waze, "Waze", "com.waze", "waze://"),
+            MapModel(MapType.yandexNavi, "Yandex Navigator", "ru.yandex.yandexnavi", "yandexnavi://"),
+            MapModel(MapType.yandexMaps, "Yandex Maps", "ru.yandex.yandexmaps", "yandexmaps://"),
+            MapModel(MapType.citymapper, "Citymapper", "com.citymapper.app.release", "citymapper://"),
+            MapModel(MapType.mapswithme, "MAPS.ME", "com.mapswithme.maps.pro", "mapswithme://"),
+            MapModel(MapType.osmand, "OsmAnd", "net.osmand", "osmandmaps://"),
+            MapModel(MapType.osmandplus, "OsmAnd+", "net.osmand.plus", "osmandmaps://"),
+            MapModel(MapType.doubleGis, "2GIS", "ru.dublgis.dgismobile", "dgis://"),
+            MapModel(MapType.tencent, "Tencent (QQ Maps)", "com.tencent.map", "qqmap://"),
+            MapModel(MapType.here, "HERE WeGo", "com.here.app.maps", "here-location://"),
+            MapModel(MapType.petal, "Petal Maps", "com.huawei.maps.app", "petalmaps://"),
+            MapModel(MapType.tomtomgo, "TomTom Go", "com.tomtom.gplay.navapp", "tomtomgo://"),
+            MapModel(MapType.tomtomgofleet, "TomTom Go Fleet", "com.tomtom.gplay.navapp.gofleet", "tomtomgofleet://"),
+            MapModel(MapType.sygic, "Sygic Truck", "com.sygic.truck", "com.sygic.aura://"),
+            MapModel(MapType.copilot, "CoPilot", "com.alk.copilot.mapviewer", "copilot://"),
+            MapModel(MapType.flitsmeister, "Flitsmeister", "nl.flitsmeister", "flitsmeister://"),
+            MapModel(MapType.truckmeister, "Truckmeister", "nl.flitsmeister.flux", "truckmeister://")
     )
 
     private fun getInstalledMaps(): List<MapModel> {
-        val installedApps = context?.packageManager?.getInstalledApplications(0) ?: return listOf()
-        return maps.filter { map -> installedApps.any { app -> app.packageName == map.packageName } }
+        return maps.filter { map -> canOpenIntent(map) }
     }
 
+    private fun canOpenIntent(map: MapModel): Boolean {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("${map.urlPrefix}test"))
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.setPackage(map.packageName)
+
+        intent.resolveActivity(context.packageManager)?.let {
+            return true;
+        }
+
+        return false;
+    }
 
     private fun isMapAvailable(type: String): Boolean {
         val installedMaps = getInstalledMaps()
@@ -75,7 +84,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     private fun launchGoogleMaps(url: String) {
-        context?.let {
+        context.let {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             if (intent.resolveActivity(it.packageManager) != null) {
@@ -85,7 +94,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     private fun launchMap(mapType: MapType, url: String, result: Result) {
-        context?.let {
+        context.let {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             val foundMap = maps.find { map -> map.mapType == mapType }
@@ -96,7 +105,6 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
         }
         result.success(null)
     }
-
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
@@ -125,9 +133,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        channel?.setMethodCallHandler(null)
-        channel = null
-        context = null
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        channel.setMethodCallHandler(null)
     }
 }
