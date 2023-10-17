@@ -4,35 +4,33 @@ import MapKit
 
 
 private enum MapType: String {
-  case apple
-  case google
-  case amap
-  case baidu
-  case waze
-  case yandexNavi
-  case yandexMaps
-  case citymapper
-  case mapswithme
-  case osmand
-  case doubleGis
-  case tencent
-  case here
-  case tomtomgo
-  case tomtomgofleet
-  case copilot
-  case sygic
-  case flitsmeister
-  case truckmeister
+    case apple
+    case google
+    case amap
+    case baidu
+    case waze
+    case yandexNavi
+    case yandexMaps
+    case citymapper
+    case mapswithme
+    case osmand
+    case doubleGis
+    case tencent
+    case here
+    case tomtomgo
+    case tomtomgofleet
+    case copilot
+    case sygic
 
-  func type() -> String {
-    return self.rawValue
-  }
+    func type() -> String {
+        return self.rawValue
+    }
 }
 
 private class Map {
-  let mapName: String;
-  let mapType: MapType;
-  let urlPrefix: String?;
+    let mapName: String;
+    let mapType: MapType;
+    let urlPrefix: String?;
 
 
     init(mapName: String, mapType: MapType, urlPrefix: String?) {
@@ -42,11 +40,11 @@ private class Map {
     }
 
     func toMap() -> [String:String] {
-    return [
-      "mapName": mapName,
-      "mapType": mapType.type(),
-    ]
-  }
+        return [
+            "mapName": mapName,
+            "mapType": mapType.type(),
+        ]
+    }
 }
 
 private let maps: [Map] = [
@@ -67,9 +65,6 @@ private let maps: [Map] = [
     Map(mapName: "TomTom Go Fleet", mapType: MapType.tomtomgofleet, urlPrefix: "tomtomgofleet://"),
     Map(mapName: "Sygic Truck", mapType: MapType.sygic, urlPrefix: "com.sygic.aura://"),
     Map(mapName: "CoPilot", mapType: MapType.copilot, urlPrefix: "copilot://")
-// TODO: These are disabled while we figure out how to call them properly
-//     Map(mapName: "Flitsmeister", mapType: MapType.flitsmeister, urlPrefix: "flitsmeister://"),
-//     Map(mapName: "Truckmeister", mapType: MapType.truckmeister, urlPrefix: "truckmeister://")
 ]
 
 private func getMapByRawMapType(type: String) -> Map? {
@@ -155,7 +150,7 @@ private func showDirections(mapType: MapType, url: String, destinationTitle: Str
 private func isMapAvailable(map: Map?) -> Bool {
     // maptype is not available on iOS
     guard let map = map else {
-      return false
+        return false
     }
     if map.mapType == MapType.apple {
         return true
@@ -165,79 +160,79 @@ private func isMapAvailable(map: Map?) -> Bool {
 
 
 public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
-  public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "map_launcher", binaryMessenger: registrar.messenger())
-    let instance = SwiftMapLauncherPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
-  }
-
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    switch call.method {
-    case "getInstalledMaps":
-      result(maps.filter({ isMapAvailable(map: $0) }).map({ $0.toMap() }))
-
-    case "showMarker":
-      let args = call.arguments as! NSDictionary
-      let mapType = args["mapType"] as! String
-      let url = args["url"] as! String
-      let title = args["title"] as! String
-      let latitude = args["latitude"] as! String
-      let longitude = args["longitude"] as! String
-
-      let map = getMapByRawMapType(type: mapType)
-      if (!isMapAvailable(map: map)) {
-        result(FlutterError(code: "MAP_NOT_AVAILABLE", message: "Map is not installed on a device", details: nil))
-        return;
-      }
-
-      showMarker(mapType: MapType(rawValue: mapType)!, url: url, title: title, latitude: latitude, longitude: longitude)
-      result(nil)
-
-    case "showDirections":
-      let args = call.arguments as! NSDictionary
-      let mapType = args["mapType"] as! String
-      let url = args["url"] as! String
-
-      let destinationTitle = args["destinationTitle"] as? String
-      let destinationLatitude = args["destinationLatitude"] as! String
-      let destinationLongitude = args["destinationLongitude"] as! String
-
-      let originTitle = args["originTitle"] as? String
-      let originLatitude = args["originLatitude"] as? String
-      let originLongitude = args["originLongitude"] as? String
-
-      let directionsMode = args["directionsMode"] as? String
-
-      let waypoints = args["waypoints"] as? [[String: String?]]
-
-      let map = getMapByRawMapType(type: mapType)
-      if (!isMapAvailable(map: map)) {
-        result(FlutterError(code: "MAP_NOT_AVAILABLE", message: "Map is not installed on a device", details: nil))
-        return;
-      }
-
-      showDirections(
-        mapType: MapType(rawValue: mapType)!,
-        url: url,
-        destinationTitle: destinationTitle,
-        destinationLatitude: destinationLatitude,
-        destinationLongitude: destinationLongitude,
-        originTitle: originTitle,
-        originLatitude: originLatitude,
-        originLongitude: originLongitude,
-        directionsMode: directionsMode,
-        waypoints: waypoints
-      )
-      result(nil)
-
-    case "isMapAvailable":
-      let args = call.arguments as! NSDictionary
-      let mapType = args["mapType"] as! String
-      let map = getMapByRawMapType(type: mapType)
-      result(isMapAvailable(map: map))
-
-    default:
-      result(FlutterMethodNotImplemented)
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        let channel = FlutterMethodChannel(name: "map_launcher", binaryMessenger: registrar.messenger())
+        let instance = SwiftMapLauncherPlugin()
+        registrar.addMethodCallDelegate(instance, channel: channel)
     }
-  }
+
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        switch call.method {
+        case "getInstalledMaps":
+            result(maps.filter({ isMapAvailable(map: $0) }).map({ $0.toMap() }))
+
+        case "showMarker":
+            let args = call.arguments as! NSDictionary
+            let mapType = args["mapType"] as! String
+            let url = args["url"] as! String
+            let title = args["title"] as! String
+            let latitude = args["latitude"] as! String
+            let longitude = args["longitude"] as! String
+
+            let map = getMapByRawMapType(type: mapType)
+            if (!isMapAvailable(map: map)) {
+                result(FlutterError(code: "MAP_NOT_AVAILABLE", message: "Map is not installed on a device", details: nil))
+                return;
+            }
+
+            showMarker(mapType: MapType(rawValue: mapType)!, url: url, title: title, latitude: latitude, longitude: longitude)
+            result(nil)
+
+        case "showDirections":
+            let args = call.arguments as! NSDictionary
+            let mapType = args["mapType"] as! String
+            let url = args["url"] as! String
+
+            let destinationTitle = args["destinationTitle"] as? String
+            let destinationLatitude = args["destinationLatitude"] as! String
+            let destinationLongitude = args["destinationLongitude"] as! String
+
+            let originTitle = args["originTitle"] as? String
+            let originLatitude = args["originLatitude"] as? String
+            let originLongitude = args["originLongitude"] as? String
+
+            let directionsMode = args["directionsMode"] as? String
+
+            let waypoints = args["waypoints"] as? [[String: String?]]
+
+            let map = getMapByRawMapType(type: mapType)
+            if (!isMapAvailable(map: map)) {
+                result(FlutterError(code: "MAP_NOT_AVAILABLE", message: "Map is not installed on a device", details: nil))
+                return;
+            }
+
+            showDirections(
+                mapType: MapType(rawValue: mapType)!,
+                url: url,
+                destinationTitle: destinationTitle,
+                destinationLatitude: destinationLatitude,
+                destinationLongitude: destinationLongitude,
+                originTitle: originTitle,
+                originLatitude: originLatitude,
+                originLongitude: originLongitude,
+                directionsMode: directionsMode,
+                waypoints: waypoints
+            )
+            result(nil)
+
+        case "isMapAvailable":
+            let args = call.arguments as! NSDictionary
+            let mapType = args["mapType"] as! String
+            let map = getMapByRawMapType(type: mapType)
+            result(isMapAvailable(map: map))
+
+        default:
+            result(FlutterMethodNotImplemented)
+        }
+    }
 }
