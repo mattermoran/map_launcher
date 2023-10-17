@@ -63,34 +63,14 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     )
 
     private fun getInstalledMaps(): List<MapModel> {
-        return maps.filter { map -> canOpenIntent(map) }
-    }
-
-    private fun canOpenIntent(map: MapModel): Boolean {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("${map.urlPrefix}test"))
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.setPackage(map.packageName)
-
-        intent.resolveActivity(context.packageManager)?.let {
-            return true;
+        return maps.filter { map ->
+            context.packageManager?.getLaunchIntentForPackage(map.packageName) != null
         }
-
-        return false;
     }
 
     private fun isMapAvailable(type: String): Boolean {
         val installedMaps = getInstalledMaps()
         return installedMaps.any { map -> map.mapType.name == type }
-    }
-
-    private fun launchGoogleMaps(url: String) {
-        context.let {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            if (intent.resolveActivity(it.packageManager) != null) {
-                it.startActivity(intent)
-            }
-        }
     }
 
     private fun launchMap(mapType: MapType, url: String, result: Result) {
