@@ -17,21 +17,6 @@ class MapLauncher {
     );
   }
 
-  @Deprecated('use showMarker instead')
-  static Future<dynamic> launchMap({
-    required MapType mapType,
-    required Coords coords,
-    required String title,
-    String? description,
-  }) {
-    return showMarker(
-      mapType: mapType,
-      coords: coords,
-      title: title,
-      description: description,
-    );
-  }
-
   /// Opens map app specified in [mapType]
   /// and shows marker at [coords]
   static Future<dynamic> showMarker({

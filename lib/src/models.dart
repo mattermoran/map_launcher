@@ -3,28 +3,77 @@ import 'package:map_launcher/src/utils.dart';
 
 /// Defines the map types supported by this plugin
 enum MapType {
+  /// Apple Maps
+  /// Only available on iOS
   apple,
+
+  /// Google Maps
   google,
+
+  /// Google Maps Go
+  /// Only available on Android
   googleGo,
+
+  /// Amap (Gaode Maps)
   amap,
+
+  /// Baidu Maps
   baidu,
+
+  /// Waze
   waze,
+
+  /// Yandex Maps
   yandexMaps,
+
+  /// Yandex Navi
   yandexNavi,
+
+  /// Citymapper
   citymapper,
+
+  /// Maps.me
   mapswithme,
+
+  /// OsmAnd
   osmand,
+
+  /// OsmAnd+
+  /// Only available on Android
   osmandplus,
+
+  /// DoubleGis
   doubleGis,
+
+  /// Tencent (QQ Maps)
   tencent,
+
+  /// HERE WeGo
   here,
+
+  /// Petal Maps
+  /// Only available on Android
   petal,
+
+  /// TomTom Go
   tomtomgo,
-  copilot,
+
+  /// TomTom Go Fleet
   tomtomgofleet,
-  sygic,
+
+  /// CoPilot
+  copilot,
+
+  /// Sygic Truck
+  sygicTruck,
+
+  /// Flitsmeister
+  /// Only available on Android
   flitsmeister,
-  truckmeister
+
+  /// Truckmeister
+  /// Only available on Android
+  truckmeister,
 }
 
 /// Defines the supported modes of transportation for [showDirections]
@@ -48,7 +97,8 @@ class Waypoint {
   final Coords coords;
   final String? title;
 
-  Waypoint(double latitude, double longitude, [this.title]) : coords = Coords(latitude, longitude);
+  Waypoint(double latitude, double longitude, [this.title])
+      : coords = Coords(latitude, longitude);
 
   double get latitude => coords.latitude;
   double get longitude => coords.longitude;
@@ -68,7 +118,8 @@ class AvailableMap {
 
   /// Parses json object to [AvailableMap]
   static AvailableMap? fromJson(json) {
-    final MapType? mapType = Utils.enumFromString(MapType.values, json['mapType']);
+    final MapType? mapType =
+        Utils.enumFromString(MapType.values, json['mapType']);
     if (mapType != null) {
       return AvailableMap(
         mapName: json['mapName'],

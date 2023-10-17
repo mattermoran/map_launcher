@@ -267,7 +267,7 @@ String getMapDirectionsUrl({
         },
       );
 
-    case MapType.sygic:
+    case MapType.sygicTruck:
       // Documentation:
       // https://www.sygic.com/developers/professional-navigation-sdk/introduction
       return Utils.buildUrl(
