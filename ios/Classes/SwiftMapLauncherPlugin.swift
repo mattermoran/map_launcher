@@ -138,7 +138,7 @@ private func showDirections(mapType: MapType, url: String, destinationTitle: Str
             let origin = getMapItem(latitude: originLatitude!, longitude: originLongitude!, name: originTitle ?? "Origin")
             return origin
         }
-        
+
         let waypointMapItems = waypoints == nil ? [MKMapItem]() : waypoints!.map { getMapItem(latitude: $0["latitude"]!!, longitude: $0["longitude"]!!, name: $0["title"] as? String) }
 
         MKMapItem.openMaps(
@@ -191,6 +191,7 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
       }
 
       showMarker(mapType: MapType(rawValue: mapType)!, url: url, title: title, latitude: latitude, longitude: longitude)
+      result(nil)
 
     case "showDirections":
       let args = call.arguments as! NSDictionary
@@ -227,6 +228,7 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
         directionsMode: directionsMode,
         waypoints: waypoints
       )
+      result(nil)
 
     case "isMapAvailable":
       let args = call.arguments as! NSDictionary
@@ -235,7 +237,7 @@ public class SwiftMapLauncherPlugin: NSObject, FlutterPlugin {
       result(isMapAvailable(map: map))
 
     default:
-      print("method does not exist")
+      result(FlutterMethodNotImplemented)
     }
   }
 }
