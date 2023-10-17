@@ -1,3 +1,7 @@
+## 3.0.1
+- Rename Sygic to Sygic Truck
+- Remove deprecated `launchMap` method. use `showMarker` instead
+
 ## 3.0.0
 BREAKING: waypoints parameter now uses `List<Waypoint>` instead of `List<Coord>``
 - Add CoPilot map (@tjeffree)
@@ -6,7 +10,6 @@ BREAKING: waypoints parameter now uses `List<Waypoint>` instead of `List<Coord>`
 - Add waypoint labels for Apple Maps (@manafire)
 - Add support for gradle 8 (@m-derakhshi)
 - Fix future not completing on iOS
-
 
 ## 2.5.0+1
 - Update screenshots
