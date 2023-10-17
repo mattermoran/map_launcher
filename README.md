@@ -31,9 +31,11 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/here.svg" width="25"> HERE WeGo
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/petal.svg" width="25"> Petal Maps (Android only)
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tomtomgo.svg" width="25"> TomTom Go
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tomtomgofleet.svg" width="25"> TomTom Go Fleet
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/copilot.svg" width="25"> CoPilot
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/flitsmeister.svg" width="25"> Flitsmeister
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/truckmeister.svg" width="25"> Truckmeister
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/flitsmeister.svg" width="25"> Flitsmeister (Android only)
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/truckmeister.svg" width="25"> Truckmeister (Android only)
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/sygic.svg" width="25"> Sygic Truck
 
 ## Get started
 
@@ -64,8 +66,7 @@ dependencies:
     <string>here-location</string>
     <string>tomtomgo</string>
     <string>copilot</string>
-    <string>flitsmeister</string>
-    <string>truckmeister</string>
+    <string>com.sygic.aura</string>
 </array>
 ```
 
@@ -139,6 +140,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.copilot`      | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
 | `.flitsmeister` | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✗             |
 | `.truckmeister` | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✗             |
+| `.sygic`        | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✗             |
 
 ### Show Directions
 
@@ -177,6 +179,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.copilot`      | ✓             | ✓                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
 | `.flitsmeister` | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✗             |
 | `.truckmeister` | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✗             |
+| `.sygic`        | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✗             |
 
 ### Extra Params
 It's possible to pass some map specific query params like api keys etc using `extraParams` option

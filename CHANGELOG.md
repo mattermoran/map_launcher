@@ -1,6 +1,12 @@
 ## 3.0.0
-- BREAKING: waypoints parameter now uses `List<Waypoint>` instead of `List<Coord>``
-- Added support for waypoint labels for Apple Maps 
+BREAKING: waypoints parameter now uses `List<Waypoint>` instead of `List<Coord>``
+- Add CoPilot map (@tjeffree)
+- Add Go Fleet and Sygic Truck maps (@amrahmed242)
+- Add Flitsmeister and Truckmeister (@robinbonnes & @frankvollebregt)
+- Add waypoint labels for Apple Maps (@manafire)
+- Add support for gradle 8 (@m-derakhshi)
+- Fix future not completing on iOS
+
 
 ## 2.5.0+1
 - Update screenshots
