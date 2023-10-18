@@ -60,7 +60,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             MapModel(MapType.copilot, "CoPilot", "com.alk.copilot.mapviewer", "copilot://"),
             MapModel(MapType.flitsmeister, "Flitsmeister", "nl.flitsmeister", "flitsmeister://"),
             MapModel(MapType.truckmeister, "Truckmeister", "nl.flitsmeister.flux", "truckmeister://"),
-            MapModel(MapType.mappls, "Mappls MapmyIndia", "com.mmi.maps", "mapmyindia://")
+            MapModel(MapType.mappls, "Mappls MapmyIndia", "com.mmi.maps", "mappls://")
     )
 
     private fun getInstalledMaps(): List<MapModel> {
