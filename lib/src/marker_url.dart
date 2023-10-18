@@ -19,7 +19,7 @@ String getMapMarkerUrl({
         url: Platform.isIOS ? 'comgooglemaps://' : 'geo:0,0',
         queryParams: {
           'q':
-              '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
+          '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
           'zoom': '$zoomLevel',
           ...(extraParams ?? {}),
         },
@@ -30,11 +30,17 @@ String getMapMarkerUrl({
         url: 'http://maps.google.com/maps',
         queryParams: {
           'q':
-              '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
+          '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
           'zoom': '$zoomLevel',
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.mappls:
+      return Utils.buildUrl(url:
+      "https://mappls.com/location/${coords.latitude},${coords.longitude}", queryParams: {
+
+      });
 
     case MapType.amap:
       return Utils.buildUrl(
@@ -168,7 +174,7 @@ String getMapMarkerUrl({
       // so falling back to directions
       return Utils.buildUrl(
         url:
-            'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.longitude},${coords.latitude}',
+        'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.longitude},${coords.latitude}',
         queryParams: {
           ...(extraParams ?? {}),
         },
@@ -179,7 +185,7 @@ String getMapMarkerUrl({
         url: 'qqmap://map/marker',
         queryParams: {
           'marker':
-              'coord:${coords.latitude},${coords.longitude}${title != null ? ';title:$title' : ''}',
+          'coord:${coords.latitude},${coords.longitude}${title != null ? ';title:$title' : ''}',
           ...(extraParams ?? {}),
         },
       );
@@ -187,7 +193,7 @@ String getMapMarkerUrl({
     case MapType.here:
       return Utils.buildUrl(
         url:
-            'https://share.here.com/l/${coords.latitude},${coords.longitude},$title',
+        'https://share.here.com/l/${coords.latitude},${coords.longitude},$title',
         queryParams: {
           'z': '$zoomLevel',
           ...(extraParams ?? {}),
@@ -219,14 +225,14 @@ String getMapMarkerUrl({
         url: 'geo:${coords.latitude},${coords.longitude}',
         queryParams: {
           'q':
-              '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
+          '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
           ...(extraParams ?? {}),
         },
       );
 
     case MapType.copilot:
-      // Documentation:
-      // https://developer.trimblemaps.com/copilot-navigation/v10-19/feature-guide/advanced-features/url-launch/
+    // Documentation:
+    // https://developer.trimblemaps.com/copilot-navigation/v10-19/feature-guide/advanced-features/url-launch/
       return Utils.buildUrl(
         url: 'copilot://mydestination',
         queryParams: {
@@ -243,17 +249,17 @@ String getMapMarkerUrl({
         url: 'geo:${coords.latitude},${coords.longitude}',
         queryParams: {
           'q':
-              '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
+          '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
           ...(extraParams ?? {}),
         },
       );
 
     case MapType.sygicTruck:
-      // Documentation:
-      // https://www.sygic.com/developers/professional-navigation-sdk/introduction
+    // Documentation:
+    // https://www.sygic.com/developers/professional-navigation-sdk/introduction
       return Utils.buildUrl(
         url:
-            'com.sygic.aura://coordinate|${coords.longitude}|${coords.latitude}|show',
+        'com.sygic.aura://coordinate|${coords.longitude}|${coords.latitude}|show',
         queryParams: {
           ...(extraParams ?? {}),
         },

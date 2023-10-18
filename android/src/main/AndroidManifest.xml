@@ -23,6 +23,7 @@
         <package android:name="com.sygic.truck"/>
         <package android:name="nl.flitsmeister" />
         <package android:name="nl.flitsmeister.flux" />
+        <package android:name="com.mmi.maps" />
     </queries>
 
 </manifest>

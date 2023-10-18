@@ -74,6 +74,9 @@ enum MapType {
   /// Truckmeister
   /// Only available on Android
   truckmeister,
+
+  /// Mappls MapmyIndia
+  mappls
 }
 
 /// Defines the supported modes of transportation for [showDirections]
@@ -119,7 +122,7 @@ class AvailableMap {
   /// Parses json object to [AvailableMap]
   static AvailableMap? fromJson(json) {
     final MapType? mapType =
-        Utils.enumFromString(MapType.values, json['mapType']);
+    Utils.enumFromString(MapType.values, json['mapType']);
     if (mapType != null) {
       return AvailableMap(
         mapName: json['mapName'],

@@ -10,7 +10,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
-private enum class MapType { google, googleGo, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand, osmandplus, doubleGis, tencent, here, petal, tomtomgo, copilot, sygicTruck, tomtomgofleet, flitsmeister, truckmeister }
+private enum class MapType { google, googleGo, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand, osmandplus, doubleGis, tencent, here, petal, tomtomgo, copilot, sygicTruck, tomtomgofleet, flitsmeister, truckmeister, mappls }
 
 private class MapModel(val mapType: MapType, val mapName: String, val packageName: String, val urlPrefix: String) {
     fun toMap(): Map<String, String> {
@@ -30,7 +30,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
 
     companion object {
         fun registerWith(
-                @NonNull registrar: io.flutter.plugin.common.PluginRegistry.Registrar) {
+            @NonNull registrar: io.flutter.plugin.common.PluginRegistry.Registrar) {
             val mapLauncherPlugin = MapLauncherPlugin()
             mapLauncherPlugin.channel = MethodChannel(registrar.messenger(), "map_launcher")
             mapLauncherPlugin.context = registrar.context()
@@ -59,7 +59,8 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             MapModel(MapType.sygicTruck, "Sygic Truck", "com.sygic.truck", "com.sygic.aura://"),
             MapModel(MapType.copilot, "CoPilot", "com.alk.copilot.mapviewer", "copilot://"),
             MapModel(MapType.flitsmeister, "Flitsmeister", "nl.flitsmeister", "flitsmeister://"),
-            MapModel(MapType.truckmeister, "Truckmeister", "nl.flitsmeister.flux", "truckmeister://")
+            MapModel(MapType.truckmeister, "Truckmeister", "nl.flitsmeister.flux", "truckmeister://"),
+            MapModel(MapType.mappls, "Mappls MapmyIndia", "com.mmi.maps", "mapmyindia://")
     )
 
     private fun getInstalledMaps(): List<MapModel> {
