@@ -82,7 +82,7 @@ String getMapDirectionsUrl({
         url: 'baidumap://map/direction',
         queryParams: {
           'destination':
-              'name: ${destinationTitle ?? 'Destination'}|latlng:${destination.latitude},${destination.longitude}',
+          'name: ${destinationTitle ?? 'Destination'}|latlng:${destination.latitude},${destination.longitude}',
           'origin': Utils.nullOrValue(
             origin,
             'name: ${originTitle ?? 'Origin'}|latlng:${origin?.latitude},${origin?.longitude}',
@@ -133,21 +133,21 @@ String getMapDirectionsUrl({
       return 'osmand.navigation:q=${destination.latitude},${destination.longitude}';
 
     case MapType.mapswithme:
-      // Couldn't get //route to work properly as of 2020/07
-      // so just using the marker method for now
-      // return Utils.buildUrl(
-      //   url: 'mapsme://route',
-      //   queryParams: {
-      //     'dll': '${destination.latitude},${destination.longitude}',
-      //     'daddr': destinationTitle,
-      //     'sll': Utils.nullOrValue(
-      //       origin,
-      //       '${origin?.latitude},${origin?.longitude}',
-      //     ),
-      //     'saddr': originTitle,
-      //     'type': Utils.getMapsMeDirectionsMode(directionsMode),
-      //   },
-      // );
+    // Couldn't get //route to work properly as of 2020/07
+    // so just using the marker method for now
+    // return Utils.buildUrl(
+    //   url: 'mapsme://route',
+    //   queryParams: {
+    //     'dll': '${destination.latitude},${destination.longitude}',
+    //     'daddr': destinationTitle,
+    //     'sll': Utils.nullOrValue(
+    //       origin,
+    //       '${origin?.latitude},${origin?.longitude}',
+    //     ),
+    //     'saddr': originTitle,
+    //     'type': Utils.getMapsMeDirectionsMode(directionsMode),
+    //   },
+    // );
       return Utils.buildUrl(
         url: 'mapsme://map',
         queryParams: {
@@ -163,7 +163,7 @@ String getMapDirectionsUrl({
         url: 'yandexmaps://maps.yandex.com/',
         queryParams: {
           'rtext':
-              '${origin?.latitude},${origin?.longitude}~${destination.latitude},${destination.longitude}',
+          '${origin?.latitude},${origin?.longitude}~${destination.latitude},${destination.longitude}',
           'rtt': Utils.getYandexMapsDirectionsMode(directionsMode),
           ...(extraParams ?? {}),
         },
@@ -183,7 +183,7 @@ String getMapDirectionsUrl({
     case MapType.doubleGis:
       return Utils.buildUrl(
         url:
-            'dgis://2gis.ru/routeSearch/rsType/${Utils.getDoubleGisDirectionsMode(directionsMode)}/${origin == null ? '' : 'from/${origin.longitude},${origin.latitude}/'}to/${destination.longitude},${destination.latitude}',
+        'dgis://2gis.ru/routeSearch/rsType/${Utils.getDoubleGisDirectionsMode(directionsMode)}/${origin == null ? '' : 'from/${origin.longitude},${origin.latitude}/'}to/${destination.longitude},${destination.latitude}',
         queryParams: {
           ...(extraParams ?? {}),
         },
@@ -205,7 +205,7 @@ String getMapDirectionsUrl({
     case MapType.here:
       return Utils.buildUrl(
         url:
-            'https://share.here.com/r/${origin?.latitude},${origin?.longitude},$originTitle/${destination.latitude},${destination.longitude}',
+        'https://share.here.com/r/${origin?.latitude},${origin?.longitude},$originTitle/${destination.latitude},${destination.longitude}',
         queryParams: {
           'm': Utils.getHereDirectionsMode(directionsMode),
           ...(extraParams ?? {}),
@@ -215,7 +215,7 @@ String getMapDirectionsUrl({
     case MapType.petal:
       return Utils.buildUrl(url: 'petalmaps://route', queryParams: {
         'daddr':
-            '${destination.latitude},${destination.longitude} (${destinationTitle ?? 'Destination'})',
+        '${destination.latitude},${destination.longitude} (${destinationTitle ?? 'Destination'})',
         'saddr': Utils.nullOrValue(
           origin,
           '${origin?.latitude},${origin?.longitude} (${originTitle ?? 'Origin'})',
@@ -244,8 +244,8 @@ String getMapDirectionsUrl({
       ).replaceFirst('?', '');
 
     case MapType.copilot:
-      // Documentation:
-      // https://developer.trimblemaps.com/copilot-navigation/v10-19/feature-guide/advanced-features/url-launch/
+    // Documentation:
+    // https://developer.trimblemaps.com/copilot-navigation/v10-19/feature-guide/advanced-features/url-launch/
       return Utils.buildUrl(
         url: 'copilot://mydestination',
         queryParams: {
@@ -268,11 +268,11 @@ String getMapDirectionsUrl({
       );
 
     case MapType.sygicTruck:
-      // Documentation:
-      // https://www.sygic.com/developers/professional-navigation-sdk/introduction
+    // Documentation:
+    // https://www.sygic.com/developers/professional-navigation-sdk/introduction
       return Utils.buildUrl(
         url:
-            'com.sygic.aura://coordinate|${destination.longitude}|${destination.latitude}|drive',
+        'com.sygic.aura://coordinate|${destination.longitude}|${destination.latitude}|drive',
         queryParams: {
           ...(extraParams ?? {}),
         },
@@ -310,5 +310,52 @@ String getMapDirectionsUrl({
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.mappls:
+      var query = "";
+      if (origin != null) {
+        query = query +
+            "${origin.latitude},${origin.longitude}${originTitle != null ? ",$originTitle" : ""}";
+      }
+      var viaPoints = "";
+      if (waypoints != null) {
+        waypoints.forEach((element) {
+          if (viaPoints.isNotEmpty) {
+            viaPoints = viaPoints + ";";
+          }
+          viaPoints = viaPoints +
+              "${element.latitude},${element.longitude}${element.title != null ? ",${element.title}" : ""}";
+        });
+      }
+      if (query.isNotEmpty) {
+        query = query + ";";
+      }
+      query = query +
+          "${destination.latitude},${destination.longitude}${destinationTitle != null ? ",$destinationTitle" : ""}";
+
+      var mode = 'driving';
+      if(directionsMode != null) {
+        switch(directionsMode) {
+          case DirectionsMode.driving:
+            mode = 'driving';
+            break;
+
+          case DirectionsMode.walking:
+            mode = 'walking';
+            break;
+
+          case DirectionsMode.bicycling:
+            mode = 'biking';
+            break;
+
+          case DirectionsMode.transit:
+            mode = 'trucking';
+            break;
+        }
+      }
+
+      return Utils.buildUrl(
+          url: "https://mappls.com/navigation",
+          queryParams: {'places': query, 'viaPoints': viaPoints, 'mode': mode});
   }
 }
