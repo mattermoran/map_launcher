@@ -31,6 +31,17 @@ android {
 
     compileSdkVersion 33
 
+    def javaVersion = JavaVersion.VERSION_1_8
+
+    compileOptions {
+        sourceCompatibility javaVersion
+        targetCompatibility javaVersion
+    }
+
+    kotlinOptions {
+        jvmTarget = "${javaVersion}"
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
