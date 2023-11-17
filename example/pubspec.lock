@@ -58,10 +58,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_svg
-      sha256: "817a28a8f1ead5ff55a3f682228985824395ec92ff9fe4aafcea845ea176d791"
+      sha256: "4d557c7923add388b674af1691498e13df66b1997dd0c5234f062dfe7585f544"
       url: "https://pub.dev"
     source: hosted
-    version: "0.21.0"
+    version: "0.21.0+1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -110,26 +110,26 @@ packages:
     dependency: transitive
     description:
       name: path_drawing
-      sha256: "39cff9f4ac86a340cfc245848ce0a7c486d04bcbdba29d64557d01f175e0fa93"
+      sha256: "3bdd251dae9ffaef944450b73f168610db7e968e7b20daf0c3907f8b4aafc8a2"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.0"
+    version: "0.5.1+1"
   path_parsing:
     dependency: transitive
     description:
       name: path_parsing
-      sha256: "9038b016bc9b786a935907aadb8334987edc359e08be3265600285d301ad4a49"
+      sha256: ee5c47c1058ad66b4a41746ec3996af9593d0858872807bcd64ac118f0700337
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0"
+    version: "0.2.1"
   petitparser:
     dependency: transitive
     description:
       name: petitparser
-      sha256: "85e8f8b118afcccf948a9844d199e56260117400bd9b9982d87bf1d62ebc1690"
+      sha256: cb3798bef7fc021ac45b308f4b51208a152792445cce0448c9a4ba5879dd8750
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.0"
+    version: "5.4.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -203,10 +203,10 @@ packages:
     dependency: transitive
     description:
       name: xml
-      sha256: "88d26fad429944d29b7c418177d156d04bbef049f295cf48130eccc84f0b8b4b"
+      sha256: "80d494c09849dc3f899d227a78c30c5b949b985ededf884cb3f3bcd39f4b447a"
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.4.1"
 sdks:
   dart: ">=3.2.0-194.0.dev <4.0.0"
   flutter: ">=1.24.0-7.0"
