@@ -74,6 +74,15 @@ enum MapType {
   /// Truckmeister
   /// Only available on Android
   truckmeister,
+
+  // Naver Map
+  naver,
+
+  // Kakao Map
+  kakao,
+
+  // T map
+  tmap,
 }
 
 /// Defines the supported modes of transportation for [showDirections]

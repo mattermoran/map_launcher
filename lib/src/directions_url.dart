@@ -310,5 +310,45 @@ String getMapDirectionsUrl({
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.naver:
+      return Utils.buildUrl(
+        url: 'nmap://route/car',
+        queryParams: {
+          'slat': origin?.latitude.toString(),
+          'slng': origin?.longitude.toString(),
+          'sname': originTitle,
+          'dlat': '${destination.latitude}',
+          'dlng': '${destination.longitude}',
+          'dname': destinationTitle,
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.kakao:
+      return Utils.buildUrl(
+        url: 'kakaomap://route',
+        queryParams: {
+          'sp':
+              origin == null ? null : '${origin.latitude},${origin.longitude}',
+          'ep': '${destination.latitude},${destination.longitude}',
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.tmap:
+      return Utils.buildUrl(
+        url: 'tmap://route',
+        queryParams: {
+          'startname': originTitle,
+          'startx': origin?.longitude.toString(),
+          'starty': origin?.latitude.toString(),
+          'goalname': destinationTitle,
+          'goaly': '${destination.latitude}',
+          'goalx': '${destination.longitude}',
+          'carType': '1',
+          ...(extraParams ?? {}),
+        },
+      );
   }
 }

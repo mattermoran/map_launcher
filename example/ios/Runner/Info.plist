@@ -58,6 +58,9 @@
 			<string>copilot</string>
 			<string>tomtomgo</string>
 			<string>com.sygic.aura</string>
+			<string>nmap</string>
+			<string>kakaomap</string>
+			<string>tmap</string>
 	</array>
 </dict>
 </plist>

@@ -294,5 +294,37 @@ String getMapMarkerUrl({
           ...(extraParams ?? {}),
         },
       );
+
+    case MapType.naver:
+      return Utils.buildUrl(
+        url: 'nmap://place',
+        queryParams: {
+          'lat': '${coords.latitude}',
+          'lng': '${coords.longitude}',
+          'zoom': '$zoomLevel',
+          'name': title,
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.kakao:
+      return Utils.buildUrl(
+        url: 'kakaomap://look',
+        queryParams: {
+          'p': '${coords.latitude},${coords.longitude}',
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.tmap:
+      return Utils.buildUrl(
+        url: 'tmap://viewmap',
+        queryParams: {
+          'name': '$title',
+          'x': '${coords.longitude}',
+          'y': '${coords.latitude}',
+          ...(extraParams ?? {}),
+        },
+      );
   }
 }
