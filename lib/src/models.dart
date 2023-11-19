@@ -78,10 +78,10 @@ enum MapType {
   // Naver Map
   naver,
 
-  // Kakao Map
+  // KakaoMap
   kakao,
 
-  // T map
+  // TMAP
   tmap,
 }
 

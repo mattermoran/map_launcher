@@ -1,3 +1,7 @@
+## 3.1.0
+- Add Naver Map, KakaoMap and TMAP (@trentcharlie & @JulyWitch)
+- Add support for AGP 7.4.2 and up (@bitsydarel)
+
 ## 3.0.1
 - Rename Sygic to Sygic Truck
 - Remove deprecated `launchMap` method. use `showMarker` instead
