@@ -1,11 +1,13 @@
 import 'package:map_launcher/src/models.dart';
 
 class Utils {
+  /// Returns a [String] from [Enum]
   static String? enumToString(o) {
     if (o == null) return null;
     return o.toString().split('.').last;
   }
 
+  /// Returns an [Enum] from [String]
   static T enumFromString<T>(Iterable<T> values, String? value) {
     return values
         .firstWhere((type) => type.toString().split('.').last == value);
@@ -16,6 +18,7 @@ class Utils {
     return value;
   }
 
+  /// Constructs a url from [url] and [queryParams]
   static String buildUrl({
     required String url,
     required Map<String, String?> queryParams,
@@ -28,6 +31,7 @@ class Utils {
     }).replaceFirst('&', '');
   }
 
+  /// Returns [DirectionsMode] for [MapType.amap]
   static String getAmapDirectionsMode(DirectionsMode? directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:
@@ -43,6 +47,7 @@ class Utils {
     }
   }
 
+  /// Returns [DirectionsMode] for [MapType.baidu]
   static String getBaiduDirectionsMode(DirectionsMode? directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:
@@ -58,6 +63,7 @@ class Utils {
     }
   }
 
+  /// Returns [DirectionsMode] for [MapType.mapswithme]
   static String getMapsMeDirectionsMode(DirectionsMode directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:
@@ -73,6 +79,7 @@ class Utils {
     }
   }
 
+  /// Returns [DirectionsMode] for [MapType.yandexMaps]
   static String getYandexMapsDirectionsMode(DirectionsMode? directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:
@@ -88,6 +95,7 @@ class Utils {
     }
   }
 
+  /// Returns [DirectionsMode] for [MapType.doubleGis]
   static String getDoubleGisDirectionsMode(DirectionsMode? directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:
@@ -101,6 +109,7 @@ class Utils {
     }
   }
 
+  /// Returns [DirectionsMode] for [MapType.tencent]
   static String getTencentDirectionsMode(DirectionsMode? directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:
@@ -116,6 +125,7 @@ class Utils {
     }
   }
 
+  /// Returns [DirectionsMode] for [MapType.here]
   static String getHereDirectionsMode(DirectionsMode? directionsMode) {
     switch (directionsMode) {
       case DirectionsMode.driving:

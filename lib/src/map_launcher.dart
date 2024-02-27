@@ -9,6 +9,7 @@ import 'package:map_launcher/src/utils.dart';
 class MapLauncher {
   static const MethodChannel _channel = const MethodChannel('map_launcher');
 
+  /// Returns list of installed map apps on the device.
   static Future<List<AvailableMap>> get installedMaps async {
     final maps = await _channel.invokeMethod('getInstalledMaps');
     return List<AvailableMap>.from(
@@ -16,21 +17,8 @@ class MapLauncher {
     );
   }
 
-  @Deprecated('use showMarker instead')
-  static Future<dynamic> launchMap({
-    required MapType mapType,
-    required Coords coords,
-    required String title,
-    String? description,
-  }) {
-    return showMarker(
-      mapType: mapType,
-      coords: coords,
-      title: title,
-      description: description,
-    );
-  }
-
+  /// Opens map app specified in [mapType]
+  /// and shows marker at [coords]
   static Future<dynamic> showMarker({
     required MapType mapType,
     required Coords coords,
@@ -59,13 +47,15 @@ class MapLauncher {
     return _channel.invokeMethod('showMarker', args);
   }
 
+  /// Opens map app specified in [mapType]
+  /// and shows directions to [destination]
   static Future<dynamic> showDirections({
     required MapType mapType,
     required Coords destination,
     String? destinationTitle,
     Coords? origin,
     String? originTitle,
-    List<Coords>? waypoints,
+    List<Waypoint>? waypoints,
     DirectionsMode? directionsMode = DirectionsMode.driving,
     Map<String, String>? extraParams,
   }) async {
@@ -80,7 +70,7 @@ class MapLauncher {
       extraParams: extraParams,
     );
 
-    final Map<String, String?> args = {
+    final Map<String, dynamic> args = {
       'mapType': Utils.enumToString(mapType),
       'url': Uri.encodeFull(url),
       'destinationTitle': destinationTitle,
@@ -89,12 +79,20 @@ class MapLauncher {
       'destinationtitle': destinationTitle,
       'originLatitude': origin?.latitude.toString(),
       'originLongitude': origin?.longitude.toString(),
-      'origintitle': originTitle,
+      'originTitle': originTitle,
       'directionsMode': Utils.enumToString(directionsMode),
+      'waypoints': (waypoints ?? [])
+          .map((waypoint) => {
+                'latitude': waypoint.latitude.toString(),
+                'longitude': waypoint.longitude.toString(),
+                'title': waypoint.title,
+              })
+          .toList(),
     };
     return _channel.invokeMethod('showDirections', args);
   }
 
+  /// Returns boolean indicating if map app is installed
   static Future<bool?> isMapAvailable(MapType mapType) async {
     return _channel.invokeMethod(
       'isMapAvailable',

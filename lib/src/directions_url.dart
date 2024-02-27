@@ -1,7 +1,9 @@
 import 'dart:io';
+
 import 'package:map_launcher/src/models.dart';
 import 'package:map_launcher/src/utils.dart';
 
+/// Returns a url that is used by [showDirections]
 String getMapDirectionsUrl({
   required MapType mapType,
   required Coords destination,
@@ -9,7 +11,7 @@ String getMapDirectionsUrl({
   Coords? origin,
   String? originTitle,
   DirectionsMode? directionsMode,
-  List<Coords>? waypoints,
+  List<Waypoint>? waypoints,
   Map<String, String>? extraParams,
 }) {
   switch (mapType) {
@@ -24,7 +26,7 @@ String getMapDirectionsUrl({
             '${origin?.latitude},${origin?.longitude}',
           ),
           'waypoints': waypoints
-              ?.map((coords) => '${coords.latitude},${coords.longitude}')
+              ?.map((waypoint) => '${waypoint.latitude},${waypoint.longitude}')
               .join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),
@@ -42,7 +44,7 @@ String getMapDirectionsUrl({
             '${origin?.latitude},${origin?.longitude}',
           ),
           'waypoints': waypoints
-              ?.map((coords) => '${coords.latitude},${coords.longitude}')
+              ?.map((waypoint) => '${waypoint.latitude},${waypoint.longitude}')
               .join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),
@@ -206,6 +208,145 @@ String getMapDirectionsUrl({
             'https://share.here.com/r/${origin?.latitude},${origin?.longitude},$originTitle/${destination.latitude},${destination.longitude}',
         queryParams: {
           'm': Utils.getHereDirectionsMode(directionsMode),
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.petal:
+      return Utils.buildUrl(url: 'petalmaps://route', queryParams: {
+        'daddr':
+            '${destination.latitude},${destination.longitude} (${destinationTitle ?? 'Destination'})',
+        'saddr': Utils.nullOrValue(
+          origin,
+          '${origin?.latitude},${origin?.longitude} (${originTitle ?? 'Origin'})',
+        ),
+        'type': Utils.getTencentDirectionsMode(directionsMode),
+        ...(extraParams ?? {}),
+      });
+
+    case MapType.tomtomgo:
+      if (Platform.isIOS) {
+        return Utils.buildUrl(
+          url: 'tomtomgo://x-callback-url/navigate',
+          queryParams: {
+            'destination': '${destination.latitude},${destination.longitude}',
+            ...(extraParams ?? {}),
+          },
+        );
+      }
+      return Utils.buildUrl(
+        url: 'google.navigation:',
+        queryParams: {
+          'q': '${destination.latitude},${destination.longitude}',
+          ...(extraParams ?? {}),
+        },
+        // the TomTom Go app cannot handle the ? at the start of the query
+      ).replaceFirst('?', '');
+
+    case MapType.copilot:
+      // Documentation:
+      // https://developer.trimblemaps.com/copilot-navigation/v10-19/feature-guide/advanced-features/url-launch/
+      return Utils.buildUrl(
+        url: 'copilot://mydestination',
+        queryParams: {
+          'type': 'LOCATION',
+          'action': 'GOTO',
+          'name': destinationTitle ?? '',
+          'lat': "${destination.latitude}",
+          'long': "${destination.longitude}",
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.tomtomgofleet:
+      return Utils.buildUrl(
+        url: 'google.navigation:',
+        queryParams: {
+          'q': '${destination.latitude},${destination.longitude}',
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.sygicTruck:
+      // Documentation:
+      // https://www.sygic.com/developers/professional-navigation-sdk/introduction
+      return Utils.buildUrl(
+        url:
+            'com.sygic.aura://coordinate|${destination.longitude}|${destination.latitude}|drive',
+        queryParams: {
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.flitsmeister:
+      if (Platform.isIOS) {
+        return Utils.buildUrl(
+          url: 'flitsmeister://',
+          queryParams: {
+            'geo': '${destination.latitude},${destination.longitude}',
+            ...(extraParams ?? {}),
+          },
+        );
+      }
+      return Utils.buildUrl(
+        url: 'geo:${destination.latitude},${destination.longitude}',
+        queryParams: {},
+      );
+
+    case MapType.truckmeister:
+      if (Platform.isIOS) {
+        return Utils.buildUrl(
+          url: 'truckmeister://',
+          queryParams: {
+            'geo': '${destination.latitude},${destination.longitude}',
+            ...(extraParams ?? {}),
+          },
+        );
+      }
+      return Utils.buildUrl(
+        url: 'geo:${destination.latitude},${destination.longitude}',
+        queryParams: {
+          'q': '${destination.latitude},${destination.longitude}',
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.naver:
+      return Utils.buildUrl(
+        url: 'nmap://route/car',
+        queryParams: {
+          'slat': origin?.latitude.toString(),
+          'slng': origin?.longitude.toString(),
+          'sname': originTitle,
+          'dlat': '${destination.latitude}',
+          'dlng': '${destination.longitude}',
+          'dname': destinationTitle,
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.kakao:
+      return Utils.buildUrl(
+        url: 'kakaomap://route',
+        queryParams: {
+          'sp':
+              origin == null ? null : '${origin.latitude},${origin.longitude}',
+          'ep': '${destination.latitude},${destination.longitude}',
+          ...(extraParams ?? {}),
+        },
+      );
+
+    case MapType.tmap:
+      return Utils.buildUrl(
+        url: 'tmap://route',
+        queryParams: {
+          'startname': originTitle,
+          'startx': origin?.longitude.toString(),
+          'starty': origin?.latitude.toString(),
+          'goalname': destinationTitle,
+          'goaly': '${destination.latitude}',
+          'goalx': '${destination.longitude}',
+          'carType': '1',
           ...(extraParams ?? {}),
         },
       );

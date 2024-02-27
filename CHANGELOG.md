@@ -1,3 +1,55 @@
+## 3.1.0
+- Add Naver Map, KakaoMap and TMAP (@trentcharlie & @JulyWitch)
+- Add support for AGP 7.4.2 and up (@bitsydarel)
+
+## 3.0.1
+- Rename Sygic to Sygic Truck
+- Remove deprecated `launchMap` method. use `showMarker` instead
+
+## 3.0.0
+BREAKING: waypoints parameter now uses `List<Waypoint>` instead of `List<Coord>``
+- Add CoPilot map (@tjeffree)
+- Add Go Fleet and Sygic Truck maps (@amrahmed242)
+- Add Flitsmeister and Truckmeister (@robinbonnes & @frankvollebregt)
+- Add waypoint labels for Apple Maps (@manafire)
+- Add support for gradle 8 (@m-derakhshi)
+- Fix future not completing on iOS
+
+## 2.5.0+1
+- Update screenshots
+
+## 2.5.0
+- Add support for waypoints on Apple Maps
+
+## 2.4.0
+- Bump kotlin version to 1.5.31
+
+## 2.3.0+1
+- Cleanup
+
+## 2.3.0
+- Add TomTom Go #125 (@frankvollebregt)
+
+## 2.2.3
+- Fix empty title in Google Maps
+
+## 2.2.2
+- Fix `originTitle` on `showDirections` method
+
+## 2.2.1+2
+- Add dartdoc comments
+- Update `directions_url.dart` formatting
+- Update broken link in the README
+
+## 2.2.1+1
+- Update README with information that title should now work in Google Maps for Android starting from v11.12
+
+## 2.2.1
+- Update Petal maps icon
+
+## 2.2.0
+- Add Petal maps #103 (@mericgerceker)
+
 ## 2.1.2
 - Replace jcenter with mavenCentral #100
 
