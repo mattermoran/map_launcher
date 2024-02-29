@@ -195,8 +195,11 @@ class WaypointsForm extends StatelessWidget {
   final List<Waypoint> waypoints;
   final void Function(List<Waypoint> waypoints) onWaypointsUpdated;
 
-  const WaypointsForm(
-      {super.key, required this.waypoints, required this.onWaypointsUpdated});
+  const WaypointsForm({
+    super.key,
+    required this.waypoints,
+    required this.onWaypointsUpdated,
+  });
 
   void updateWaypoint(Waypoint waypoint, int index) {
     final tempWaypoints = [...waypoints];
