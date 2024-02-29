@@ -7,7 +7,7 @@ import 'package:map_launcher/src/models.dart';
 import 'package:map_launcher/src/utils.dart';
 
 class MapLauncher {
-  static const MethodChannel _channel = const MethodChannel('map_launcher');
+  static const MethodChannel _channel = MethodChannel('map_launcher');
 
   /// Returns list of installed map apps on the device.
   static Future<List<AvailableMap>> get installedMaps async {
