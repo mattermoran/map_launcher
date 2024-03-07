@@ -39,6 +39,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/naver.svg" width="25"> Naver Map
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/kakao.svg" width="25"> KakaoMap
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tmap.svg" width="25"> TMAP
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapyCz.svg" width="25"> Mapy.cz
 
 ## Get started
 
@@ -46,7 +47,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^3.1.0
+  map_launcher: ^3.2.0
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 
@@ -70,6 +71,10 @@ dependencies:
     <string>tomtomgo</string>
     <string>copilot</string>
     <string>com.sygic.aura</string>
+    <string>nmap</string>
+    <string>kakaomap</string>
+    <string>tmap</string>
+    <string>szn-mapy</string>
 </array>
 ```
 

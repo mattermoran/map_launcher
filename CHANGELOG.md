@@ -1,3 +1,6 @@
+## 3.2.0
+- Add Mapy.cz (@TheHumr)
+
 ## 3.1.0
 - Add Naver Map, KakaoMap and TMAP (@trentcharlie & @JulyWitch)
 - Add support for AGP 7.4.2 and up (@bitsydarel)

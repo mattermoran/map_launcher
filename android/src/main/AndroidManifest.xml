@@ -26,6 +26,7 @@
         <package android:name="com.nhn.android.nmap" />
         <package android:name="net.daum.android.map" />
         <package android:name="com.skt.tmap.ku" />
+        <package android:name="cz.seznam.mapy" />
     </queries>
 
 </manifest>
