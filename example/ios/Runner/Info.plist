@@ -63,5 +63,9 @@
 			<string>tmap</string>
 			<string>szn-mapy</string>
 	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 </dict>
 </plist>

@@ -3,10 +3,10 @@ import 'package:map_launcher/map_launcher.dart';
 import 'package:map_launcher_example/maps_sheet.dart';
 
 class ShowDirections extends StatefulWidget {
-  const ShowDirections({Key? key}) : super(key: key);
+  const ShowDirections({super.key});
 
   @override
-  _ShowDirectionsState createState() => _ShowDirectionsState();
+  State<ShowDirections> createState() => _ShowDirectionsState();
 }
 
 class _ShowDirectionsState extends State<ShowDirections> {
@@ -18,11 +18,8 @@ class _ShowDirectionsState extends State<ShowDirections> {
   double originLongitude = -122.404604;
   String originTitle = 'Pier 33';
 
-  // List<Coords> waypoints = [];
   List<Waypoint> waypoints = [
     Waypoint(37.7705112, -122.4108267),
-    // Coords(37.6988984, -122.4830961),
-    // Coords(37.7935754, -122.483654),
   ];
 
   DirectionsMode directionsMode = DirectionsMode.driving;
@@ -34,11 +31,12 @@ class _ShowDirectionsState extends State<ShowDirections> {
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: <Widget>[
-            FormTitle('Destination'),
+            const FormTitle('Destination'),
             TextFormField(
               autocorrect: false,
               autovalidateMode: AutovalidateMode.disabled,
-              decoration: InputDecoration(labelText: 'Destination Latitude'),
+              decoration:
+                  const InputDecoration(labelText: 'Destination Latitude'),
               initialValue: destinationLatitude.toString(),
               onChanged: (newValue) {
                 setState(() {
@@ -49,7 +47,8 @@ class _ShowDirectionsState extends State<ShowDirections> {
             TextFormField(
               autocorrect: false,
               autovalidateMode: AutovalidateMode.disabled,
-              decoration: InputDecoration(labelText: 'Destination Longitude'),
+              decoration:
+                  const InputDecoration(labelText: 'Destination Longitude'),
               initialValue: destinationLongitude.toString(),
               onChanged: (newValue) {
                 setState(() {
@@ -60,7 +59,7 @@ class _ShowDirectionsState extends State<ShowDirections> {
             TextFormField(
               autocorrect: false,
               autovalidateMode: AutovalidateMode.disabled,
-              decoration: InputDecoration(labelText: 'Destination Title'),
+              decoration: const InputDecoration(labelText: 'Destination Title'),
               initialValue: destinationTitle,
               onChanged: (newValue) {
                 setState(() {
@@ -68,11 +67,11 @@ class _ShowDirectionsState extends State<ShowDirections> {
                 });
               },
             ),
-            FormTitle('Origin'),
+            const FormTitle('Origin'),
             TextFormField(
               autocorrect: false,
               autovalidateMode: AutovalidateMode.disabled,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Origin Latitude (uses current location if empty)',
               ),
               initialValue: originLatitude.toString(),
@@ -85,7 +84,7 @@ class _ShowDirectionsState extends State<ShowDirections> {
             TextFormField(
               autocorrect: false,
               autovalidateMode: AutovalidateMode.disabled,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Origin Longitude (uses current location if empty)',
               ),
               initialValue: originLongitude.toString(),
@@ -98,7 +97,7 @@ class _ShowDirectionsState extends State<ShowDirections> {
             TextFormField(
               autocorrect: false,
               autovalidateMode: AutovalidateMode.disabled,
-              decoration: InputDecoration(labelText: 'Origin Title'),
+              decoration: const InputDecoration(labelText: 'Origin Title'),
               initialValue: originTitle,
               onChanged: (newValue) {
                 setState(() {
@@ -114,7 +113,7 @@ class _ShowDirectionsState extends State<ShowDirections> {
                 });
               },
             ),
-            FormTitle('Directions Mode'),
+            const FormTitle('Directions Mode'),
             Container(
               alignment: Alignment.centerLeft,
               child: DropdownButton(
@@ -132,7 +131,7 @@ class _ShowDirectionsState extends State<ShowDirections> {
                 }).toList(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             MaterialButton(
               onPressed: () {
                 MapsSheet.show(
@@ -152,7 +151,7 @@ class _ShowDirectionsState extends State<ShowDirections> {
                   },
                 );
               },
-              child: Text('Show Maps'),
+              child: const Text('Show Maps'),
             )
           ],
         ),
@@ -165,25 +164,25 @@ class FormTitle extends StatelessWidget {
   final String title;
   final Widget? trailing;
 
-  FormTitle(this.title, {this.trailing});
+  const FormTitle(this.title, {super.key, this.trailing});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Row(
           children: [
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.blue,
               ),
             ),
-            Spacer(),
+            const Spacer(),
             if (trailing != null) trailing!,
           ],
         ),
@@ -196,7 +195,11 @@ class WaypointsForm extends StatelessWidget {
   final List<Waypoint> waypoints;
   final void Function(List<Waypoint> waypoints) onWaypointsUpdated;
 
-  WaypointsForm({required this.waypoints, required this.onWaypointsUpdated});
+  const WaypointsForm({
+    super.key,
+    required this.waypoints,
+    required this.onWaypointsUpdated,
+  });
 
   void updateWaypoint(Waypoint waypoint, int index) {
     final tempWaypoints = [...waypoints];
@@ -272,10 +275,10 @@ class WaypointsForm extends StatelessWidget {
             ),
           ];
         }).expand((element) => element),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Row(children: [
           MaterialButton(
-            child: Text(
+            child: const Text(
               'Add Waypoint',
               style: TextStyle(
                 // color: Colors.blue,
@@ -283,7 +286,7 @@ class WaypointsForm extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              onWaypointsUpdated([...waypoints]..add(Waypoint(0, 0)));
+              onWaypointsUpdated([...waypoints, Waypoint(0, 0)]);
             },
           ),
         ]),

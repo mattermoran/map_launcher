@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:map_launcher_example/show_directions.dart';
 import 'package:map_launcher_example/show_marker.dart';
 
-void main() => runApp(MapLauncherDemo());
+void main() => runApp(const MapLauncherDemo());
 
 class MapLauncherDemo extends StatefulWidget {
+  const MapLauncherDemo({super.key});
+
   @override
-  _MapLauncherDemoState createState() => _MapLauncherDemoState();
+  State<MapLauncherDemo> createState() => _MapLauncherDemoState();
 }
 
 enum LaunchMode { marker, directions }
@@ -14,7 +16,7 @@ enum LaunchMode { marker, directions }
 class _MapLauncherDemoState extends State<MapLauncherDemo> {
   int selectedTabIndex = 0;
 
-  List<Widget> widgets = [ShowMarker(), ShowDirections()];
+  List<Widget> widgets = [const ShowMarker(), const ShowDirections()];
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class _MapLauncherDemoState extends State<MapLauncherDemo> {
           onTap: (newTabIndex) => setState(() {
             selectedTabIndex = newTabIndex;
           }),
-          items: [
+          items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.pin_drop),
               label: 'Marker',
