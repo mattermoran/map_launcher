@@ -83,6 +83,9 @@ enum MapType {
 
   // TMAP
   tmap,
+
+  /// MapyCZ
+  mapyCz,
 }
 
 /// Defines the supported modes of transportation for [showDirections]

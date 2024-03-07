@@ -10,7 +10,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
-private enum class MapType { google, googleGo, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand, osmandplus, doubleGis, tencent, here, petal, tomtomgo, copilot, sygicTruck, tomtomgofleet, flitsmeister, truckmeister, naver, kakao, tmap }
+private enum class MapType { google, googleGo, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand, osmandplus, doubleGis, tencent, here, petal, tomtomgo, copilot, sygicTruck, tomtomgofleet, flitsmeister, truckmeister, naver, kakao, tmap, mapyCz }
 
 private class MapModel(val mapType: MapType, val mapName: String, val packageName: String, val urlPrefix: String) {
     fun toMap(): Map<String, String> {
@@ -62,7 +62,8 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             MapModel(MapType.truckmeister, "Truckmeister", "nl.flitsmeister.flux", "truckmeister://"),
             MapModel(MapType.naver, "Naver Map", "com.nhn.android.nmap", "nmap://"),
             MapModel(MapType.kakao, "Kakao Maps", "net.daum.android.map", "kakaomap://"),
-            MapModel(MapType.tmap, "TMap", "com.skt.tmap.ku", "tmap://")
+            MapModel(MapType.tmap, "TMap", "com.skt.tmap.ku", "tmap://"),
+            MapModel(MapType.mapyCz, "Mapy CZ", "cz.seznam.mapy", "https://")
     )
 
     private fun getInstalledMaps(): List<MapModel> {
