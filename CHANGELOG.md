@@ -1,5 +1,7 @@
 ## 3.2.1
 - Add privacy manifest
+- Bump flutter min version to 3.13.0
+- Bump dart min version to 3.1.0
 
 ## 3.2.0
 - Add Mapy.cz (@TheHumr)
