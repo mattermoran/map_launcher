@@ -18,5 +18,7 @@ A new flutter plugin project.
   s.swift_version = '4.2'
 
   s.ios.deployment_target = '8.0'
+
+  s.resource_bundles = {'map_launcher_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
 end
 

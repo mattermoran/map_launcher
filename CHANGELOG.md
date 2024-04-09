@@ -1,3 +1,6 @@
+## 3.2.1
+- Add privacy manifest
+
 ## 3.2.0
 - Add Mapy.cz (@TheHumr)
 
