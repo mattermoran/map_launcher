@@ -1,4 +1,4 @@
-## 3.2.1
+## 3.3.0
 - Add privacy manifest
 - Bump flutter min version to 3.13.0
 - Bump dart min version to 3.1.0
