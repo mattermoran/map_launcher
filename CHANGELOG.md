@@ -1,3 +1,6 @@
+## 3.3.1
+- Remove support for Maps.me on android as it stopped working a while ago
+
 ## 3.3.0
 - Add privacy manifest
 - Bump flutter min version to 3.13.0
