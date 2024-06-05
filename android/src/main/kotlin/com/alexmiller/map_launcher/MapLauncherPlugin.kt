@@ -10,7 +10,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
-private enum class MapType { google, googleGo, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, mapswithme, osmand, osmandplus, doubleGis, tencent, here, petal, tomtomgo, copilot, sygicTruck, tomtomgofleet, flitsmeister, truckmeister, naver, kakao, tmap, mapyCz }
+private enum class MapType { google, googleGo, amap, baidu, waze, yandexNavi, yandexMaps, citymapper, osmand, osmandplus, doubleGis, tencent, here, petal, tomtomgo, copilot, sygicTruck, tomtomgofleet, flitsmeister, truckmeister, naver, kakao, tmap, mapyCz }
 
 private class MapModel(val mapType: MapType, val mapName: String, val packageName: String, val urlPrefix: String) {
     fun toMap(): Map<String, String> {
@@ -47,7 +47,6 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             MapModel(MapType.yandexNavi, "Yandex Navigator", "ru.yandex.yandexnavi", "yandexnavi://"),
             MapModel(MapType.yandexMaps, "Yandex Maps", "ru.yandex.yandexmaps", "yandexmaps://"),
             MapModel(MapType.citymapper, "Citymapper", "com.citymapper.app.release", "citymapper://"),
-            MapModel(MapType.mapswithme, "MAPS.ME", "com.mapswithme.maps.pro", "mapswithme://"),
             MapModel(MapType.osmand, "OsmAnd", "net.osmand", "osmandmaps://"),
             MapModel(MapType.osmandplus, "OsmAnd+", "net.osmand.plus", "osmandmaps://"),
             MapModel(MapType.doubleGis, "2GIS", "ru.dublgis.dgismobile", "dgis://"),
