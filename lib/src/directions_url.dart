@@ -359,5 +359,14 @@ String getMapDirectionsUrl({
           'source': 'coor',
         },
       );
+    case MapType.neshan:
+      return Utils.buildUrl(
+        url: 'https://nshn.ir/',
+        queryParams: {
+          'origin': '${origin?.latitude},${origin?.longitude}',
+          'destination': '${destination.latitude},${destination.longitude}',
+          'vehicle': directionsMode == DirectionsMode.driving ? 'd' : 'm',
+        },
+      );
   }
 }

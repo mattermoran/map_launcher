@@ -336,5 +336,13 @@ String getMapMarkerUrl({
           'source': 'coor',
         },
       );
+    case MapType.neshan:
+      return Utils.buildUrl(
+        url: 'https://nshn.ir',
+        queryParams: {
+          'lat': '${coords.latitude}',
+          'lng': '${coords.longitude}',
+        },
+      );
   }
 }
