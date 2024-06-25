@@ -337,6 +337,14 @@ String getMapMarkerUrl({
         },
       );
     case MapType.neshan:
+      if (Platform.isIOS) {
+        return Utils.buildUrl(
+          url: 'neshan://',
+          queryParams: {
+            'destination': '${coords.latitude},${coords.longitude}',
+          },
+        );
+      }
       return Utils.buildUrl(
         url: 'https://nshn.ir',
         queryParams: {

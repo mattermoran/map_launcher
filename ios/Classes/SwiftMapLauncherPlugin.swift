@@ -74,7 +74,7 @@ private let maps: [Map] = [
     Map(mapName: "Kakao Maps", mapType: MapType.kakao, urlPrefix: "kakaomap://"),
     Map(mapName: "TMap", mapType: MapType.tmap, urlPrefix: "tmap://"),
     Map(mapName: "Mapy CZ", mapType: MapType.mapyCz, urlPrefix: "szn-mapy://"),
-    Map(mapName: "Neshan Map", mapType: MapType.neshan, urlPrefix: "nshn.ir/")
+    Map(mapName: "Neshan Map", mapType: MapType.neshan, urlPrefix: "neshan://")
 ]
 
 private func getMapByRawMapType(type: String) -> Map? {
