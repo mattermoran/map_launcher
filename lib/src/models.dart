@@ -86,6 +86,8 @@ enum MapType {
 
   /// MapyCZ
   mapyCz,
+
+  neshan
 }
 
 /// Defines the supported modes of transportation for [showDirections]
