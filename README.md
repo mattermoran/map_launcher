@@ -40,7 +40,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/kakao.svg" width="25"> KakaoMap
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tmap.svg" width="25"> TMAP
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapyCz.svg" width="25"> Mapy.cz
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/neshan.png" width="25"> Neshan Map
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/neshan.svg" width="25"> Neshan Map
 
 ## Get started
 
