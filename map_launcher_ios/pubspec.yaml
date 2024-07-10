@@ -1,0 +1,27 @@
+name: map_launcher_ios
+description: iOS implementation of the map_launcher plugin
+version: 0.1.0+1
+publish_to: none
+
+environment:
+  sdk: ^3.4.0
+
+flutter:
+  plugin:
+    implements: map_launcher
+    platforms:
+      ios:
+        pluginClass: MapLauncherPlugin
+        dartPluginClass: MapLauncherIOS
+
+dependencies:
+  flutter:
+    sdk: flutter
+  map_launcher_platform_interface:
+    path: ../map_launcher_platform_interface
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  plugin_platform_interface: ^2.1.8
+  very_good_analysis: ^6.0.0

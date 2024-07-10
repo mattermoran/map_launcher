@@ -1,0 +1,48 @@
+name: map_launcher
+description: A Very Good Project created by Very Good CLI.
+version: 0.1.0+1
+publish_to: none
+
+environment:
+  sdk: ^3.4.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        default_package: map_launcher_android
+      ios:
+        default_package: map_launcher_ios
+      linux:
+        default_package: map_launcher_linux
+      macos:
+        default_package: map_launcher_macos
+      web:
+        default_package: map_launcher_web
+      windows:
+        default_package: map_launcher_windows
+
+dependencies:
+  flutter:
+    sdk: flutter
+  map_launcher_android:
+    path: ../map_launcher_android
+  map_launcher_ios:
+    path: ../map_launcher_ios
+  map_launcher_linux:
+    path: ../map_launcher_linux
+  map_launcher_macos:
+    path: ../map_launcher_macos
+  map_launcher_platform_interface:
+    path: ../map_launcher_platform_interface
+  map_launcher_web:
+    path: ../map_launcher_web
+  map_launcher_windows:
+    path: ../map_launcher_windows
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+  plugin_platform_interface: ^2.1.8
+  very_good_analysis: ^6.0.0

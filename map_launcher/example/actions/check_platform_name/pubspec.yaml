@@ -1,0 +1,17 @@
+name: check_platform_name
+description: A custom action for Fluttium.
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.4.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  fluttium: ^0.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+  very_good_analysis: ^6.0.0

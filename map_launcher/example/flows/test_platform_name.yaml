@@ -1,0 +1,4 @@
+description: Test if plugin returns correct platform name
+---
+- pressOn: "Get Platform Name"
+- checkPlatformName:
