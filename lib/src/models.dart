@@ -113,6 +113,7 @@ class Waypoint {
       : coords = Coords(latitude, longitude);
 
   double get latitude => coords.latitude;
+
   double get longitude => coords.longitude;
 }
 
@@ -163,10 +164,8 @@ class AvailableMap {
 
   /// Launches current map and shows directions to `destination`
   Future<void> showDirections({
-    required Coords destination,
-    String? destinationTitle,
-    Coords? origin,
-    String? originTitle,
+    required Waypoint destination,
+    Waypoint? origin,
     List<Waypoint>? waypoints,
     DirectionsMode directionsMode = DirectionsMode.driving,
     Map<String, String>? extraParams,
@@ -174,9 +173,7 @@ class AvailableMap {
     return MapLauncher.showDirections(
       mapType: mapType,
       destination: destination,
-      destinationTitle: destinationTitle,
       origin: origin,
-      originTitle: originTitle,
       waypoints: waypoints,
       directionsMode: directionsMode,
       extraParams: extraParams,

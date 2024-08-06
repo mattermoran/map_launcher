@@ -6,46 +6,38 @@ import 'package:map_launcher/src/utils.dart';
 /// Returns a url that is used by [showDirections]
 String getMapDirectionsUrl({
   required MapType mapType,
-  required Coords destination,
-  String? destinationTitle,
-  Coords? origin,
-  String? originTitle,
+  required Waypoint destination,
+  Waypoint? origin,
   DirectionsMode? directionsMode,
   List<Waypoint>? waypoints,
   Map<String, String>? extraParams,
 }) {
   switch (mapType) {
     case MapType.google:
+      String addr(Waypoint p) => '${p.latitude},${p.longitude}';
+
       return Utils.buildUrl(
         url: 'https://www.google.com/maps/dir/',
         queryParams: {
           'api': '1',
-          'destination': '${destination.latitude},${destination.longitude}',
-          'origin': Utils.nullOrValue(
-            origin,
-            '${origin?.latitude},${origin?.longitude}',
-          ),
-          'waypoints': waypoints
-              ?.map((waypoint) => '${waypoint.latitude},${waypoint.longitude}')
-              .join('|'),
+          'destination': addr(destination),
+          if (origin != null) 'origin': addr(origin),
+          'waypoints': waypoints?.map(addr).join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),
         },
       );
 
     case MapType.googleGo:
+      String addr(Waypoint p) => '${p.latitude},${p.longitude}';
+
       return Utils.buildUrl(
         url: 'https://www.google.com/maps/dir/',
         queryParams: {
           'api': '1',
-          'destination': '${destination.latitude},${destination.longitude}',
-          'origin': Utils.nullOrValue(
-            origin,
-            '${origin?.latitude},${origin?.longitude}',
-          ),
-          'waypoints': waypoints
-              ?.map((waypoint) => '${waypoint.latitude},${waypoint.longitude}')
-              .join('|'),
+          'destination': addr(destination),
+          if (origin != null) 'origin': addr(origin),
+          'waypoints': waypoints?.map(addr).join('|'),
           'travelmode': Utils.enumToString(directionsMode),
           ...(extraParams ?? {}),
         },
@@ -53,7 +45,7 @@ String getMapDirectionsUrl({
 
     case MapType.apple:
       return Utils.buildUrl(
-        url: 'http://maps.apple.com/maps',
+        url: 'https://maps.apple.com/maps',
         queryParams: {
           'daddr': '${destination.latitude},${destination.longitude}',
           ...(extraParams ?? {}),
@@ -61,16 +53,19 @@ String getMapDirectionsUrl({
       );
 
     case MapType.amap:
+      Map<String, String?> addr(Waypoint p, String prefix) {
+        return {
+          '${prefix}lat': '${p.latitude}',
+          '${prefix}lon': '${p.longitude}',
+          '${prefix}name': p.title,
+        };
+      }
       return Utils.buildUrl(
         url: Platform.isIOS ? 'iosamap://path' : 'amapuri://route/plan/',
         queryParams: {
           'sourceApplication': 'applicationName',
-          'dlat': '${destination.latitude}',
-          'dlon': '${destination.longitude}',
-          'dname': destinationTitle,
-          'slat': Utils.nullOrValue(origin, '${origin?.latitude}'),
-          'slon': Utils.nullOrValue(origin, '${origin?.longitude}'),
-          'sname': originTitle,
+          ...addr(destination, 'd'),
+          if (origin != null) ...addr(origin, 's'),
           't': Utils.getAmapDirectionsMode(directionsMode),
           'dev': '0',
           ...(extraParams ?? {}),
@@ -78,15 +73,16 @@ String getMapDirectionsUrl({
       );
 
     case MapType.baidu:
+      String addr(Waypoint p, String defaultTitle) {
+        return 'name: ${p.title ?? defaultTitle}'
+            '|latlng:${p.latitude},${p.longitude}';
+      }
+
       return Utils.buildUrl(
         url: 'baidumap://map/direction',
         queryParams: {
-          'destination':
-              'name: ${destinationTitle ?? 'Destination'}|latlng:${destination.latitude},${destination.longitude}',
-          'origin': Utils.nullOrValue(
-            origin,
-            'name: ${originTitle ?? 'Origin'}|latlng:${origin?.latitude},${origin?.longitude}',
-          ),
+          'destination': addr(destination, 'Destination'),
+          if (origin != null) 'origin': addr(origin, 'Origin'),
           'coord_type': 'gcj02',
           'mode': Utils.getBaiduDirectionsMode(directionsMode),
           'src': 'com.map_launcher',
@@ -106,14 +102,16 @@ String getMapDirectionsUrl({
       );
 
     case MapType.citymapper:
+      Map<String, String?> addr(Waypoint p, String prefix) {
+        return {
+          '${prefix}coord': '${p.latitude},${p.longitude}',
+          '${prefix}name': p.title,
+        };
+      }
+
       return Utils.buildUrl(url: 'citymapper://directions', queryParams: {
-        'endcoord': '${destination.latitude},${destination.longitude}',
-        'endname': destinationTitle,
-        'startcoord': Utils.nullOrValue(
-          origin,
-          '${origin?.latitude},${origin?.longitude}',
-        ),
-        'startname': originTitle,
+        ...addr(destination, 'end'),
+        if (origin != null) ...addr(origin, 'start'),
         ...(extraParams ?? {}),
       });
 
@@ -125,7 +123,7 @@ String getMapDirectionsUrl({
           queryParams: {
             'lat': '${destination.latitude}',
             'lon': '${destination.longitude}',
-            'title': destinationTitle,
+            'title': destination.title,
             ...(extraParams ?? {}),
           },
         );
@@ -153,59 +151,93 @@ String getMapDirectionsUrl({
         queryParams: {
           'v': '1',
           'll': '${destination.latitude},${destination.longitude}',
-          'n': destinationTitle,
+          'n': destination.title,
           ...(extraParams ?? {}),
         },
       );
 
     case MapType.yandexMaps:
+      String addr(Waypoint p) => '${p.latitude},${p.longitude}';
+
       return Utils.buildUrl(
         url: 'yandexmaps://maps.yandex.com/',
         queryParams: {
-          'rtext':
-              '${origin?.latitude},${origin?.longitude}~${destination.latitude},${destination.longitude}',
+          'rtext': [
+            if (origin != null) addr(origin),
+            addr(destination),
+          ].join('~'),
           'rtt': Utils.getYandexMapsDirectionsMode(directionsMode),
           ...(extraParams ?? {}),
         },
       );
 
     case MapType.yandexNavi:
+      Map<String, String?> addr(Waypoint p, String suffix) {
+        return {
+          'lat_$suffix': '${p.latitude}',
+          'lon_$suffix': '${p.longitude}',
+        };
+      }
+
       return Utils.buildUrl(
         url: 'yandexnavi://build_route_on_map',
         queryParams: {
-          'lat_to': '${destination.latitude}',
-          'lon_to': '${destination.longitude}',
-          'lat_from': Utils.nullOrValue(origin, '${origin?.latitude}'),
-          'lon_from': Utils.nullOrValue(origin, '${origin?.longitude}'),
+          ...addr(destination, 'to'),
+          if (origin != null) ...addr(origin, 'from'),
         },
       );
 
     case MapType.doubleGis:
+      String addr(Waypoint p, String prefix) =>
+          '$prefix/${p.longitude},${p.latitude}';
+
       return Utils.buildUrl(
-        url:
-            'dgis://2gis.ru/routeSearch/rsType/${Utils.getDoubleGisDirectionsMode(directionsMode)}/${origin == null ? '' : 'from/${origin.longitude},${origin.latitude}/'}to/${destination.longitude},${destination.latitude}',
+        url: [
+          'dgis://2gis.ru/routeSearch/rsType',
+          Utils.getDoubleGisDirectionsMode(directionsMode),
+          if (origin != null) addr(origin, 'from'),
+          addr(destination, 'to')
+        ].join('/'),
         queryParams: {
           ...(extraParams ?? {}),
         },
       );
 
     case MapType.tencent:
+      Map<String, String?> addr(Waypoint p, String prefix) {
+        return {
+          prefix: p.title,
+          '${prefix}coord': '${p.latitude},${p.longitude}',
+        };
+      }
+
       return Utils.buildUrl(
         url: 'qqmap://map/routeplan',
         queryParams: {
-          'from': originTitle,
-          'fromcoord': '${origin?.latitude},${origin?.longitude}',
-          'to': destinationTitle,
-          'tocoord': '${destination.latitude},${destination.longitude}',
+          if (origin != null) ...addr(origin, 'from'),
+          ...addr(destination, 'to'),
           'type': Utils.getTencentDirectionsMode(directionsMode),
           ...(extraParams ?? {}),
         },
       );
 
     case MapType.here:
+      String addr(Waypoint p) {
+        final title = p.title;
+        return [
+          p.latitude,
+          p.longitude,
+          if (title != null) Uri.encodeComponent(title),
+        ].join(',');
+      }
+
       return Utils.buildUrl(
-        url:
-            'https://share.here.com/r/${origin?.latitude},${origin?.longitude},$originTitle/${destination.latitude},${destination.longitude}',
+        url: [
+          'here-route:/',
+          if (origin != null) '/${addr(origin)}',
+          if (waypoints != null) ...waypoints.map(addr),
+          '/${addr(destination)}',
+        ].join('/'),
         queryParams: {
           'm': Utils.getHereDirectionsMode(directionsMode),
           ...(extraParams ?? {}),
@@ -213,13 +245,12 @@ String getMapDirectionsUrl({
       );
 
     case MapType.petal:
+      String addr(Waypoint p, String defaultTitle) =>
+          '${p.latitude},${p.longitude} (${p.title ?? defaultTitle})';
+
       return Utils.buildUrl(url: 'petalmaps://route', queryParams: {
-        'daddr':
-            '${destination.latitude},${destination.longitude} (${destinationTitle ?? 'Destination'})',
-        'saddr': Utils.nullOrValue(
-          origin,
-          '${origin?.latitude},${origin?.longitude} (${originTitle ?? 'Origin'})',
-        ),
+        'daddr': addr(destination, 'Destination'),
+        if (origin != null) 'saddr': addr(origin, 'Origin'),
         'type': Utils.getTencentDirectionsMode(directionsMode),
         ...(extraParams ?? {}),
       });
@@ -251,9 +282,9 @@ String getMapDirectionsUrl({
         queryParams: {
           'type': 'LOCATION',
           'action': 'GOTO',
-          'name': destinationTitle ?? '',
-          'lat': "${destination.latitude}",
-          'long': "${destination.longitude}",
+          'name': destination.title ?? '',
+          'lat': '${destination.latitude}',
+          'long': '${destination.longitude}',
           ...(extraParams ?? {}),
         },
       );
@@ -271,8 +302,9 @@ String getMapDirectionsUrl({
       // Documentation:
       // https://www.sygic.com/developers/professional-navigation-sdk/introduction
       return Utils.buildUrl(
-        url:
-            'com.sygic.aura://coordinate|${destination.longitude}|${destination.latitude}|drive',
+        url: 'com.sygic.aura://coordinate'
+            '|${destination.longitude}|${destination.latitude}'
+            '|drive',
         queryParams: {
           ...(extraParams ?? {}),
         },
@@ -312,15 +344,19 @@ String getMapDirectionsUrl({
       );
 
     case MapType.naver:
+      Map<String, String?> addr(Waypoint p, String prefix) {
+        return {
+          '${prefix}lat': '${p.latitude}',
+          '${prefix}lng': '${p.longitude}',
+          '${prefix}name': p.title,
+        };
+      }
+
       return Utils.buildUrl(
         url: 'nmap://route/car',
         queryParams: {
-          'slat': origin?.latitude.toString(),
-          'slng': origin?.longitude.toString(),
-          'sname': originTitle,
-          'dlat': '${destination.latitude}',
-          'dlng': '${destination.longitude}',
-          'dname': destinationTitle,
+          if (origin != null) ...addr(origin, 's'),
+          ...addr(destination, 'd'),
           ...(extraParams ?? {}),
         },
       );
@@ -337,15 +373,19 @@ String getMapDirectionsUrl({
       );
 
     case MapType.tmap:
+      Map<String, String?> addr(Waypoint p, String prefix) {
+        return {
+          '${prefix}name': p.title,
+          '${prefix}x': '${p.longitude}',
+          '${prefix}y': '${p.latitude}',
+        };
+      }
+
       return Utils.buildUrl(
         url: 'tmap://route',
         queryParams: {
-          'startname': originTitle,
-          'startx': origin?.longitude.toString(),
-          'starty': origin?.latitude.toString(),
-          'goalname': destinationTitle,
-          'goaly': '${destination.latitude}',
-          'goalx': '${destination.longitude}',
+          if (origin != null) ...addr(origin, 'start'),
+          ...addr(destination, 'goal'),
           'carType': '1',
           ...(extraParams ?? {}),
         },

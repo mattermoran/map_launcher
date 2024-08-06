@@ -51,10 +51,8 @@ class MapLauncher {
   /// and shows directions to [destination]
   static Future<dynamic> showDirections({
     required MapType mapType,
-    required Coords destination,
-    String? destinationTitle,
-    Coords? origin,
-    String? originTitle,
+    required Waypoint destination,
+    Waypoint? origin,
     List<Waypoint>? waypoints,
     DirectionsMode? directionsMode = DirectionsMode.driving,
     Map<String, String>? extraParams,
@@ -62,9 +60,7 @@ class MapLauncher {
     final url = getMapDirectionsUrl(
       mapType: mapType,
       destination: destination,
-      destinationTitle: destinationTitle,
       origin: origin,
-      originTitle: originTitle,
       waypoints: waypoints,
       directionsMode: directionsMode,
       extraParams: extraParams,
@@ -73,13 +69,12 @@ class MapLauncher {
     final Map<String, dynamic> args = {
       'mapType': Utils.enumToString(mapType),
       'url': Uri.encodeFull(url),
-      'destinationTitle': destinationTitle,
+      'destinationTitle': destination.title,
       'destinationLatitude': destination.latitude.toString(),
       'destinationLongitude': destination.longitude.toString(),
-      'destinationtitle': destinationTitle,
       'originLatitude': origin?.latitude.toString(),
       'originLongitude': origin?.longitude.toString(),
-      'originTitle': originTitle,
+      'originTitle': origin?.title,
       'directionsMode': Utils.enumToString(directionsMode),
       'waypoints': (waypoints ?? [])
           .map((waypoint) => {

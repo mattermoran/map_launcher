@@ -138,13 +138,16 @@ class _ShowDirectionsState extends State<ShowDirections> {
                   context: context,
                   onMapTap: (map) {
                     map.showDirections(
-                      destination: Coords(
+                      destination: Waypoint(
                         destinationLatitude,
                         destinationLongitude,
+                        destinationTitle,
                       ),
-                      destinationTitle: destinationTitle,
-                      origin: Coords(originLatitude, originLongitude),
-                      originTitle: originTitle,
+                      origin: Waypoint(
+                        originLatitude,
+                        originLongitude,
+                        originTitle,
+                      ),
                       waypoints: waypoints,
                       directionsMode: directionsMode,
                     );
