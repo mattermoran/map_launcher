@@ -13,12 +13,6 @@ class Utils {
         .firstWhere((type) => type.toString().split('.').last == value);
   }
 
-  // static String? nullOrValue(dynamic nullable, String value) {
-  //   if (nullable == null) return null;
-  //   return value;
-  // }
-
-
   /// Constructs a url from [url] and [queryParams]
   static String buildUrl({
     required String url,
