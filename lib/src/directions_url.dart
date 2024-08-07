@@ -236,7 +236,7 @@ String getMapDirectionsUrl({
           'here-route:/',
           if (origin != null) addr(origin) else 'mylocation',
           if (waypoints != null) ...waypoints.map(addr),
-          (addr(destination)),
+          addr(destination),
         ].join('/'),
         queryParams: {
           'm': Utils.getHereDirectionsMode(directionsMode),
