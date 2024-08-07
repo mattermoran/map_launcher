@@ -227,16 +227,16 @@ String getMapDirectionsUrl({
         return [
           p.latitude,
           p.longitude,
-          if (title != null) Uri.encodeComponent(title),
+          if (title != null) title,
         ].join(',');
       }
 
       return Utils.buildUrl(
         url: [
           'here-route:/',
-          if (origin != null) '/${addr(origin)}',
+          if (origin != null) addr(origin) else 'mylocation',
           if (waypoints != null) ...waypoints.map(addr),
-          '/${addr(destination)}',
+          (addr(destination)),
         ].join('/'),
         queryParams: {
           'm': Utils.getHereDirectionsMode(directionsMode),
