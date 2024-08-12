@@ -62,6 +62,7 @@
 			<string>kakaomap</string>
 			<string>tmap</string>
 			<string>szn-mapy</string>
+			<string>mappls</string>
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>

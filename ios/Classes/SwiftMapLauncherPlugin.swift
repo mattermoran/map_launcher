@@ -25,6 +25,7 @@ private enum MapType: String {
     case kakao
     case tmap
     case mapyCz
+    case mmi
 
     func type() -> String {
         return self.rawValue
@@ -73,6 +74,7 @@ private let maps: [Map] = [
     Map(mapName: "Kakao Maps", mapType: MapType.kakao, urlPrefix: "kakaomap://"),
     Map(mapName: "TMap", mapType: MapType.tmap, urlPrefix: "tmap://"),
     Map(mapName: "Mapy CZ", mapType: MapType.mapyCz, urlPrefix: "szn-mapy://")
+    Map(mapName: "Mappls MapmyIndia", mapType: MapType.mmi, urlPrefix: "mappls://")
 ]
 
 private func getMapByRawMapType(type: String) -> Map? {
