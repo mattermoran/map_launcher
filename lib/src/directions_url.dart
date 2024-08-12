@@ -361,26 +361,25 @@ String getMapDirectionsUrl({
       );
 
     case MapType.mmi:
-      var query = "";
+      var query = '';
       if (origin != null) {
-        query = query +
-            "${origin.latitude},${origin.longitude}${originTitle != null ? ",$originTitle" : ""}";
+        query = '$query${origin.latitude},${origin.longitude}${originTitle != null ? ',$originTitle' : ''}';
       }
       var viaPoints = "";
+
       if (waypoints != null) {
-        waypoints.forEach((element) {
+        for (Waypoint element in waypoints){
           if (viaPoints.isNotEmpty) {
-            viaPoints = viaPoints + ";";
+            viaPoints = '$viaPoints;';
           }
-          viaPoints = viaPoints +
-              "${element.latitude},${element.longitude}${element.title != null ? ",${element.title}" : ""}";
-        });
+          viaPoints = '$viaPoints${element.latitude},${element.longitude}${ element.title ?? ''}';
+        }
       }
+
       if (query.isNotEmpty) {
-        query = query + ";";
+        query = '$query;';
       }
-      query = query +
-          "${destination.latitude},${destination.longitude}${destinationTitle != null ? ",$destinationTitle" : ""}";
+      query = '$query${destination.latitude},${destination.longitude}${destinationTitle != null ? ',$destinationTitle' : ''}';
 
       var mode = 'driving';
       if(directionsMode != null) {
@@ -407,5 +406,5 @@ String getMapDirectionsUrl({
           url: "https://mappls.com/navigation",
           queryParams: {'places': query, 'viaPoints': viaPoints, 'mode': mode});
   }
-  }
+
 }

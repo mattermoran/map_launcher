@@ -62,7 +62,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             MapModel(MapType.naver, "Naver Map", "com.nhn.android.nmap", "nmap://"),
             MapModel(MapType.kakao, "Kakao Maps", "net.daum.android.map", "kakaomap://"),
             MapModel(MapType.tmap, "TMap", "com.skt.tmap.ku", "tmap://"),
-            MapModel(MapType.mapyCz, "Mapy CZ", "cz.seznam.mapy", "https://")
+            MapModel(MapType.mapyCz, "Mapy CZ", "cz.seznam.mapy", "https://"),
             MapModel(MapType.mmi, "Mappls MapmyIndia","com.mmi.maps","mappls://")
     )
 
