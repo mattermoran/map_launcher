@@ -73,7 +73,7 @@ private let maps: [Map] = [
     Map(mapName: "Naver Map", mapType: MapType.naver, urlPrefix: "nmap://"),
     Map(mapName: "Kakao Maps", mapType: MapType.kakao, urlPrefix: "kakaomap://"),
     Map(mapName: "TMap", mapType: MapType.tmap, urlPrefix: "tmap://"),
-    Map(mapName: "Mapy CZ", mapType: MapType.mapyCz, urlPrefix: "szn-mapy://")
+    Map(mapName: "Mapy CZ", mapType: MapType.mapyCz, urlPrefix: "szn-mapy://"),
     Map(mapName: "Mappls MapmyIndia", mapType: MapType.mmi, urlPrefix: "mappls://")
 ]
 
