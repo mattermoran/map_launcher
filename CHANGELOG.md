@@ -1,3 +1,6 @@
+## 3.4.0
+- Remove support for apps using android v1 embedding
+
 ## 3.3.1
 - Remove support for Maps.me on android as it stopped working a while ago
 
