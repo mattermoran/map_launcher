@@ -25,17 +25,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "map_launcher")
         this.context = flutterPluginBinding.applicationContext
-        channel?.setMethodCallHandler(this)
-    }
-
-    companion object {
-        fun registerWith(
-                @NonNull registrar: io.flutter.plugin.common.PluginRegistry.Registrar) {
-            val mapLauncherPlugin = MapLauncherPlugin()
-            mapLauncherPlugin.channel = MethodChannel(registrar.messenger(), "map_launcher")
-            mapLauncherPlugin.context = registrar.context()
-            mapLauncherPlugin.channel?.setMethodCallHandler(mapLauncherPlugin)
-        }
+        channel.setMethodCallHandler(this)
     }
 
     private val maps = listOf(
@@ -117,7 +107,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
-    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
     }
 }
