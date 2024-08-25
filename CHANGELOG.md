@@ -1,3 +1,6 @@
+## 3.5.0
+- Add Mappls MapmyIndia (@Ajaay7 & @Saksham66)
+
 ## 3.4.0
 - Remove support for apps using android v1 embedding
 

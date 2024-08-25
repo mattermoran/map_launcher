@@ -337,9 +337,11 @@ String getMapMarkerUrl({
         },
       );
 
-    case MapType.mmi:
-      return Utils.buildUrl(url:'https://www.mappls.com/location/${coords.latitude},${coords.longitude}', queryParams: {
-      });
-
+    case MapType.mappls:
+      return Utils.buildUrl(
+        url:
+            'https://www.mappls.com/location/${coords.latitude},${coords.longitude}',
+        queryParams: {},
+      );
   }
 }

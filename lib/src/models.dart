@@ -88,7 +88,7 @@ enum MapType {
   mapyCz,
 
   // MAPPLS MapmyIndia
-  mmi,
+  mappls,
 }
 
 /// Defines the supported modes of transportation for [showDirections]

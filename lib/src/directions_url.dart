@@ -360,30 +360,33 @@ String getMapDirectionsUrl({
         },
       );
 
-    case MapType.mmi:
+    case MapType.mappls:
       var query = '';
       if (origin != null) {
-        query = '$query${origin.latitude},${origin.longitude}${originTitle != null ? ',$originTitle' : ''}';
+        query =
+            '$query${origin.latitude},${origin.longitude}${originTitle != null ? ',$originTitle' : ''}';
       }
       var viaPoints = "";
 
       if (waypoints != null) {
-        for (Waypoint element in waypoints){
+        for (Waypoint element in waypoints) {
           if (viaPoints.isNotEmpty) {
             viaPoints = '$viaPoints;';
           }
-          viaPoints = '$viaPoints${element.latitude},${element.longitude}${ element.title ?? ''}';
+          viaPoints =
+              '$viaPoints${element.latitude},${element.longitude}${element.title ?? ''}';
         }
       }
 
       if (query.isNotEmpty) {
         query = '$query;';
       }
-      query = '$query${destination.latitude},${destination.longitude}${destinationTitle != null ? ',$destinationTitle' : ''}';
+      query =
+          '$query${destination.latitude},${destination.longitude}${destinationTitle != null ? ',$destinationTitle' : ''}';
 
       var mode = 'driving';
-      if(directionsMode != null) {
-        switch(directionsMode) {
+      if (directionsMode != null) {
+        switch (directionsMode) {
           case DirectionsMode.driving:
             mode = 'driving';
             break;
@@ -403,8 +406,12 @@ String getMapDirectionsUrl({
       }
 
       return Utils.buildUrl(
-          url: "https://mappls.com/navigation",
-          queryParams: {'places': query, 'viaPoints': viaPoints, 'mode': mode});
+        url: "https://mappls.com/navigation",
+        queryParams: {
+          'places': query,
+          'viaPoints': viaPoints,
+          'mode': mode,
+        },
+      );
   }
-
 }
