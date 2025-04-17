@@ -140,4 +140,19 @@ class Utils {
         return 'd';
     }
   }
+
+  /// Returns [DirectionsMode] for [MapType.apple]
+  static String? getAppleDirectionsMode(DirectionsMode? directionsMode) {
+    switch (directionsMode) {
+      case DirectionsMode.driving:
+        return 'd';
+      case DirectionsMode.walking:
+        return 'w';
+      case DirectionsMode.transit:
+        return 'r';
+      case DirectionsMode.bicycling:
+      case null:
+        return null;
+    }
+  }
 }
