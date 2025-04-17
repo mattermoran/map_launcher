@@ -12,10 +12,10 @@ dependencies:
     sdk: flutter
   map_launcher:
     path: ../
-  flutter_svg: ^0.21.0
+  flutter_svg: ^2.0.17
 
 dev_dependencies:
-  flutter_lints: ^3.0.1
+  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
 
