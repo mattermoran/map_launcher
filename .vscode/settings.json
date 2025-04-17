@@ -8,5 +8,5 @@
   },
   "editor.rulers": [],
   "files.insertFinalNewline": true,
-  "dart.flutterSdkPath": ".fvm/versions/3.24.0"
+  "dart.flutterSdkPath": ".fvm/versions/3.29.3"
 }
