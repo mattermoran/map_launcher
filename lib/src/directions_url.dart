@@ -413,5 +413,14 @@ String getMapDirectionsUrl({
           'mode': mode,
         },
       );
+    case MapType.moovit:
+      return Utils.buildUrl(
+        url: "moovit://directions",
+        queryParams: {
+          'dest_lat': origin?.latitude.toString(),
+          'dest_lon': origin?.longitude.toString(),
+          'dest_name': originTitle
+        },
+      );
   }
 }

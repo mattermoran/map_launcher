@@ -89,6 +89,9 @@ enum MapType {
 
   // MAPPLS MapmyIndia
   mappls,
+
+  // Moovit
+  moovit,
 }
 
 /// Defines the supported modes of transportation for [showDirections]

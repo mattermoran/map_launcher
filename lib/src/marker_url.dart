@@ -343,5 +343,15 @@ String getMapMarkerUrl({
             'https://www.mappls.com/location/${coords.latitude},${coords.longitude}',
         queryParams: {},
       );
+
+    case MapType.moovit:
+      return Utils.buildUrl(
+        url: 'moovit://directions',
+        queryParams: {
+          'dest_lat': '${coords.latitude}',
+          'dest_lon': '${coords.longitude}',
+          'dest_name': title,
+        },
+      );
   }
 }
