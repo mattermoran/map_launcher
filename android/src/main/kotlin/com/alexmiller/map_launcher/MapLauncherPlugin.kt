@@ -28,16 +28,6 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
         channel?.setMethodCallHandler(this)
     }
 
-    companion object {
-        fun registerWith(
-                @NonNull registrar: io.flutter.plugin.common.PluginRegistry.Registrar) {
-            val mapLauncherPlugin = MapLauncherPlugin()
-            mapLauncherPlugin.channel = MethodChannel(registrar.messenger(), "map_launcher")
-            mapLauncherPlugin.context = registrar.context()
-            mapLauncherPlugin.channel?.setMethodCallHandler(mapLauncherPlugin)
-        }
-    }
-
     private val maps = listOf(
             MapModel(MapType.google, "Google Maps", "com.google.android.apps.maps", "geo://"),
             MapModel(MapType.googleGo, "Google Maps Go", "com.google.android.apps.mapslite", "geo://"),
