@@ -165,8 +165,9 @@ String getMapDirectionsUrl({
       return Utils.buildUrl(
         url: 'yandexmaps://maps.yandex.com/',
         queryParams: {
-          'rtext':
-              '${origin?.latitude},${origin?.longitude}~${destination.latitude},${destination.longitude}',
+          'rtext': '${origin?.latitude},${origin?.longitude}~'
+              '${waypoints?.map((waypoint) => '${waypoint.latitude},${waypoint.longitude}~').join() ?? ''}'
+              '${destination.latitude},${destination.longitude}',
           'rtt': Utils.getYandexMapsDirectionsMode(directionsMode),
           ...?extraParams,
         },
@@ -180,6 +181,10 @@ String getMapDirectionsUrl({
           'lon_to': '${destination.longitude}',
           'lat_from': Utils.nullOrValue(origin, '${origin?.latitude}'),
           'lon_from': Utils.nullOrValue(origin, '${origin?.longitude}'),
+          for (var i = 0; i < (waypoints?.length ?? 0); i++) ...{
+            'lat_via_$i': '${waypoints?[i].latitude}',
+            'lon_via_$i': '${waypoints?[i].longitude}',
+          },
         },
       );
 
