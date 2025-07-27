@@ -22,9 +22,7 @@ class _MapLauncherDemoState extends State<MapLauncherDemo> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Map Launcher Demo'),
-        ),
+        appBar: AppBar(title: const Text('Map Launcher Demo')),
         body: widgets[selectedTabIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: selectedTabIndex,

@@ -92,12 +92,7 @@ enum MapType {
 }
 
 /// Defines the supported modes of transportation for [showDirections]
-enum DirectionsMode {
-  driving,
-  walking,
-  transit,
-  bicycling,
-}
+enum DirectionsMode { driving, walking, transit, bicycling }
 
 /// Class that holds latitude and longitude coordinates
 class Coords {
@@ -113,7 +108,7 @@ class Waypoint {
   final String? title;
 
   Waypoint(double latitude, double longitude, [this.title])
-      : coords = Coords(latitude, longitude);
+    : coords = Coords(latitude, longitude);
 
   double get latitude => coords.latitude;
   double get longitude => coords.longitude;
@@ -132,18 +127,16 @@ class AvailableMap {
   });
 
   /// Parses json object to [AvailableMap]
-  static AvailableMap? fromJson(json) {
-    final MapType? mapType =
-        Utils.enumFromString(MapType.values, json['mapType']);
-    if (mapType != null) {
-      return AvailableMap(
-        mapName: json['mapName'],
-        mapType: mapType,
-        icon: 'packages/map_launcher/assets/icons/${json['mapType']}.svg',
-      );
-    } else {
-      return null;
-    }
+  static AvailableMap fromJson(json) {
+    final MapType mapType = Utils.enumFromString(
+      MapType.values,
+      json['mapType'],
+    );
+    return AvailableMap(
+      mapName: json['mapName'],
+      mapType: mapType,
+      icon: 'packages/map_launcher/assets/icons/${json['mapType']}.svg',
+    );
   }
 
   /// Launches current map and shows marker at `coords`
@@ -188,6 +181,6 @@ class AvailableMap {
 
   @override
   String toString() {
-    return 'AvailableMap { mapName: $mapName, mapType: ${Utils.enumToString(mapType)} }';
+    return 'AvailableMap { mapName: $mapName, mapType: ${mapType.name} }';
   }
 }

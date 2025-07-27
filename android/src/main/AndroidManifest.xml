@@ -1,33 +1,33 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.alexmiller.map_launcher">
+  package="dev.fluttered.map_launcher">
 
-    <queries>
-        <package android:name="com.google.android.apps.maps" />
-        <package android:name="com.google.android.apps.mapslite" />
-        <package android:name="com.autonavi.minimap" />
-        <package android:name="com.baidu.BaiduMap" />
-        <package android:name="com.waze" />
-        <package android:name="ru.yandex.yandexnavi" />
-        <package android:name="ru.yandex.yandexmaps" />
-        <package android:name="com.citymapper.app.release" />
-        <package android:name="com.mapswithme.maps.pro" />
-        <package android:name="net.osmand" />
-        <package android:name="net.osmand.plus" />
-        <package android:name="ru.dublgis.dgismobile" />
-        <package android:name="com.tencent.map" />
-        <package android:name="com.here.app.maps" />
-        <package android:name="com.huawei.maps.app" />
-        <package android:name="com.alk.copilot.mapviewer" />
-        <package android:name="com.tomtom.gplay.navapp"/>
-        <package android:name="com.tomtom.gplay.navapp.gofleet"/>
-        <package android:name="com.sygic.truck"/>
-        <package android:name="nl.flitsmeister" />
-        <package android:name="nl.flitsmeister.flux" />
-        <package android:name="com.nhn.android.nmap" />
-        <package android:name="net.daum.android.map" />
-        <package android:name="com.skt.tmap.ku" />
-        <package android:name="cz.seznam.mapy" />
-        <package android:name="com.mmi.maps" />
-    </queries>
+  <queries>
+    <package android:name="com.google.android.apps.maps" />
+    <package android:name="com.google.android.apps.mapslite" />
+    <package android:name="com.autonavi.minimap" />
+    <package android:name="com.baidu.BaiduMap" />
+    <package android:name="com.waze" />
+    <package android:name="ru.yandex.yandexnavi" />
+    <package android:name="ru.yandex.yandexmaps" />
+    <package android:name="com.citymapper.app.release" />
+    <package android:name="com.mapswithme.maps.pro" />
+    <package android:name="net.osmand" />
+    <package android:name="net.osmand.plus" />
+    <package android:name="ru.dublgis.dgismobile" />
+    <package android:name="com.tencent.map" />
+    <package android:name="com.here.app.maps" />
+    <package android:name="com.huawei.maps.app" />
+    <package android:name="com.alk.copilot.mapviewer" />
+    <package android:name="com.tomtom.gplay.navapp" />
+    <package android:name="com.tomtom.gplay.navapp.gofleet" />
+    <package android:name="com.sygic.truck" />
+    <package android:name="nl.flitsmeister" />
+    <package android:name="nl.flitsmeister.flux" />
+    <package android:name="com.nhn.android.nmap" />
+    <package android:name="net.daum.android.map" />
+    <package android:name="com.skt.tmap.ku" />
+    <package android:name="cz.seznam.mapy" />
+    <package android:name="com.mmi.maps" />
+  </queries>
 
 </manifest>

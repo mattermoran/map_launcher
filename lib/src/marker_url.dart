@@ -21,7 +21,7 @@ String getMapMarkerUrl({
           'q':
               '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
           'zoom': '$zoomLevel',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -32,7 +32,7 @@ String getMapMarkerUrl({
           'q':
               '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
           'zoom': '$zoomLevel',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -46,7 +46,7 @@ String getMapMarkerUrl({
           'lon': '${coords.longitude}',
           'zoom': '$zoomLevel',
           'dev': '0',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -56,13 +56,14 @@ String getMapMarkerUrl({
         queryParams: {
           'location': '${coords.latitude},${coords.longitude}',
           'title': title ?? 'Title',
-          'content': description ??
+          'content':
+              description ??
               'Description', // baidu fails if no description provided
           'traffic': 'on',
           'src': 'com.map_launcher',
           'coord_type': 'gcj02',
           'zoom': '$zoomLevel',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -71,7 +72,7 @@ String getMapMarkerUrl({
         url: 'http://maps.apple.com/maps',
         queryParams: {
           'saddr': '${coords.latitude},${coords.longitude}',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -81,7 +82,7 @@ String getMapMarkerUrl({
         queryParams: {
           'll': '${coords.latitude},${coords.longitude}',
           'z': '$zoomLevel',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -94,7 +95,7 @@ String getMapMarkerUrl({
           'zoom': '$zoomLevel',
           'no-balloon': '0',
           'desc': '$title',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -105,7 +106,7 @@ String getMapMarkerUrl({
           'pt': '${coords.longitude},${coords.latitude}',
           'z': '$zoomLevel',
           'l': 'map',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -115,7 +116,7 @@ String getMapMarkerUrl({
         queryParams: {
           'endcoord': '${coords.latitude},${coords.longitude}',
           'endname': '$title',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -126,7 +127,7 @@ String getMapMarkerUrl({
           'v': '1',
           'll': '${coords.latitude},${coords.longitude}',
           'n': title,
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -140,7 +141,7 @@ String getMapMarkerUrl({
             'lon': '${coords.longitude}',
             'z': '$zoomLevel',
             'title': title,
-            ...(extraParams ?? {}),
+            ...?extraParams,
           },
         );
       }
@@ -150,7 +151,7 @@ String getMapMarkerUrl({
           'lat': '${coords.latitude}',
           'lon': '${coords.longitude}',
           'z': '$zoomLevel',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -158,9 +159,7 @@ String getMapMarkerUrl({
       if (Platform.isIOS) {
         return Utils.buildUrl(
           url: 'dgis://2gis.ru/geo/${coords.longitude},${coords.latitude}',
-          queryParams: {
-            ...(extraParams ?? {}),
-          },
+          queryParams: {...?extraParams},
         );
       }
 
@@ -169,9 +168,7 @@ String getMapMarkerUrl({
       return Utils.buildUrl(
         url:
             'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.longitude},${coords.latitude}',
-        queryParams: {
-          ...(extraParams ?? {}),
-        },
+        queryParams: {...?extraParams},
       );
 
     case MapType.tencent:
@@ -180,7 +177,7 @@ String getMapMarkerUrl({
         queryParams: {
           'marker':
               'coord:${coords.latitude},${coords.longitude}${title != null ? ';title:$title' : ''}',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -188,10 +185,7 @@ String getMapMarkerUrl({
       return Utils.buildUrl(
         url:
             'https://share.here.com/l/${coords.latitude},${coords.longitude},$title',
-        queryParams: {
-          'z': '$zoomLevel',
-          ...(extraParams ?? {}),
-        },
+        queryParams: {'z': '$zoomLevel', ...?extraParams},
       );
 
     case MapType.petal:
@@ -200,7 +194,7 @@ String getMapMarkerUrl({
         queryParams: {
           'marker': '${coords.latitude},${coords.longitude}',
           'z': '$zoomLevel',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -211,7 +205,7 @@ String getMapMarkerUrl({
           url: 'tomtomgo://x-callback-url/navigate',
           queryParams: {
             'destination': '${coords.latitude},${coords.longitude}',
-            ...(extraParams ?? {}),
+            ...?extraParams,
           },
         );
       }
@@ -220,7 +214,7 @@ String getMapMarkerUrl({
         queryParams: {
           'q':
               '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -234,7 +228,7 @@ String getMapMarkerUrl({
           'action': 'VIEW',
           'marker': '${coords.latitude},${coords.longitude}',
           'name': title ?? '',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -244,7 +238,7 @@ String getMapMarkerUrl({
         queryParams: {
           'q':
               '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -254,9 +248,7 @@ String getMapMarkerUrl({
       return Utils.buildUrl(
         url:
             'com.sygic.aura://coordinate|${coords.longitude}|${coords.latitude}|show',
-        queryParams: {
-          ...(extraParams ?? {}),
-        },
+        queryParams: {...?extraParams},
       );
 
     case MapType.flitsmeister:
@@ -265,7 +257,7 @@ String getMapMarkerUrl({
           url: 'flitsmeister://',
           queryParams: {
             'geo': '${coords.latitude},${coords.longitude}',
-            ...(extraParams ?? {}),
+            ...?extraParams,
           },
         );
       }
@@ -273,7 +265,7 @@ String getMapMarkerUrl({
         url: 'geo:${coords.latitude},${coords.longitude}',
         queryParams: {
           'q': '${coords.latitude},${coords.longitude}',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -283,7 +275,7 @@ String getMapMarkerUrl({
           url: 'truckmeister://',
           queryParams: {
             'geo': '${coords.latitude},${coords.longitude}',
-            ...(extraParams ?? {}),
+            ...?extraParams,
           },
         );
       }
@@ -291,7 +283,7 @@ String getMapMarkerUrl({
         url: 'geo:${coords.latitude},${coords.longitude}',
         queryParams: {
           'q': '${coords.latitude},${coords.longitude}',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -303,7 +295,7 @@ String getMapMarkerUrl({
           'lng': '${coords.longitude}',
           'zoom': '$zoomLevel',
           'name': title,
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -312,7 +304,7 @@ String getMapMarkerUrl({
         url: 'kakaomap://look',
         queryParams: {
           'p': '${coords.latitude},${coords.longitude}',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
@@ -323,7 +315,7 @@ String getMapMarkerUrl({
           'name': '$title',
           'x': '${coords.longitude}',
           'y': '${coords.latitude}',
-          ...(extraParams ?? {}),
+          ...?extraParams,
         },
       );
 
