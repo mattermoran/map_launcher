@@ -48,7 +48,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^3.5.0
+  map_launcher: ^4.0.0
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 
@@ -129,7 +129,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 ##### Maps
 
 | `mapType`       | `coords`                                                                 | `title`                                        | `description` | `zoom`       | `extraParams` |
-|-----------------|--------------------------------------------------------------------------|------------------------------------------------|---------------|--------------|---------------|
+| --------------- | ------------------------------------------------------------------------ | ---------------------------------------------- | ------------- | ------------ | ------------- |
 | `.google`       | ✓                                                                        | iOS only <br /> see Known Issues section below | ✗             | ✓            | ✓             |
 | `.apple`        | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
 | `.googleGo`     | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
@@ -169,7 +169,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 ##### Maps
 
 | `mapType`       | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` | `waypoints`                                  | `extraParams` |
-|-----------------|---------------|--------------------|------------------------------|---------------|------------------|----------------------------------------------|---------------|
+| --------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- | -------------------------------------------- | ------------- |
 | `.google`       | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓ (up to 8 on iOS and unlimited? on android) | ✓             |
 | `.apple`        | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✓             |
 | `.googleGo`     | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓                                            | ✓             |
@@ -194,14 +194,15 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.mappls`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✗             |
 
 ### Extra Params
+
 It's possible to pass some map specific query params like api keys etc using `extraParams` option
 
 Here are known params for some maps:
 
-| `mapType`          | `extraParams`                             |
-| ------------------ | ----------------------------------------- |
-| `.tencent`         | `{ 'referer': '' }`                       |
-| `.yandexNavi`      | `{ 'client': '', 'signature': '' }`       |
+| `mapType`     | `extraParams`                       |
+| ------------- | ----------------------------------- |
+| `.tencent`    | `{ 'referer': '' }`                 |
+| `.yandexNavi` | `{ 'client': '', 'signature': '' }` |
 
 ## Example
 
@@ -277,7 +278,7 @@ class MapLauncherDemo extends StatelessWidget {
 
 ## Known issues
 
-- *[Fixed in Google maps 11.12](https://issuetracker.google.com/issues/129726279#comment175)* Google Maps for Android have a bug that setting label for a marker doesn't work. See more on [Google Issue Tracker](https://issuetracker.google.com/issues/129726279)
+- _[Fixed in Google maps 11.12](https://issuetracker.google.com/issues/129726279#comment175)_ Google Maps for Android have a bug that setting label for a marker doesn't work. See more on [Google Issue Tracker](https://issuetracker.google.com/issues/129726279)
 
 - On iOS it's possible to "delete" Apple Maps which actually just removes it from homescreen and does not actually delete it. Because of that Apple Maps will always show up as available on iOS. You can read more about it [here](https://stackoverflow.com/questions/39603120/how-to-check-if-apple-maps-is-installed)
 
