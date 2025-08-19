@@ -2,7 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/map_launcher)](https://pub.dartlang.org/packages/map_launcher)
 [![likes](https://img.shields.io/pub/likes/map_launcher)](https://pub.dev/packages/map_launcher/score)
-[![popularity](https://img.shields.io/pub/popularity/map_launcher)](https://pub.dev/packages/map_launcher/score)
+![Pub Monthly Downloads](https://img.shields.io/pub/dm/map_launcher)
 [![pub points](https://img.shields.io/pub/points/map_launcher)](https://pub.dev/packages/map_launcher/score)
 [![GitHub stars](https://img.shields.io/github/stars/mattermoran/map_launcher?logo=github)](https://github.com/mattermoran/map_launcher/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/mattermoran/map_launcher?logo=github)](https://github.com/mattermoran/map_launcher/network)
