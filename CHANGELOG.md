@@ -1,3 +1,8 @@
+## 4.0.1
+
+- Fix search param URL encoding ([#201](https://github.com/mattermoran/map_launcher/pull/201))
+- Improve public API documentation ([#200](https://github.com/mattermoran/map_launcher/pull/200))
+
 ## 4.0.0
 
 - Recreate the plugin with new structure to prepare for multiplatform support
