@@ -1,137 +1,175 @@
 import 'package:map_launcher/src/map_launcher.dart';
-import 'package:map_launcher/src/utils.dart';
 
-/// Defines the map types supported by this plugin
+/// Defines the map types supported by this plugin.
 enum MapType {
-  /// Apple Maps
-  /// Only available on iOS
+  /// Apple Maps.
+  /// Available on iOS only.
   apple,
 
-  /// Google Maps
+  /// Google Maps.
   google,
 
-  /// Google Maps Go
-  /// Only available on Android
+  /// Google Maps Go.
+  /// Available on Android only.
   googleGo,
 
-  /// Amap (Gaode Maps)
+  /// Amap (Gaode Maps).
   amap,
 
-  /// Baidu Maps
+  /// Baidu Maps.
   baidu,
 
-  /// Waze
+  /// Waze.
   waze,
 
-  /// Yandex Maps
+  /// Yandex Maps.
   yandexMaps,
 
-  /// Yandex Navi
+  /// Yandex Navi.
   yandexNavi,
 
-  /// Citymapper
+  /// Citymapper.
   citymapper,
 
-  /// Maps.me
+  /// Maps.me.
   mapswithme,
 
-  /// OsmAnd
+  /// OsmAnd.
   osmand,
 
-  /// OsmAnd+
-  /// Only available on Android
+  /// OsmAnd+.
+  /// Available on Android only.
   osmandplus,
 
-  /// DoubleGis
+  /// 2GIS.
   doubleGis,
 
-  /// Tencent (QQ Maps)
+  /// Tencent (QQ Maps).
   tencent,
 
-  /// HERE WeGo
+  /// HERE WeGo.
   here,
 
-  /// Petal Maps
-  /// Only available on Android
+  /// Petal Maps.
+  /// Available on Android only.
   petal,
 
-  /// TomTom Go
+  /// TomTom Go.
   tomtomgo,
 
-  /// TomTom Go Fleet
+  /// TomTom Go Fleet.
   tomtomgofleet,
 
-  /// CoPilot
+  /// CoPilot.
   copilot,
 
-  /// Sygic Truck
+  /// Sygic Truck.
   sygicTruck,
 
-  /// Flitsmeister
-  /// Only available on Android
+  /// Flitsmeister.
+  /// Available on Android only.
   flitsmeister,
 
-  /// Truckmeister
-  /// Only available on Android
+  /// Truckmeister.
+  /// Available on Android only.
   truckmeister,
 
-  // Naver Map
+  /// Naver Map.
   naver,
 
-  // KakaoMap
+  /// KakaoMap.
   kakao,
 
-  // TMAP
+  /// TMAP.
   tmap,
 
-  /// MapyCZ
+  /// MapyCZ.
   mapyCz,
 
-  // MAPPLS MapmyIndia
+  /// MAPPLS MapmyIndia.
   mappls,
 }
 
-/// Defines the supported modes of transportation for [showDirections]
-enum DirectionsMode { driving, walking, transit, bicycling }
+/// Defines the supported modes of transportation for [AvailableMap.showDirections].
+enum DirectionsMode {
+  /// Travel by car or truck.
+  driving,
 
-/// Class that holds latitude and longitude coordinates
+  /// Travel on foot.
+  walking,
+
+  /// Travel using public transit.
+  transit,
+
+  /// Travel by bicycle.
+  bicycling,
+}
+
+/// Represents latitude and longitude coordinates.
 class Coords {
+  /// Latitude in decimal degrees.
   final double latitude;
+
+  /// Longitude in decimal degrees.
   final double longitude;
 
+  /// Creates a [Coords] instance with the given [latitude] and [longitude].
   Coords(this.latitude, this.longitude);
 }
 
-/// Class that holds lat/lng coordinates and optional title
+/// Represents a waypoint with coordinates and an optional title.
 class Waypoint {
+  /// The coordinates of this waypoint.
   final Coords coords;
+
+  /// An optional title for this waypoint.
   final String? title;
 
+  /// Creates a [Waypoint] with [latitude], [longitude], and an optional [title].
   Waypoint(double latitude, double longitude, [this.title])
     : coords = Coords(latitude, longitude);
 
+  /// Latitude in decimal degrees.
   double get latitude => coords.latitude;
+
+  /// Longitude in decimal degrees.
   double get longitude => coords.longitude;
 }
 
-/// Class that holds all the information needed to launch a map
+/// Represents an installed map application that can be launched.
 class AvailableMap {
+  /// Display name of the map application.
   String mapName;
+
+  /// The type of the map application.
   MapType mapType;
+
+  /// Path to the map icon asset (SVG).
+  ///
+  /// To display this icon in your app, use the
+  /// [`flutter_svg`](https://pub.dev/packages/flutter_svg) package:
+  ///
+  /// ```dart
+  /// import 'package:flutter_svg/flutter_svg.dart';
+  ///
+  /// SvgPicture.asset(
+  ///   map.icon,
+  ///   height: 30,
+  ///   width: 30,
+  /// );
+  /// ```
   String icon;
 
+  /// Creates an [AvailableMap] with [mapName], [mapType], and [icon].
   AvailableMap({
     required this.mapName,
     required this.mapType,
     required this.icon,
   });
 
-  /// Parses json object to [AvailableMap]
-  static AvailableMap fromJson(json) {
-    final MapType mapType = Utils.enumFromString(
-      MapType.values,
-      json['mapType'],
-    );
+  /// Creates an [AvailableMap] instance from a JSON object.
+  static AvailableMap fromJson(Map<String, dynamic> json) {
+    final MapType mapType = MapType.values.byName(json['mapType']);
     return AvailableMap(
       mapName: json['mapName'],
       mapType: mapType,
@@ -139,12 +177,18 @@ class AvailableMap {
     );
   }
 
-  /// Launches current map and shows marker at `coords`
+  /// Launches this map and shows a marker at the given [coords].
+  ///
+  /// - [coords]: Coordinates where the marker should be placed.
+  /// - [title]: Title for the marker.
+  /// - [description]: Optional description for the marker.
+  /// - [zoom]: Optional zoom level for the map (default is 16).
+  /// - [extraParams]: Extra map-specific query parameters.
   Future<void> showMarker({
     required Coords coords,
     required String title,
     String? description,
-    int? zoom,
+    int zoom = 16,
     Map<String, String>? extraParams,
   }) {
     return MapLauncher.showMarker(
@@ -157,7 +201,15 @@ class AvailableMap {
     );
   }
 
-  /// Launches current map and shows directions to `destination`
+  /// Launches this map and shows directions to the given [destination].
+  ///
+  /// - [destination]: Coordinates of the destination.
+  /// - [destinationTitle]: Optional label for the destination.
+  /// - [origin]: Optional starting point. If not provided, the map app may use the current location.
+  /// - [originTitle]: Optional label for the origin.
+  /// - [waypoints]: A list of intermediate waypoints along the route.
+  /// - [directionsMode]: Mode of transport (defaults to [DirectionsMode.driving]).
+  /// - [extraParams]: Extra map-specific query parameters.
   Future<void> showDirections({
     required Coords destination,
     String? destinationTitle,
