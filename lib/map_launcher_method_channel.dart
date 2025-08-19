@@ -51,7 +51,7 @@ class MethodChannelMapLauncher extends MapLauncherPlatform {
 
     final Map<String, String?> args = {
       'mapType': mapType.name,
-      'url': Uri.encodeFull(url),
+      'url': url,
       'title': title,
       'description': description,
       'latitude': coords.latitude.toString(),
@@ -95,7 +95,7 @@ class MethodChannelMapLauncher extends MapLauncherPlatform {
 
     final Map<String, dynamic> args = {
       'mapType': mapType.name,
-      'url': Uri.encodeFull(url),
+      'url': url,
       'destinationTitle': destinationTitle,
       'destinationLatitude': destination.latitude.toString(),
       'destinationLongitude': destination.longitude.toString(),

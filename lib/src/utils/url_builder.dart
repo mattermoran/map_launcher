@@ -6,14 +6,15 @@
 ///   [queryParams] will override them.
 String buildUrl({
   required String url,
-  required Map<String, String?> queryParams,
+  required Map<String, String> queryParams,
 }) {
-  return queryParams.entries
-      .fold('$url?', (dynamic previousValue, element) {
-        if (element.value == null || element.value == '') {
-          return previousValue;
-        }
-        return '$previousValue&${element.key}=${element.value}';
-      })
-      .replaceFirst('&', '');
+  final base = Uri.parse(url);
+
+  final cleaned = <String, String>{
+    for (final e in queryParams.entries)
+      if (e.value.trim().isNotEmpty) e.key: e.value,
+  };
+
+  final merged = {...base.queryParameters, ...cleaned};
+  return base.replace(queryParameters: merged).toString();
 }
