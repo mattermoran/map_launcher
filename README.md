@@ -176,8 +176,8 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.amap`         | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.baidu`        | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.waze`         | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
-| `.yandexMaps`   | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
-| `.yandexNavi`   | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.yandexMaps`   | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✓             |
+| `.yandexNavi`   | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✓             |
 | `.citymapper`   | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.mapswithme`   | ✓             | ✓                  | only shows marker            | ✗             | ✗                | ✗                                            | ✓             |
 | `.osmand`       | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
