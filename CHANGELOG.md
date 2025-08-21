@@ -1,3 +1,7 @@
+## 4.1.0
+
+- Add support for swift package manager and bump min ios to 13 ([#205](https://github.com/mattermoran/map_launcher/pull/205))
+
 ## 4.0.2
 
 - Fix parsing available map json ([#204](https://github.com/mattermoran/map_launcher/pull/204))
