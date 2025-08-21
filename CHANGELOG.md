@@ -1,3 +1,7 @@
+## 4.2.0
+
+- feat: add waypoints support for yandex maps and yandex navi ([#206](https://github.com/mattermoran/map_launcher/pull/206)) (@ahmetcj4)
+
 ## 4.1.0
 
 - Add support for swift package manager and bump min ios to 13 ([#205](https://github.com/mattermoran/map_launcher/pull/205))
