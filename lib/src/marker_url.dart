@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:map_launcher/src/models.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
+import 'package:map_launcher/src/utils/utils.dart';
 
 /// Returns a url that is used by [showMarker]
 String getMapMarkerUrl({
@@ -14,22 +15,16 @@ String getMapMarkerUrl({
 }) {
   switch (mapType) {
     case MapType.google:
-      return buildUrl(
-        url: Platform.isIOS ? 'comgooglemaps://' : 'geo:0,0',
-        queryParams: {
-          'q':
-              '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
-          'zoom': zoom.toString(),
-          ...?extraParams,
-        },
-      );
-
     case MapType.googleGo:
+      final titleFormatted = title.isNotNullOrEmpty ? '($title)' : '';
       return buildUrl(
-        url: 'http://maps.google.com/maps',
+        url: mapType == MapType.googleGo
+            ? 'http://maps.google.com/maps'
+            : Platform.isIOS
+            ? 'comgooglemaps://'
+            : 'geo:0,0',
         queryParams: {
-          'q':
-              '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
+          'q': '${coords.latlng}$titleFormatted',
           'zoom': zoom.toString(),
           ...?extraParams,
         },
@@ -50,14 +45,14 @@ String getMapMarkerUrl({
       );
 
     case MapType.baidu:
+      final titleFormatted = title.isNotNullOrEmpty ? title! : 'Pin';
       return buildUrl(
         url: 'baidumap://map/marker',
         queryParams: {
-          'location': '${coords.latitude},${coords.longitude}',
-          'title': title != null && title.isNotEmpty ? title : 'Pin',
-          'content':
-              description ??
-              'Description', // baidu fails if no description provided
+          'location': coords.latlng,
+          'title': titleFormatted,
+          // baidu fails if no description provided
+          'content': description ?? 'Description',
           'traffic': 'on',
           'src': 'com.map_launcher',
           'coord_type': 'gcj02',
@@ -69,17 +64,14 @@ String getMapMarkerUrl({
     case MapType.apple:
       return buildUrl(
         url: 'http://maps.apple.com/maps',
-        queryParams: {
-          'saddr': '${coords.latitude},${coords.longitude}',
-          ...?extraParams,
-        },
+        queryParams: {'saddr': coords.latlng, ...?extraParams},
       );
 
     case MapType.waze:
       return buildUrl(
         url: 'waze://',
         queryParams: {
-          'll': '${coords.latitude},${coords.longitude}',
+          'll': coords.latlng,
           'z': zoom.toString(),
           ...?extraParams,
         },
@@ -102,7 +94,7 @@ String getMapMarkerUrl({
       return buildUrl(
         url: 'yandexmaps://maps.yandex.ru/',
         queryParams: {
-          'pt': '${coords.longitude},${coords.latitude}',
+          'pt': coords.lnglat,
           'z': zoom.toString(),
           'l': 'map',
           ...?extraParams,
@@ -113,7 +105,7 @@ String getMapMarkerUrl({
       return buildUrl(
         url: 'citymapper://directions',
         queryParams: {
-          'endcoord': '${coords.latitude},${coords.longitude}',
+          'endcoord': coords.latlng,
           'endname': ?title,
           ...?extraParams,
         },
@@ -124,7 +116,7 @@ String getMapMarkerUrl({
         url: 'mapsme://map',
         queryParams: {
           'v': '1',
-          'll': '${coords.latitude},${coords.longitude}',
+          'll': coords.latlng,
           'n': ?title,
           ...?extraParams,
         },
@@ -157,7 +149,7 @@ String getMapMarkerUrl({
     case MapType.doubleGis:
       if (Platform.isIOS) {
         return buildUrl(
-          url: 'dgis://2gis.ru/geo/${coords.longitude},${coords.latitude}',
+          url: 'dgis://2gis.ru/geo/${coords.lnglat}',
           queryParams: {...?extraParams},
         );
       }
@@ -165,26 +157,26 @@ String getMapMarkerUrl({
       // android app does not seem to support marker by coordinates
       // so falling back to directions
       return buildUrl(
-        url:
-            'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.longitude},${coords.latitude}',
+        url: 'dgis://2gis.ru/routeSearch/rsType/car/to/${coords.lnglat}',
         queryParams: {...?extraParams},
       );
 
     case MapType.tencent:
+      final titleFormatted = title.isNotNullOrEmpty ? ';title:$title' : '';
       return buildUrl(
         url: 'qqmap://map/marker',
         queryParams: {
-          'marker':
-              'coord:${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? ';title:$title' : ''}',
+          'marker': 'coord:${coords.latlng}$titleFormatted',
           ...?extraParams,
         },
       );
 
     case MapType.here:
-      final safeTitle = title == null ? '' : ',${Uri.encodeComponent(title)}';
+      final titleFormatted = title.isNotNullOrEmpty
+          ? ',${Uri.encodeComponent(title!)}'
+          : '';
       return buildUrl(
-        url:
-            'https://share.here.com/l/${coords.latitude},${coords.longitude}$safeTitle',
+        url: 'https://share.here.com/l/${coords.latlng}$titleFormatted',
         queryParams: {'z': zoom.toString(), ...?extraParams},
       );
 
@@ -192,7 +184,7 @@ String getMapMarkerUrl({
       return buildUrl(
         url: 'petalmaps://poidetail',
         queryParams: {
-          'marker': '${coords.latitude},${coords.longitude}',
+          'marker': coords.latlng,
           'z': zoom.toString(),
           ...?extraParams,
         },
@@ -203,21 +195,15 @@ String getMapMarkerUrl({
         // currently uses the navigate endpoint on iOS, even when just showing a marker
         return buildUrl(
           url: 'tomtomgo://x-callback-url/navigate',
-          queryParams: {
-            'destination': '${coords.latitude},${coords.longitude}',
-            ...?extraParams,
-          },
+          queryParams: {'destination': coords.latlng, ...?extraParams},
         );
       }
-      final safeTitle = title != null && title.isNotEmpty
-          ? '(${Uri.encodeComponent(title)})'
+      final titleFormatted = title.isNotNullOrEmpty
+          ? '(${Uri.encodeComponent(title!)})'
           : '';
       return buildUrl(
-        url: 'geo:${coords.latitude},${coords.longitude}',
-        queryParams: {
-          'q': '${coords.latitude},${coords.longitude}$safeTitle',
-          ...?extraParams,
-        },
+        url: 'geo:${coords.latlng}',
+        queryParams: {'q': '${coords.latlng}$titleFormatted', ...?extraParams},
       );
 
     case MapType.copilot:
@@ -228,7 +214,7 @@ String getMapMarkerUrl({
         queryParams: {
           'type': 'LOCATION',
           'action': 'VIEW',
-          'marker': '${coords.latitude},${coords.longitude}',
+          'marker': coords.latlng,
           'name': ?title,
           ...?extraParams,
         },
@@ -236,20 +222,20 @@ String getMapMarkerUrl({
 
     case MapType.tomtomgofleet:
       return buildUrl(
-        url: 'geo:${coords.latitude},${coords.longitude}',
-        queryParams: {
-          'q':
-              '${coords.latitude},${coords.longitude}${title != null && title.isNotEmpty ? '($title)' : ''}',
-          ...?extraParams,
-        },
+        url: 'geo:${coords.latlng}',
+        queryParams: {'q': '${coords.latlng}${title ?? ''}', ...?extraParams},
       );
 
     case MapType.sygicTruck:
       // Documentation:
       // https://www.sygic.com/developers/professional-navigation-sdk/introduction
       return buildUrl(
-        url:
-            'com.sygic.aura://coordinate|${coords.longitude}|${coords.latitude}|show',
+        url: [
+          'com.sygic.aura://coordinate',
+          coords.longitude,
+          coords.latitude,
+          'show',
+        ].join('|'),
         queryParams: {...?extraParams},
       );
 
@@ -257,36 +243,24 @@ String getMapMarkerUrl({
       if (Platform.isIOS) {
         return buildUrl(
           url: 'flitsmeister://',
-          queryParams: {
-            'geo': '${coords.latitude},${coords.longitude}',
-            ...?extraParams,
-          },
+          queryParams: {'geo': coords.latlng, ...?extraParams},
         );
       }
       return buildUrl(
-        url: 'geo:${coords.latitude},${coords.longitude}',
-        queryParams: {
-          'q': '${coords.latitude},${coords.longitude}',
-          ...?extraParams,
-        },
+        url: 'geo:${coords.latlng}',
+        queryParams: {'q': coords.latlng, ...?extraParams},
       );
 
     case MapType.truckmeister:
       if (Platform.isIOS) {
         return buildUrl(
           url: 'truckmeister://',
-          queryParams: {
-            'geo': '${coords.latitude},${coords.longitude}',
-            ...?extraParams,
-          },
+          queryParams: {'geo': coords.latlng, ...?extraParams},
         );
       }
       return buildUrl(
-        url: 'geo:${coords.latitude},${coords.longitude}',
-        queryParams: {
-          'q': '${coords.latitude},${coords.longitude}',
-          ...?extraParams,
-        },
+        url: 'geo:${coords.latlng}',
+        queryParams: {'q': coords.latlng, ...?extraParams},
       );
 
     case MapType.naver:
@@ -304,10 +278,7 @@ String getMapMarkerUrl({
     case MapType.kakao:
       return buildUrl(
         url: 'kakaomap://look',
-        queryParams: {
-          'p': '${coords.latitude},${coords.longitude}',
-          ...?extraParams,
-        },
+        queryParams: {'p': coords.latlng, ...?extraParams},
       );
 
     case MapType.tmap:
@@ -325,7 +296,7 @@ String getMapMarkerUrl({
       return buildUrl(
         url: 'https://mapy.cz/zakladni',
         queryParams: {
-          'id': '${coords.longitude},${coords.latitude}',
+          'id': coords.lnglat,
           'z': zoom.toString(),
           'source': 'coor',
           ...?extraParams,
@@ -334,8 +305,7 @@ String getMapMarkerUrl({
 
     case MapType.mappls:
       return buildUrl(
-        url:
-            'https://www.mappls.com/location/${coords.latitude},${coords.longitude}',
+        url: 'https://www.mappls.com/location/${coords.latlng}',
         queryParams: {...?extraParams},
       );
   }

@@ -115,6 +115,26 @@ class Coords {
 
   /// Creates a [Coords] instance with the given [latitude] and [longitude].
   Coords(this.latitude, this.longitude);
+
+  /// Returns a string representation of the coordinates in the form
+  /// `"latitude,longitude"`.
+  ///
+  /// Example:
+  /// ```dart
+  /// final coords = Coords(59.3293, 18.0686);
+  /// print(coords.latlng); // "59.3293,18.0686"
+  /// ```
+  String get latlng => '$latitude,$longitude';
+
+  /// Returns a string representation of the coordinates in the form
+  /// `"longitude,latitude"`.
+  ///
+  /// Example:
+  /// ```dart
+  /// final coords = Coords(59.3293, 18.0686);
+  /// print(coords.lnglat); // "18.0686,59.3293"
+  /// ```
+  String get lnglat => '$longitude,$latitude';
 }
 
 /// Represents a waypoint with coordinates and an optional title.
