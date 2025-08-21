@@ -168,7 +168,7 @@ class AvailableMap {
   });
 
   /// Creates an [AvailableMap] instance from a JSON object.
-  static AvailableMap fromJson(Map<String, dynamic> json) {
+  static AvailableMap fromJson(dynamic json) {
     final MapType mapType = MapType.values.byName(json['mapType']);
     return AvailableMap(
       mapName: json['mapName'],
