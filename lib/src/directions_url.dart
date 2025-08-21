@@ -127,16 +127,22 @@ String getMapDirectionsUrl({
       );
 
     case MapType.yandexMaps:
+      // https://yandex.com/dev/yandex-apps-launch-maps/doc/en/
       return buildUrl(
         url: 'yandexmaps://maps.yandex.com/',
         queryParams: {
-          'rtext': [?origin?.latlng, destination.latlng].join('~'),
+          'rtext': [
+            ?origin?.latlng,
+            ...?waypoints?.map((waypoint) => waypoint.coords.latlng),
+            destination.latlng,
+          ].join('~'),
           'rtt': getYandexMapsDirectionsMode(directionsMode),
           ...?extraParams,
         },
       );
 
     case MapType.yandexNavi:
+      // https://yandex.ru/dev/navigator/doc/ru/
       return buildUrl(
         url: 'yandexnavi://build_route_on_map',
         queryParams: {
@@ -144,6 +150,10 @@ String getMapDirectionsUrl({
           'lon_to': destination.longitude.toString(),
           'lat_from': ?origin?.latitude.toString(),
           'lon_from': ?origin?.longitude.toString(),
+          for (var i = 0; i < (waypoints?.length ?? 0); i++) ...{
+            'lat_via_$i': '${waypoints?[i].latitude}',
+            'lon_via_$i': '${waypoints?[i].longitude}',
+          },
           ...?extraParams,
         },
       );
