@@ -1,3 +1,7 @@
+## 4.0.2
+
+- Fix parsing available map json ([#204](https://github.com/mattermoran/map_launcher/pull/204))
+
 ## 4.0.1
 
 - Fix search param URL encoding ([#201](https://github.com/mattermoran/map_launcher/pull/201))
