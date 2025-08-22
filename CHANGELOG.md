@@ -1,3 +1,7 @@
+## 4.3.0
+
+- feat: add support for moovit map ([#207](https://github.com/mattermoran/map_launcher/pull/207)) (@kfiross)
+
 ## 4.2.0
 
 - feat: add waypoints support for yandex maps and yandex navi ([#206](https://github.com/mattermoran/map_launcher/pull/206)) (@ahmetcj4)
