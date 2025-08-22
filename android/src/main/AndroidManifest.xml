@@ -28,6 +28,7 @@
     <package android:name="cz.seznam.mapy" /> <!-- Mapy CZ -->
     <package android:name="com.mmi.maps" /> <!-- Mappls MapmyIndia -->
     <package android:name="com.tranzmate" /> <!-- Moovit -->
+    <package android:name="org.rajman.neshan.traffic.tehran.navigator" /> <!-- Neshan -->
   </queries>
 
 </manifest>

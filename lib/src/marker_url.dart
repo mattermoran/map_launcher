@@ -319,5 +319,21 @@ String getMapMarkerUrl({
           ...?extraParams,
         },
       );
+
+    case MapType.neshan:
+      if (Platform.isIOS) {
+        return buildUrl(
+          url: 'neshan://',
+          queryParams: {'destination': coords.latlng, ...?extraParams},
+        );
+      }
+      return buildUrl(
+        url: 'https://nshn.ir',
+        queryParams: {
+          'lat': coords.latitude.toString(),
+          'lng': coords.longitude.toString(),
+          ...?extraParams,
+        },
+      );
   }
 }

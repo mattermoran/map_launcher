@@ -42,6 +42,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapyCz.svg" width="25"> Mapy.cz
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mappls.svg" width="25"> Mappls MapmyIndia
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/moovit.svg" width="25"> Moovit
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/neshan.svg" width="25"> Neshan
 
 ## Get started
 
@@ -155,6 +156,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.sygicTruck`   | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
 | `.mappls`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
 | `.moovit`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
+| `.neshan`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
 
 ### Show Directions
 
@@ -196,6 +198,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.sygicTruck`   | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
 | `.mappls`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.moovit`       | ✓             | ✓                  | ✓                            | ✓             | ✗                | ✗                                            | ✓             |
+| `.neshan`       | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            | ✓             |
 
 ### Extra Params
 
