@@ -345,5 +345,20 @@ String getMapDirectionsUrl({
           ...?extraParams,
         },
       );
+
+    case MapType.moovit:
+      // https: //moovit.com/developers/deeplinking/
+      return buildUrl(
+        url: 'moovit://directions',
+        queryParams: {
+          'dest_lat': destination.latitude.toString(),
+          'dest_lon': destination.longitude.toString(),
+          'dest_name': ?destinationTitle,
+          'orig_lat': ?origin?.latitude.toString(),
+          'orig_lon': ?origin?.longitude.toString(),
+          'orig_name': ?originTitle,
+          ...?extraParams,
+        },
+      );
   }
 }
