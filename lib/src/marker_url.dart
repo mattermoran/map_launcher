@@ -308,5 +308,16 @@ String getMapMarkerUrl({
         url: 'https://www.mappls.com/location/${coords.latlng}',
         queryParams: {...?extraParams},
       );
+
+    case MapType.moovit:
+      // https: //moovit.com/developers/deeplinking/
+      return buildUrl(
+        url: 'moovit://nearby',
+        queryParams: {
+          'lat': coords.latitude.toString(),
+          'lon': coords.longitude.toString(),
+          ...?extraParams,
+        },
+      );
   }
 }

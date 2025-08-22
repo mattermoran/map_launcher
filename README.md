@@ -41,6 +41,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tmap.svg" width="25"> TMAP
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapyCz.svg" width="25"> Mapy.cz
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mappls.svg" width="25"> Mappls MapmyIndia
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/moovit.svg" width="25"> Moovit
 
 ## Get started
 
@@ -77,6 +78,7 @@ dependencies:
     <string>tmap</string>
     <string>szn-mapy</string>
     <string>mappls</string>
+    <string>moovit</string>
 </array>
 ```
 
@@ -148,10 +150,11 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.petalMaps`    | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
 | `.tomtomgo`     | ✓ <br /> iOS does not support marker <br /> shows directions instead     | ✗                                              | ✗             | ✗            | ✓             |
 | `.copilot`      | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
-| `.flitsmeister` | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✗             |
-| `.truckmeister` | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✗             |
-| `.sygicTruck`   | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✗             |
-| `.mappls`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✗             |
+| `.flitsmeister` | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
+| `.truckmeister` | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
+| `.sygicTruck`   | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
+| `.mappls`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
+| `.moovit`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
 
 ### Show Directions
 
@@ -188,10 +191,11 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.petalMaps`    | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.tomtomgo`     | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
 | `.copilot`      | ✓             | ✓                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
-| `.flitsmeister` | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✗             |
-| `.truckmeister` | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✗             |
-| `.sygicTruck`   | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✗             |
-| `.mappls`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✗             |
+| `.flitsmeister` | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.truckmeister` | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.sygicTruck`   | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.mappls`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.moovit`       | ✓             | ✓                  | ✓                            | ✓             | ✗                | ✗                                            | ✓             |
 
 ### Extra Params
 
