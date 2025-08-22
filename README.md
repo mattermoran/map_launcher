@@ -80,6 +80,7 @@ dependencies:
     <string>szn-mapy</string>
     <string>mappls</string>
     <string>moovit</string>
+    <string>neshan</string>
 </array>
 ```
 
