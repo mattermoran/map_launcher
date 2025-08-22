@@ -91,6 +91,9 @@ enum MapType {
 
   /// Moovit.
   moovit,
+
+  /// Neshan.
+  neshan,
 }
 
 /// Defines the supported modes of transportation for [AvailableMap.showDirections].

@@ -360,5 +360,15 @@ String getMapDirectionsUrl({
           ...?extraParams,
         },
       );
+
+    case MapType.neshan:
+      return buildUrl(
+        url: Platform.isIOS ? 'neshan://' : 'https://nshn.ir/',
+        queryParams: {
+          'origin': ?origin?.latlng,
+          'destination': destination.latlng,
+          ...?extraParams,
+        },
+      );
   }
 }
