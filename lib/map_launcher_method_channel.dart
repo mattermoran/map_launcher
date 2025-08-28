@@ -121,7 +121,7 @@ class MethodChannelMapLauncher extends MapLauncherPlatform {
   /// `false` otherwise.
   @override
   Future<bool> isMapAvailable(MapType mapType) async {
-    final result = methodChannel.invokeMethod('isMapAvailable', {
+    final result = await methodChannel.invokeMethod('isMapAvailable', {
       'mapType': mapType.name,
     });
     return result as bool;
