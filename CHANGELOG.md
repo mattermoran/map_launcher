@@ -1,3 +1,7 @@
+## 4.4.1
+
+- fix: isMapAvailable method regression ([#210](https://github.com/mattermoran/map_launcher/pull/210))
+
 ## 4.4.0
 
 - feat: add support for neshan map ([#208](https://github.com/mattermoran/map_launcher/pull/208)) (@AmirJabbari)
