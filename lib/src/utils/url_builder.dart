@@ -1,20 +1,24 @@
 /// Builds a URL by combining [url] with [queryParams].
 ///
+/// - If [url] already contains query parameters or a fragment (`#`),
+///   they are stripped before adding [queryParams].
 /// - Entries with empty-string values are ignored.
 /// - Parameters are URL-encoded.
-/// - Existing query parameters in [url] are preserved, but keys in
-///   [queryParams] will override them.
 String buildUrl({
   required String url,
   required Map<String, String> queryParams,
 }) {
-  final base = Uri.parse(url);
+  // Strip off any existing query or fragment
+  final baseUrl = url.split('?')[0].split('#')[0];
 
-  final cleaned = <String, String>{
-    for (final e in queryParams.entries)
-      if (e.value.trim().isNotEmpty) e.key: e.value,
+  // Filter out empty values
+  final params = <String, String>{
+    for (final entry in queryParams.entries)
+      if (entry.value.trim().isNotEmpty) entry.key: entry.value,
   };
 
-  final merged = {...base.queryParameters, ...cleaned};
-  return base.replace(queryParameters: merged).toString();
+  if (params.isEmpty) return baseUrl;
+
+  final query = Uri(queryParameters: params).query;
+  return '$baseUrl?$query';
 }
