@@ -50,7 +50,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^4.4.1
+  map_launcher: ^4.4.2
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 

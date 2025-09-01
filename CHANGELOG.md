@@ -1,3 +1,7 @@
+## 4.4.2
+
+- fix: preserve url scheme casing ([#212](https://github.com/mattermoran/map_launcher/pull/212)) (@eryanwcp)
+
 ## 4.4.1
 
 - fix: isMapAvailable method regression ([#210](https://github.com/mattermoran/map_launcher/pull/210))
