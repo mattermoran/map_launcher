@@ -1,3 +1,7 @@
+## 4.4.3
+
+- fix: gracefully handle invalid urls ([#216](https://github.com/mattermoran/map_launcher/pull/216))
+
 ## 4.4.2
 
 - fix: preserve url scheme casing ([#212](https://github.com/mattermoran/map_launcher/pull/212)) (@eryanwcp)
