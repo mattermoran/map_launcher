@@ -115,7 +115,7 @@ private func getDirectionsMode(directionsMode: String?) -> String {
     }
 }
 
-private func showMarker(mapType: MapType, url: String, title: String, latitude: String, longitude: String) {
+private func showMarker(mapType: MapType, url: String, title: String, latitude: String, longitude: String) -> FlutterError? {
     switch mapType {
     case MapType.apple:
         let coordinate = CLLocationCoordinate2DMake(Double(latitude)!, Double(longitude)!)
@@ -127,13 +127,17 @@ private func showMarker(mapType: MapType, url: String, title: String, latitude: 
             MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: region.span)]
         mapItem.name = title
         mapItem.openInMaps(launchOptions: options)
+        return nil
     default:
-        UIApplication.shared.open(URL(string:url)!, options: [:], completionHandler: nil)
-
+        guard let nsUrl = URL(string: url) else {
+            return FlutterError(code: "INVALID_URL", message: "Invalid URL", details: nil)
+        }
+        UIApplication.shared.open(nsUrl, options: [:], completionHandler: nil)
+        return nil
     }
 }
 
-private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originTitle: String?, originLatitude: String?, originLongitude: String?, directionsMode: String?, waypoints: [[String: String?]]?) {
+private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originTitle: String?, originLatitude: String?, originLongitude: String?, directionsMode: String?, waypoints: [[String: String?]]?) -> FlutterError? {
     switch mapType {
     case MapType.apple:
 
@@ -154,9 +158,13 @@ private func showDirections(mapType: MapType, url: String, destinationTitle: Str
             with: [originMapItem] + waypointMapItems + [destinationMapItem],
             launchOptions: [MKLaunchOptionsDirectionsModeKey: getDirectionsMode(directionsMode: directionsMode)]
         )
+        return nil
     default:
-        UIApplication.shared.open(URL(string:url)!, options: [:], completionHandler: nil)
-
+        guard let nsUrl = URL(string: url) else {
+            return FlutterError(code: "INVALID_URL", message: "Invalid URL", details: nil)
+        }
+        UIApplication.shared.open(nsUrl, options: [:], completionHandler: nil)
+        return nil
     }
 }
 
@@ -169,7 +177,10 @@ private func isMapAvailable(map: Map?) -> Bool {
     if map.mapType == MapType.apple {
         return true
     }
-    return UIApplication.shared.canOpenURL(URL(string:map.urlPrefix!)!)
+    guard let urlPrefix = map.urlPrefix, let nsUrl = URL(string: urlPrefix) else {
+        return false
+    }
+    return UIApplication.shared.canOpenURL(nsUrl)
 }
 
 public class MapLauncherPlugin: NSObject, FlutterPlugin {
@@ -198,14 +209,14 @@ public class MapLauncherPlugin: NSObject, FlutterPlugin {
                 return;
             }
 
-            showMarker(
+            let error = showMarker(
                 mapType: MapType(rawValue: mapType)!,
                 url: url,
                 title: title,
                 latitude: latitude,
                 longitude: longitude
             )
-            result(nil)
+            result(error)
 
         case "showDirections":
             let args = call.arguments as! NSDictionary
@@ -230,7 +241,7 @@ public class MapLauncherPlugin: NSObject, FlutterPlugin {
                 return;
             }
 
-            showDirections(
+            let error = showDirections(
                 mapType: MapType(rawValue: mapType)!,
                 url: url,
                 destinationTitle: destinationTitle,
@@ -242,7 +253,7 @@ public class MapLauncherPlugin: NSObject, FlutterPlugin {
                 directionsMode: directionsMode,
                 waypoints: waypoints
             )
-            result(nil)
+            result(error)
 
         case "isMapAvailable":
             let args = call.arguments as! NSDictionary
