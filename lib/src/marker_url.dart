@@ -335,5 +335,16 @@ String getMapMarkerUrl({
           ...?extraParams,
         },
       );
+
+    case MapType.airnavPro:
+      // AirNav Pro does not support markers — falling back to direct-to (directions)
+      final location = '${coords.latitude}_${coords.longitude},0.0';
+      if (Platform.isIOS) {
+        return buildUrl(
+          url: 'airnavpro://direct-to',
+          queryParams: {'coordinates': 'wgs84-decimal', 'location': location, ...?extraParams},
+        );
+      }
+      return 'https://airnavigation.aero/direct-to?coordinates=wgs84-decimal&location=${Uri.encodeComponent(location)}';
   }
 }

@@ -370,5 +370,17 @@ String getMapDirectionsUrl({
           ...?extraParams,
         },
       );
+
+    case MapType.airnavPro:
+      // Documentation: https://airnavigation.aero/manual/en/html/manual/moving-map.html#create-via-url
+      // On Android, airnavpro:// scheme is not supported — HTTPS fallback used instead.
+      final location = '${destination.latitude}_${destination.longitude},0.0';
+      if (Platform.isIOS) {
+        return buildUrl(
+          url: 'airnavpro://direct-to',
+          queryParams: {'coordinates': 'wgs84-decimal', 'location': location, ...?extraParams},
+        );
+      }
+      return 'https://airnavigation.aero/direct-to?coordinates=wgs84-decimal&location=${Uri.encodeComponent(location)}';
   }
 }
