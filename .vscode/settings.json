@@ -2,9 +2,11 @@
   "dart.lineLength": 80,
   "editor.wordWrapColumn": 80,
   "[dart]": {
-    "editor.rulers": [80]
+    "editor.rulers": [
+      80
+    ]
   },
   "editor.rulers": [],
   "files.insertFinalNewline": true,
-  "dart.flutterSdkPath": ".fvm/versions/3.35.1"
+  "dart.flutterSdkPath": ".fvm/versions/3.44.7"
 }

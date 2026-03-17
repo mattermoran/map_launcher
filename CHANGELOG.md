@@ -1,3 +1,28 @@
+## 5.0.0-dev.1
+
+**Breaking Changes:**
+
+- **New builder-style API**: `MapLauncher.marker(location).show()` and `MapLauncher.directions(destination).show()` replace the old `MapLauncher.showMarker()` / `MapLauncher.showDirections()` methods.
+- **Sealed `Location` type**: Use `Location.coords(lat, lng)` / `Location.search('query')` (or shorthand `.coords()` / `.search()`) instead of separate coordinate and search parameters.
+- **`MapType` enum now carries metadata**: Display name, store IDs, and icons are now properties on `MapType` itself, available without platform calls.
+- **`SupportedMap` replaces `AvailableMap`**: Combines `MapType` with runtime installation status.
+- **Minimum SDK**: Requires Dart 3.11+ and Flutter 3.3+.
+
+**New Features:**
+
+- **Desktop & web support**: macOS, Windows, Linux, and web platforms via universal links (HTTPS URLs).
+- **Scheme-to-universal fallback**: On mobile, if a native app scheme URL fails (app not installed), automatically falls back to the universal HTTPS URL.
+- **URL inspection**: `getUrl()`, `getUniversalUrl()`, and `getSchemeUrl()` let you preview URLs without launching.
+- **Extras system**: Type-safe, map-specific parameters via `GoogleExtra`, `AppleExtra`, `WazeExtra`, `TencentExtra`, `YandexNaviExtra`.
+- **`getSupportedMaps()`**: Per-request map discovery that respects capabilities (marker support, search support, waypoint support).
+- **`getAvailableMaps()`**: Platform-wide map discovery returning both installed and universal-link maps.
+- **Store URLs on `MapType`**: `appStoreUrl` and `playStoreUrl` getters for linking to app store pages.
+
+## 4.6.0
+
+- feat: add support for SPEDION Navigation ([#220](https://github.com/mattermoran/map_launcher/pull/220)) (@D3nn7)
+- feat: add support for Magic Earth ([#222](https://github.com/mattermoran/map_launcher/pull/222)) (@APopaMagicLane)
+
 ## 4.5.0
 
 - feat: add support for Air Navigation Pro ([#219](https://github.com/mattermoran/map_launcher/pull/219)) (@BranislavKljaic96)

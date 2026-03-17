@@ -3,4 +3,4 @@ include: package:flutter_lints/flutter.yaml
 linter:
   rules:
     public_member_api_docs: true
-    package_api_docs: true
+    use_null_aware_elements: true
