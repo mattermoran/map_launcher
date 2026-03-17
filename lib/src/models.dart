@@ -94,6 +94,9 @@ enum MapType {
 
   /// Neshan.
   neshan,
+
+  /// Air Navigation Pro.
+  airnavPro,
 }
 
 /// Defines the supported modes of transportation for [AvailableMap.showDirections].

@@ -36,7 +36,8 @@ private enum class MapType {
     mapyCz,
     mappls,
     moovit,
-    neshan
+    neshan,
+    airnavPro,
 }
 
 private class MapModel(
@@ -97,8 +98,9 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
         MapModel(MapType.mapyCz, "Mapy CZ", "cz.seznam.mapy", "https://"),
         MapModel(MapType.mappls, "Mappls MapmyIndia", "com.mmi.maps", "mappls://"),
         MapModel(MapType.moovit, "Moovit", "com.tranzmate", "moovit://"),
-        MapModel(MapType.neshan, "Neshan", "org.rajman.neshan.traffic.tehran.navigator", "https://")
-    )
+        MapModel(MapType.neshan, "Neshan", "org.rajman.neshan.traffic.tehran.navigator", "https://"),
+        MapModel(MapType.airnavPro, "AirNav Pro", "com.xample.airnavigation", "airnavpro://")
+        )
 
     private fun getInstalledMaps(): List<MapModel> {
         return maps.filter { map ->
