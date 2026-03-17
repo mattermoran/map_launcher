@@ -43,6 +43,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mappls.svg" width="25"> Mappls MapmyIndia
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/moovit.svg" width="25"> Moovit
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/neshan.svg" width="25"> Neshan
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/airnavPro.svg" width="25"> Air Navigation Pro
 
 ## Get started
 
@@ -50,7 +51,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: ^4.4.2
+  map_launcher: 4.5.0
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 
@@ -81,6 +82,7 @@ dependencies:
     <string>mappls</string>
     <string>moovit</string>
     <string>neshan</string>
+    <string>airnavpro</string>
 </array>
 ```
 
@@ -158,6 +160,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.mappls`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
 | `.moovit`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
 | `.neshan`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
+| `.airnavPro`    | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
 
 ### Show Directions
 
@@ -200,6 +203,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.mappls`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.moovit`       | ✓             | ✓                  | ✓                            | ✓             | ✗                | ✗                                            | ✓             |
 | `.neshan`       | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            | ✓             |
+| `.airnavPro`    | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
 
 ### Extra Params
 

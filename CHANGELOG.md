@@ -1,3 +1,7 @@
+## 4.5.0
+
+- feat: add support for Air Navigation Pro ([#219](https://github.com/mattermoran/map_launcher/pull/219)) (@BranislavKljaic96)
+
 ## 4.4.3
 
 - fix: gracefully handle invalid urls ([#216](https://github.com/mattermoran/map_launcher/pull/216))
