@@ -382,5 +382,17 @@ String getMapDirectionsUrl({
         );
       }
       return 'https://airnavigation.aero/direct-to?coordinates=wgs84-decimal&location=${Uri.encodeComponent(location)}';
+
+    case MapType.spedionNavigation:
+      final params = <String, String>{
+        if (destinationTitle?.isNotEmpty == true)
+          'q': '($destinationTitle)',
+        ...?extraParams,
+      };
+
+      return buildUrl(
+        url: 'geo:${destination.latlng}',
+        queryParams: params,
+      );
   }
 }

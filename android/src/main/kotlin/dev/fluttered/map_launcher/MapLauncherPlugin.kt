@@ -38,6 +38,7 @@ private enum class MapType {
     moovit,
     neshan,
     airnavPro,
+    spedionNavigation,
 }
 
 private class MapModel(
@@ -99,7 +100,8 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
         MapModel(MapType.mappls, "Mappls MapmyIndia", "com.mmi.maps", "mappls://"),
         MapModel(MapType.moovit, "Moovit", "com.tranzmate", "moovit://"),
         MapModel(MapType.neshan, "Neshan", "org.rajman.neshan.traffic.tehran.navigator", "https://"),
-        MapModel(MapType.airnavPro, "AirNav Pro", "com.xample.airnavigation", "airnavpro://")
+        MapModel(MapType.airnavPro, "AirNav Pro", "com.xample.airnavigation", "airnavpro://"),
+        MapModel(MapType.spedionNavigation, "SPEDION Navigation", "de.spedion.mobile.android.spediontrucknavigation", "geo://"),
         )
 
     private fun getInstalledMaps(): List<MapModel> {
