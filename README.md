@@ -24,6 +24,7 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexNavi.svg" width="25"> Yandex Navigator
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/citymapper.svg" width="25"> Citymapper
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapswithme.svg" width="25"> Maps.me (iOS only)
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/magicEarth.svg" width="25"> Magic Earth (Android only)
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.svg" width="25"> OsmAnd
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmandplus.svg" width="25"> OsmAnd+ (Android only)
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/doubleGis.svg" width="25"> 2GIS
@@ -146,6 +147,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.yandexNavi`   | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
 | `.citymapper`   | ✓ <br /> does not support marker <br /> shows directions instead         | ✓                                              | ✗             | ✗            | ✓             |
 | `.mapswithme`   | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
+| `.magicEarth`   | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
 | `.osmand`       | ✓                                                                        | iOS only                                       | ✗             | ✓            | ✓             |
 | `.osmandplus`   | ✓                                                                        | iOS only                                       | ✗             | ✓            | ✓             |
 | `.doubleGis`    | ✓ <br /> android does not support marker <br /> shows directions instead | ✗                                              | ✗             | ✗            | ✓             |
@@ -189,6 +191,7 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 | `.yandexNavi`   | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✓             |
 | `.citymapper`   | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
 | `.mapswithme`   | ✓             | ✓                  | only shows marker            | ✗             | ✗                | ✗                                            | ✓             |
+| `.magicEarth`   | ✓             | ✗                  | always uses current location | ✗             | ✓                | ✗                                            | ✓             |
 | `.osmand`       | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
 | `.osmandplus`   | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
 | `.doubleGis`    | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            | ✓             |

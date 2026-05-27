@@ -100,6 +100,17 @@ String getMapDirectionsUrl({
         },
       );
 
+    case MapType.magicEarth:
+      final mode = getMagicEarthDirectionsMode(directionsMode);
+      return buildUrl(
+        url: 'magicearth://',
+        queryParams: {
+          'lat': destination.latitude.toString(),
+          'lon': destination.longitude.toString(),
+          ...?extraParams,
+        },
+      ).replaceFirst('?', '?get_directions&$mode&');
+
     case MapType.osmand:
     case MapType.osmandplus:
       if (Platform.isIOS) {

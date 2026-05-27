@@ -10,6 +10,7 @@
     <package android:name="ru.yandex.yandexnavi" /> <!-- Yandex Navigator -->
     <package android:name="ru.yandex.yandexmaps" /> <!-- Yandex Maps -->
     <package android:name="com.citymapper.app.release" /> <!-- Citymapper -->
+    <package android:name="com.generalmagic.magicearth" /> <!-- Magic Earth -->
     <package android:name="net.osmand" /> <!-- OsmAnd -->
     <package android:name="net.osmand.plus" /> <!-- OsmAnd+ -->
     <package android:name="ru.dublgis.dgismobile" /> <!-- 2GIS -->

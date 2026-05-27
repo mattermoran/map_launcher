@@ -32,6 +32,17 @@ String getMapsMeDirectionsMode(DirectionsMode mode) {
   };
 }
 
+/// Returns the travel mode switch for Magic Earth ([MapType.magicEarth]).
+String getMagicEarthDirectionsMode(DirectionsMode? mode) {
+  return switch (mode) {
+    DirectionsMode.driving => 'drive_to',
+    DirectionsMode.walking => 'walk_to',
+    DirectionsMode.transit => 'public_transport_to',
+    DirectionsMode.bicycling => 'bike_to',
+    _ => 'drive_to',
+  };
+}
+
 /// Returns directions mode code for Yandex Maps ([MapType.yandexMaps]).
 String getYandexMapsDirectionsMode(DirectionsMode? mode) {
   return switch (mode) {
