@@ -11,14 +11,14 @@ import XCTest
 
 class RunnerTests: XCTestCase {
 
-  func testGetPlatformVersion() {
+  func testIsMapAvailableForAppleMaps() {
     let plugin = MapLauncherPlugin()
 
-    let call = FlutterMethodCall(methodName: "getPlatformVersion", arguments: [])
+    let call = FlutterMethodCall(methodName: "isMapAvailable", arguments: ["mapType": "apple"])
 
     let resultExpectation = expectation(description: "result block must be called.")
     plugin.handle(call) { result in
-      XCTAssertEqual(result as! String, "iOS " + UIDevice.current.systemVersion)
+      XCTAssertEqual(result as? Bool, true)
       resultExpectation.fulfill()
     }
     waitForExpectations(timeout: 1)
