@@ -24,7 +24,6 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexNavi.svg" width="25"> Yandex Navigator
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/citymapper.svg" width="25"> Citymapper
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapswithme.svg" width="25"> Maps.me (iOS only)
-</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/magicEarth.svg" width="25"> Magic Earth
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.svg" width="25"> OsmAnd
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmandplus.svg" width="25"> OsmAnd+ (Android only)
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/doubleGis.svg" width="25"> 2GIS
@@ -45,6 +44,8 @@ Currently supported maps:
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/moovit.svg" width="25"> Moovit
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/neshan.svg" width="25"> Neshan
 </br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/airnavPro.svg" width="25"> Air Navigation Pro
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/spedionNavigation.svg" width="25"> SPEDION Navigation (Android only)
+</br><img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/magicEarth.svg" width="25"> Magic Earth
 
 ## Get started
 
@@ -52,7 +53,7 @@ Currently supported maps:
 
 ```yaml
 dependencies:
-  map_launcher: 4.5.0
+  map_launcher: 4.6.0
   flutter_svg: # only if you want to use icons as they are svgs
 ```
 
@@ -136,34 +137,35 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 
 ##### Maps
 
-| `mapType`       | `coords`                                                                 | `title`                                        | `description` | `zoom`       | `extraParams` |
-| --------------- | ------------------------------------------------------------------------ | ---------------------------------------------- | ------------- | ------------ | ------------- |
-| `.google`       | ✓                                                                        | iOS only <br /> see Known Issues section below | ✗             | ✓            | ✓             |
-| `.apple`        | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
-| `.googleGo`     | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
-| `.amap`         | ✓                                                                        | ✓                                              | ✓             | Android only | ✓             |
-| `.baidu`        | ✓                                                                        | ✓                                              | ✓             | ✓            | ✓             |
-| `.waze`         | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
-| `.yandexMaps`   | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
-| `.yandexNavi`   | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
-| `.citymapper`   | ✓ <br /> does not support marker <br /> shows directions instead         | ✓                                              | ✗             | ✗            | ✓             |
-| `.mapswithme`   | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
-| `.magicEarth`   | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
-| `.osmand`       | ✓                                                                        | iOS only                                       | ✗             | ✓            | ✓             |
-| `.osmandplus`   | ✓                                                                        | iOS only                                       | ✗             | ✓            | ✓             |
-| `.doubleGis`    | ✓ <br /> android does not support marker <br /> shows directions instead | ✗                                              | ✗             | ✗            | ✓             |
-| `.tencent`      | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
-| `.here`         | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
-| `.petalMaps`    | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
-| `.tomtomgo`     | ✓ <br /> iOS does not support marker <br /> shows directions instead     | ✗                                              | ✗             | ✗            | ✓             |
-| `.copilot`      | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
-| `.flitsmeister` | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
-| `.truckmeister` | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
-| `.sygicTruck`   | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
-| `.mappls`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
-| `.moovit`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
-| `.neshan`       | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
-| `.airnavPro`    | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
+| `mapType`            | `coords`                                                                 | `title`                                        | `description` | `zoom`       | `extraParams` |
+| -------------------- | ------------------------------------------------------------------------ | ---------------------------------------------- | ------------- | ------------ | ------------- |
+| `.google`            | ✓                                                                        | iOS only <br /> see Known Issues section below | ✗             | ✓            | ✓             |
+| `.apple`             | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
+| `.googleGo`          | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
+| `.amap`              | ✓                                                                        | ✓                                              | ✓             | Android only | ✓             |
+| `.baidu`             | ✓                                                                        | ✓                                              | ✓             | ✓            | ✓             |
+| `.waze`              | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
+| `.yandexMaps`        | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
+| `.yandexNavi`        | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
+| `.citymapper`        | ✓ <br /> does not support marker <br /> shows directions instead         | ✓                                              | ✗             | ✗            | ✓             |
+| `.mapswithme`        | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
+| `.osmand`            | ✓                                                                        | iOS only                                       | ✗             | ✓            | ✓             |
+| `.osmandplus`        | ✓                                                                        | iOS only                                       | ✗             | ✓            | ✓             |
+| `.doubleGis`         | ✓ <br /> android does not support marker <br /> shows directions instead | ✗                                              | ✗             | ✗            | ✓             |
+| `.tencent`           | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
+| `.here`              | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
+| `.petalMaps`         | ✓                                                                        | ✗                                              | ✗             | ✓            | ✓             |
+| `.tomtomgo`          | ✓ <br /> iOS does not support marker <br /> shows directions instead     | ✗                                              | ✗             | ✗            | ✓             |
+| `.copilot`           | ✓                                                                        | ✓                                              | ✗             | ✗            | ✓             |
+| `.flitsmeister`      | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
+| `.truckmeister`      | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
+| `.sygicTruck`        | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
+| `.mappls`            | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
+| `.moovit`            | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
+| `.neshan`            | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
+| `.airnavPro`         | ✓ <br /> does not support marker <br /> shows directions instead         | ✗                                              | ✗             | ✗            | ✓             |
+| `.spedionNavigation` | ✓                                                                        | ✗                                              | ✗             | ✗            | ✓             |
+| `.magicEarth`        | ✓                                                                        | ✓                                              | ✗             | ✓            | ✓             |
 
 ### Show Directions
 
@@ -180,34 +182,35 @@ if (await MapLauncher.isMapAvailable(MapType.google)) {
 
 ##### Maps
 
-| `mapType`       | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` | `waypoints`                                  | `extraParams` |
-| --------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- | -------------------------------------------- | ------------- |
-| `.google`       | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓ (up to 8 on iOS and unlimited? on android) | ✓             |
-| `.apple`        | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✓             |
-| `.googleGo`     | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓                                            | ✓             |
-| `.amap`         | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
-| `.baidu`        | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
-| `.waze`         | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
-| `.yandexMaps`   | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✓             |
-| `.yandexNavi`   | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✓             |
-| `.citymapper`   | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
-| `.mapswithme`   | ✓             | ✓                  | only shows marker            | ✗             | ✗                | ✗                                            | ✓             |
-| `.magicEarth`   | ✓             | ✗                  | always uses current location | ✗             | ✓                | ✗                                            | ✓             |
-| `.osmand`       | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
-| `.osmandplus`   | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
-| `.doubleGis`    | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            | ✓             |
-| `.tencent`      | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
-| `.here`         | ✓             | ✗                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
-| `.petalMaps`    | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
-| `.tomtomgo`     | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
-| `.copilot`      | ✓             | ✓                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
-| `.flitsmeister` | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
-| `.truckmeister` | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
-| `.sygicTruck`   | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
-| `.mappls`       | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
-| `.moovit`       | ✓             | ✓                  | ✓                            | ✓             | ✗                | ✗                                            | ✓             |
-| `.neshan`       | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            | ✓             |
-| `.airnavPro`    | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `mapType`            | `destination` | `destinationTitle` | `origin`                     | `originTitle` | `directionsMode` | `waypoints`                                  | `extraParams` |
+| -------------------- | ------------- | ------------------ | ---------------------------- | ------------- | ---------------- | -------------------------------------------- | ------------- |
+| `.google`            | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓ (up to 8 on iOS and unlimited? on android) | ✓             |
+| `.apple`             | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✓             |
+| `.googleGo`          | ✓             | ✗                  | ✓                            | ✗             | ✓                | ✓                                            | ✓             |
+| `.amap`              | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.baidu`             | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.waze`              | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.yandexMaps`        | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✓             |
+| `.yandexNavi`        | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✓                                            | ✓             |
+| `.citymapper`        | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.mapswithme`        | ✓             | ✓                  | only shows marker            | ✗             | ✗                | ✗                                            | ✓             |
+| `.osmand`            | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.osmandplus`        | ✓             | iOS only           | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.doubleGis`         | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            | ✓             |
+| `.tencent`           | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.here`              | ✓             | ✗                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.petalMaps`         | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.tomtomgo`          | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.copilot`           | ✓             | ✓                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.flitsmeister`      | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.truckmeister`      | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.sygicTruck`        | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.mappls`            | ✓             | ✓                  | ✓                            | ✓             | ✓                | ✗                                            | ✓             |
+| `.moovit`            | ✓             | ✓                  | ✓                            | ✓             | ✗                | ✗                                            | ✓             |
+| `.neshan`            | ✓             | ✗                  | ✓                            | ✗             | ✗                | ✗                                            | ✓             |
+| `.airnavPro`         | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.spedionNavigation` | ✓             | ✗                  | always uses current location | ✗             | ✗                | ✗                                            | ✓             |
+| `.magicEarth`        | ✓             | ✗                  | always uses current location | ✗             | ✓                | ✗                                            | ✓             |
 
 ### Extra Params
 

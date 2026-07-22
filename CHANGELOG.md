@@ -1,3 +1,8 @@
+## 4.6.0
+
+- feat: add support for SPEDION Navigation ([#220](https://github.com/mattermoran/map_launcher/pull/220)) (@D3nn7)
+- feat: add support for Magic Earth ([#222](https://github.com/mattermoran/map_launcher/pull/222)) (@APopaMagicLane)
+
 ## 4.5.0
 
 - feat: add support for Air Navigation Pro ([#219](https://github.com/mattermoran/map_launcher/pull/219)) (@BranislavKljaic96)
