@@ -1,272 +1,108 @@
 import Flutter
 import UIKit
-import MapKit
 
-private enum MapType: String {
-    case apple
-    case google
-    case amap
-    case baidu
-    case waze
-    case yandexNavi
-    case yandexMaps
-    case citymapper
-    case mapswithme
-    case magicEarth
-    case osmand
-    case doubleGis
-    case tencent
-    case here
-    case tomtomgo
-    case tomtomgofleet
-    case copilot
-    case sygicTruck
-    case naver
-    case kakao
-    case tmap
-    case mapyCz
-    case mappls
-    case moovit
-    case neshan
-    case airnavPro
-
-    func type() -> String {
-        return self.rawValue
-    }
-}
-
-
-private class Map {
-    let mapName: String;
-    let mapType: MapType;
-    let urlPrefix: String?;
-
-
-    init(mapName: String, mapType: MapType, urlPrefix: String?) {
-        self.mapName = mapName
-        self.mapType = mapType
-        self.urlPrefix = urlPrefix
-    }
-
-    func toMap() -> [String:String] {
-        return [
-            "mapName": mapName,
-            "mapType": mapType.type(),
-        ]
-    }
-}
-
-private let maps: [Map] = [
-    Map(mapName: "Apple Maps", mapType: MapType.apple, urlPrefix: ""),
-    Map(mapName: "Google Maps", mapType: MapType.google, urlPrefix: "comgooglemaps://"),
-    Map(mapName: "Amap", mapType: MapType.amap, urlPrefix: "iosamap://"),
-    Map(mapName: "Baidu Maps", mapType: MapType.baidu, urlPrefix: "baidumap://"),
-    Map(mapName: "Waze", mapType: MapType.waze, urlPrefix: "waze://"),
-    Map(mapName: "Yandex Navigator", mapType: MapType.yandexNavi, urlPrefix: "yandexnavi://"),
-    Map(mapName: "Yandex Maps", mapType: MapType.yandexMaps, urlPrefix: "yandexmaps://"),
-    Map(mapName: "Citymapper", mapType: MapType.citymapper, urlPrefix: "citymapper://"),
-    Map(mapName: "MAPS.ME", mapType: MapType.mapswithme, urlPrefix: "mapswithme://"),
-    Map(mapName: "Magic Earth", mapType: MapType.magicEarth, urlPrefix: "magicearth://"),
-    Map(mapName: "OsmAnd", mapType: MapType.osmand, urlPrefix: "osmandmaps://"),
-    Map(mapName: "2GIS", mapType: MapType.doubleGis, urlPrefix: "dgis://"),
-    Map(mapName: "Tencent (QQ Maps)", mapType: MapType.tencent, urlPrefix: "qqmap://"),
-    Map(mapName: "HERE WeGo", mapType: MapType.here, urlPrefix: "here-location://"),
-    Map(mapName: "TomTom Go", mapType: MapType.tomtomgo, urlPrefix: "tomtomgo://"),
-    Map(mapName: "TomTom Go Fleet", mapType: MapType.tomtomgofleet, urlPrefix: "tomtomgofleet://"),
-    Map(mapName: "Sygic Truck", mapType: MapType.sygicTruck, urlPrefix: "com.sygic.aura://"),
-    Map(mapName: "CoPilot", mapType: MapType.copilot, urlPrefix: "copilot://"),
-    Map(mapName: "Naver Map", mapType: MapType.naver, urlPrefix: "nmap://"),
-    Map(mapName: "Kakao Maps", mapType: MapType.kakao, urlPrefix: "kakaomap://"),
-    Map(mapName: "TMap", mapType: MapType.tmap, urlPrefix: "tmap://"),
-    Map(mapName: "Mapy CZ", mapType: MapType.mapyCz, urlPrefix: "szn-mapy://"),
-    Map(mapName: "Mappls MapmyIndia", mapType: MapType.mappls, urlPrefix: "mappls://"),
-    Map(mapName: "Moovit", mapType: MapType.moovit, urlPrefix: "moovit://"),
-    Map(mapName: "Neshan", mapType: MapType.neshan, urlPrefix: "neshan://"),
-    Map(mapName: "AirNav Pro", mapType: MapType.airnavPro, urlPrefix: "airnavpro://")
+/// Map of Dart MapType enum name → iOS URL scheme prefix.
+///
+/// Used to detect installed map apps via `UIApplication.canOpenURL`.
+/// Each scheme must be declared in the host app's `Info.plist` under
+/// `LSApplicationQueriesSchemes`.
+private let mapSchemes: [String: String] = [
+    "apple": "", // Apple Maps is always available on iOS
+    "google": "comgooglemaps://",
+    "amap": "iosamap://",
+    "baidu": "baidumap://",
+    "waze": "waze://",
+    "yandexNavi": "yandexnavi://",
+    "yandexMaps": "yandexmaps://",
+    "citymapper": "citymapper://",
+    "mapswithme": "mapswithme://",
+    "osmand": "osmandmaps://",
+    "doubleGis": "dgis://",
+    "tencent": "qqmap://",
+    "here": "here-location://",
+    "tomtomgo": "tomtomgo://",
+    "sygicTruck": "com.sygic.aura://",
+    "copilot": "copilot://",
+    "naver": "nmap://",
+    "kakao": "kakaomap://",
+    "tmap": "tmap://",
+    "mapyCz": "szn-mapy://",
+    "mappls": "mappls://",
+    "moovit": "moovit://",
+    "neshan": "neshan://",
+    "airnavPro": "airnavpro://",
+    "magicEarth": "magicearth://",
 ]
 
-private func getMapByRawMapType(type: String) -> Map? {
-    return maps.first(where: { $0.mapType.type() == type })
-}
-
-private func getMapItem(latitude: String, longitude: String, name: String?) -> MKMapItem {
-    let coordinate = CLLocationCoordinate2DMake(Double(latitude)!, Double(longitude)!)
-    let destinationPlacemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
-
-    let mapItem = MKMapItem(placemark: destinationPlacemark)
-    mapItem.name = name
-    return mapItem
-}
-
-private func getDirectionsMode(directionsMode: String?) -> String {
-    switch directionsMode {
-    case "driving":
-        return MKLaunchOptionsDirectionsModeDriving
-    case "walking":
-        return MKLaunchOptionsDirectionsModeWalking
-    case "transit":
-        if #available(iOS 9.0, *) {
-            return MKLaunchOptionsDirectionsModeTransit
-        } else {
-            return MKLaunchOptionsDirectionsModeDriving
-        }
-    default:
-        if #available(iOS 10.0, *) {
-            return MKLaunchOptionsDirectionsModeDefault
-        } else {
-            return MKLaunchOptionsDirectionsModeDriving
-        }
-    }
-}
-
-private func showMarker(mapType: MapType, url: String, title: String, latitude: String, longitude: String) -> FlutterError? {
-    switch mapType {
-    case MapType.apple:
-        let coordinate = CLLocationCoordinate2DMake(Double(latitude)!, Double(longitude)!)
-        let region = MKCoordinateRegion(center: coordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.02))
-        let placemark = MKPlacemark(coordinate: coordinate, addressDictionary: nil)
-        let mapItem = MKMapItem(placemark: placemark)
-        let options = [
-            MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: region.center),
-            MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: region.span)]
-        mapItem.name = title
-        mapItem.openInMaps(launchOptions: options)
-        return nil
-    default:
-        guard let nsUrl = URL(string: url) else {
-            return FlutterError(code: "INVALID_URL", message: "Invalid URL", details: nil)
-        }
-        UIApplication.shared.open(nsUrl, options: [:], completionHandler: nil)
-        return nil
-    }
-}
-
-private func showDirections(mapType: MapType, url: String, destinationTitle: String?, destinationLatitude: String, destinationLongitude: String, originTitle: String?, originLatitude: String?, originLongitude: String?, directionsMode: String?, waypoints: [[String: String?]]?) -> FlutterError? {
-    switch mapType {
-    case MapType.apple:
-
-        let destinationMapItem = getMapItem(latitude: destinationLatitude, longitude: destinationLongitude, name: destinationTitle ?? "Destination");
-
-        let hasOrigin = originLatitude != nil && originLatitude != nil
-        var originMapItem: MKMapItem {
-            if !hasOrigin {
-                return MKMapItem.forCurrentLocation()
-            }
-            let origin = getMapItem(latitude: originLatitude!, longitude: originLongitude!, name: originTitle ?? "Origin")
-            return origin
-        }
-
-        let waypointMapItems = waypoints == nil ? [MKMapItem]() : waypoints!.map { getMapItem(latitude: $0["latitude"]!!, longitude: $0["longitude"]!!, name: $0["title"] as? String) }
-
-        MKMapItem.openMaps(
-            with: [originMapItem] + waypointMapItems + [destinationMapItem],
-            launchOptions: [MKLaunchOptionsDirectionsModeKey: getDirectionsMode(directionsMode: directionsMode)]
-        )
-        return nil
-    default:
-        guard let nsUrl = URL(string: url) else {
-            return FlutterError(code: "INVALID_URL", message: "Invalid URL", details: nil)
-        }
-        UIApplication.shared.open(nsUrl, options: [:], completionHandler: nil)
-        return nil
-    }
-}
-
-
-private func isMapAvailable(map: Map?) -> Bool {
-    // maptype is not available on iOS
-    guard let map = map else {
-        return false
-    }
-    if map.mapType == MapType.apple {
-        return true
-    }
-    guard let urlPrefix = map.urlPrefix, let nsUrl = URL(string: urlPrefix) else {
-        return false
-    }
-    return UIApplication.shared.canOpenURL(nsUrl)
-}
-
+/// Flutter plugin for map_launcher on iOS.
+///
+/// Provides two method channel calls:
+/// - `launch` — opens a URL via `UIApplication.shared.open`
+/// - `getInstalledMaps` — detects installed map apps via `canOpenURL`
 public class MapLauncherPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: "map_launcher", binaryMessenger: registrar.messenger())
+        let channel = FlutterMethodChannel(
+            name: "map_launcher",
+            binaryMessenger: registrar.messenger()
+        )
         let instance = MapLauncherPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
+        case "launch":
+            guard let args = call.arguments as? [String: Any],
+                  let urlString = args["url"] as? String,
+                  let url = URL(string: urlString) else {
+                result(
+                    FlutterError(
+                        code: "INVALID_URL",
+                        message: "Missing or invalid 'url' argument",
+                        details: nil
+                    )
+                )
+                return
+            }
+            UIApplication.shared.open(url, options: [:]) { success in
+                if success {
+                    result(nil)
+                } else {
+                    result(
+                        FlutterError(
+                            code: "LAUNCH_FAILED",
+                            message: "Failed to open URL: \(urlString)",
+                            details: nil
+                        )
+                    )
+                }
+            }
+
         case "getInstalledMaps":
-            result(maps.filter({ isMapAvailable(map: $0) }).map({ $0.toMap() }))
-
-        case "showMarker":
-            let args = call.arguments as! NSDictionary
-            let mapType = args["mapType"] as! String
-            let url = args["url"] as! String
-            let title = args["title"] as! String
-            let latitude = args["latitude"] as! String
-            let longitude = args["longitude"] as! String
-
-            let map = getMapByRawMapType(type: mapType)
-            if (!isMapAvailable(map: map)) {
-                result(FlutterError(code: "MAP_NOT_AVAILABLE", message: "Map is not installed on a device", details: nil))
-                return;
+            let installed = mapSchemes.compactMap { (mapType, scheme) -> [String: String]? in
+                if isMapAvailable(mapType: mapType, scheme: scheme) {
+                    return ["mapType": mapType]
+                }
+                return nil
             }
-
-            let error = showMarker(
-                mapType: MapType(rawValue: mapType)!,
-                url: url,
-                title: title,
-                latitude: latitude,
-                longitude: longitude
-            )
-            result(error)
-
-        case "showDirections":
-            let args = call.arguments as! NSDictionary
-            let mapType = args["mapType"] as! String
-            let url = args["url"] as! String
-
-            let destinationTitle = args["destinationTitle"] as? String
-            let destinationLatitude = args["destinationLatitude"] as! String
-            let destinationLongitude = args["destinationLongitude"] as! String
-
-            let originTitle = args["originTitle"] as? String
-            let originLatitude = args["originLatitude"] as? String
-            let originLongitude = args["originLongitude"] as? String
-
-            let directionsMode = args["directionsMode"] as? String
-
-            let waypoints = args["waypoints"] as? [[String: String?]]
-
-            let map = getMapByRawMapType(type: mapType)
-            if (!isMapAvailable(map: map)) {
-                result(FlutterError(code: "MAP_NOT_AVAILABLE", message: "Map is not installed on a device", details: nil))
-                return;
-            }
-
-            let error = showDirections(
-                mapType: MapType(rawValue: mapType)!,
-                url: url,
-                destinationTitle: destinationTitle,
-                destinationLatitude: destinationLatitude,
-                destinationLongitude: destinationLongitude,
-                originTitle: originTitle,
-                originLatitude: originLatitude,
-                originLongitude: originLongitude,
-                directionsMode: directionsMode,
-                waypoints: waypoints
-            )
-            result(error)
-
-        case "isMapAvailable":
-            let args = call.arguments as! NSDictionary
-            let mapType = args["mapType"] as! String
-            let map = getMapByRawMapType(type: mapType)
-            result(isMapAvailable(map: map))
+            result(installed)
 
         default:
             result(FlutterMethodNotImplemented)
         }
+    }
+
+    /// Checks whether a map app is available on the device.
+    ///
+    /// Apple Maps is always available. Other apps are detected
+    /// via `UIApplication.canOpenURL` using their URL scheme prefix.
+    private func isMapAvailable(mapType: String, scheme: String) -> Bool {
+        if mapType == "apple" {
+            return true
+        }
+        guard !scheme.isEmpty, let url = URL(string: scheme) else {
+            return false
+        }
+        return UIApplication.shared.canOpenURL(url)
     }
 }

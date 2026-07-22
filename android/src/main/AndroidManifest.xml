@@ -10,7 +10,6 @@
     <package android:name="ru.yandex.yandexnavi" /> <!-- Yandex Navigator -->
     <package android:name="ru.yandex.yandexmaps" /> <!-- Yandex Maps -->
     <package android:name="com.citymapper.app.release" /> <!-- Citymapper -->
-    <package android:name="com.generalmagic.magicearth" /> <!-- Magic Earth -->
     <package android:name="net.osmand" /> <!-- OsmAnd -->
     <package android:name="net.osmand.plus" /> <!-- OsmAnd+ -->
     <package android:name="ru.dublgis.dgismobile" /> <!-- 2GIS -->
@@ -31,7 +30,9 @@
     <package android:name="com.tranzmate" /> <!-- Moovit -->
     <package android:name="org.rajman.neshan.traffic.tehran.navigator" /> <!-- Neshan -->
     <package android:name="com.xample.airnavigation" /> <!-- AirNav Pro -->
+    <package android:name="com.mapswithme.maps.pro" /> <!-- MAPS.ME -->
     <package android:name="de.spedion.mobile.android.spediontrucknavigation" /> <!-- SPEDION Navigation -->
+    <package android:name="com.generalmagic.magicearth" /> <!-- Magic Earth -->
   </queries>
 
 </manifest>

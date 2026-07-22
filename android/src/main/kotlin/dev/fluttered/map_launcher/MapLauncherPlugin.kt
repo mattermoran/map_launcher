@@ -9,55 +9,48 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import androidx.core.net.toUri
 
-private enum class MapType {
-    google,
-    googleGo,
-    amap,
-    baidu,
-    waze,
-    yandexNavi,
-    yandexMaps,
-    citymapper,
-    magicEarth,
-    osmand,
-    osmandplus,
-    doubleGis,
-    tencent,
-    here,
-    petal,
-    tomtomgo,
-    copilot,
-    sygicTruck,
-    tomtomgofleet,
-    flitsmeister,
-    truckmeister,
-    naver,
-    kakao,
-    tmap,
-    mapyCz,
-    mappls,
-    moovit,
-    neshan,
-    airnavPro,
-    spedionNavigation,
-}
+/// Map of Dart MapType enum name → Android package name.
+///
+/// Used to detect installed map apps via [PackageManager.getLaunchIntentForPackage].
+private val mapPackages = mapOf(
+    "google" to "com.google.android.apps.maps",
+    "googleGo" to "com.google.android.apps.mapslite",
+    "amap" to "com.autonavi.minimap",
+    "baidu" to "com.baidu.BaiduMap",
+    "waze" to "com.waze",
+    "yandexNavi" to "ru.yandex.yandexnavi",
+    "yandexMaps" to "ru.yandex.yandexmaps",
+    "citymapper" to "com.citymapper.app.release",
+    "mapswithme" to "com.mapswithme.maps.pro",
+    "osmand" to "net.osmand",
+    "osmandplus" to "net.osmand.plus",
+    "doubleGis" to "ru.dublgis.dgismobile",
+    "tencent" to "com.tencent.map",
+    "here" to "com.here.app.maps",
+    "petal" to "com.huawei.maps.app",
+    "tomtomgo" to "com.tomtom.gplay.navapp",
+    "tomtomgofleet" to "com.tomtom.gplay.navapp.gofleet",
+    "sygicTruck" to "com.sygic.truck",
+    "copilot" to "com.alk.copilot.mapviewer",
+    "flitsmeister" to "nl.flitsmeister",
+    "truckmeister" to "nl.flitsmeister.flux",
+    "naver" to "com.nhn.android.nmap",
+    "kakao" to "net.daum.android.map",
+    "tmap" to "com.skt.tmap.ku",
+    "mapyCz" to "cz.seznam.mapy",
+    "mappls" to "com.mmi.maps",
+    "moovit" to "com.tranzmate",
+    "neshan" to "org.rajman.neshan.traffic.tehran.navigator",
+    "airnavPro" to "com.xample.airnavigation",
+    "spedionNavigation" to "de.spedion.mobile.android.spediontrucknavigation",
+    "magicEarth" to "com.generalmagic.magicearth",
+)
 
-private class MapModel(
-    val mapType: MapType,
-    val mapName: String,
-    val packageName: String,
-    val urlPrefix: String
-) {
-    fun toMap(): Map<String, String> {
-        return mapOf(
-            "mapType" to mapType.name,
-            "mapName" to mapName,
-            "packageName" to packageName,
-            "urlPrefix" to urlPrefix
-        )
-    }
-}
-
+/// Flutter plugin for map_launcher on Android.
+///
+/// Provides two method channel calls:
+/// - `launch` — opens a URL via [Intent.ACTION_VIEW]
+/// - `getInstalledMaps` — detects installed map apps via [PackageManager]
 class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
@@ -68,92 +61,35 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
         channel.setMethodCallHandler(this)
     }
 
-    private val maps = listOf(
-        MapModel(MapType.google, "Google Maps", "com.google.android.apps.maps", "geo://"),
-        MapModel(MapType.googleGo, "Google Maps Go", "com.google.android.apps.mapslite", "geo://"),
-        MapModel(MapType.amap, "Amap", "com.autonavi.minimap", "iosamap://"),
-        MapModel(MapType.baidu, "Baidu Maps", "com.baidu.BaiduMap", "baidumap://"),
-        MapModel(MapType.waze, "Waze", "com.waze", "waze://"),
-        MapModel(MapType.yandexNavi, "Yandex Navigator", "ru.yandex.yandexnavi", "yandexnavi://"),
-        MapModel(MapType.yandexMaps, "Yandex Maps", "ru.yandex.yandexmaps", "yandexmaps://"),
-        MapModel(MapType.citymapper, "Citymapper", "com.citymapper.app.release", "citymapper://"),
-        MapModel(MapType.magicEarth, "Magic Earth", "com.generalmagic.magicearth", "magicearth://"),
-        MapModel(MapType.osmand, "OsmAnd", "net.osmand", "osmandmaps://"),
-        MapModel(MapType.osmandplus, "OsmAnd+", "net.osmand.plus", "osmandmaps://"),
-        MapModel(MapType.doubleGis, "2GIS", "ru.dublgis.dgismobile", "dgis://"),
-        MapModel(MapType.tencent, "Tencent (QQ Maps)", "com.tencent.map", "qqmap://"),
-        MapModel(MapType.here, "HERE WeGo", "com.here.app.maps", "here-location://"),
-        MapModel(MapType.petal, "Petal Maps", "com.huawei.maps.app", "petalmaps://"),
-        MapModel(MapType.tomtomgo, "TomTom Go", "com.tomtom.gplay.navapp", "tomtomgo://"),
-        MapModel(
-            MapType.tomtomgofleet,
-            "TomTom Go Fleet",
-            "com.tomtom.gplay.navapp.gofleet",
-            "tomtomgofleet://"
-        ),
-        MapModel(MapType.sygicTruck, "Sygic Truck", "com.sygic.truck", "com.sygic.aura://"),
-        MapModel(MapType.copilot, "CoPilot", "com.alk.copilot.mapviewer", "copilot://"),
-        MapModel(MapType.flitsmeister, "Flitsmeister", "nl.flitsmeister", "flitsmeister://"),
-        MapModel(MapType.truckmeister, "Truckmeister", "nl.flitsmeister.flux", "truckmeister://"),
-        MapModel(MapType.naver, "Naver Map", "com.nhn.android.nmap", "nmap://"),
-        MapModel(MapType.kakao, "Kakao Maps", "net.daum.android.map", "kakaomap://"),
-        MapModel(MapType.tmap, "TMap", "com.skt.tmap.ku", "tmap://"),
-        MapModel(MapType.mapyCz, "Mapy CZ", "cz.seznam.mapy", "https://"),
-        MapModel(MapType.mappls, "Mappls MapmyIndia", "com.mmi.maps", "mappls://"),
-        MapModel(MapType.moovit, "Moovit", "com.tranzmate", "moovit://"),
-        MapModel(MapType.neshan, "Neshan", "org.rajman.neshan.traffic.tehran.navigator", "https://"),
-        MapModel(MapType.airnavPro, "AirNav Pro", "com.xample.airnavigation", "airnavpro://"),
-        MapModel(MapType.spedionNavigation, "SPEDION Navigation", "de.spedion.mobile.android.spediontrucknavigation", "geo://"),
-        )
-
-    private fun getInstalledMaps(): List<MapModel> {
-        return maps.filter { map ->
-            context.packageManager?.getLaunchIntentForPackage(map.packageName) != null
-        }
-    }
-
-    private fun isMapAvailable(type: String): Boolean {
-        val installedMaps = getInstalledMaps()
-        return installedMaps.any { map -> map.mapType.name == type }
-    }
-
-    private fun launchMap(mapType: MapType, url: String, result: Result) {
-        context.let {
-            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            val foundMap = maps.find { map -> map.mapType == mapType }
-            if (foundMap != null) {
-                intent.setPackage(foundMap.packageName)
-            }
-            it.startActivity(intent)
-        }
-        result.success(null)
-    }
-
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
-            "getInstalledMaps" -> {
-                val installedMaps = getInstalledMaps()
-                result.success(installedMaps.map { map -> map.toMap() })
-            }
-
-            "showMarker", "showDirections" -> {
-                val args = call.arguments as Map<*, *>
-
-                if (!isMapAvailable(args["mapType"] as String)) {
-                    result.error("MAP_NOT_AVAILABLE", "Map is not installed on a device", null)
+            "launch" -> {
+                val url = call.argument<String>("url")
+                val packageName = call.argument<String>("packageName")
+                if (url == null) {
+                    result.error("INVALID_URL", "Missing 'url' argument", null)
                     return
                 }
-
-                val mapType = MapType.valueOf(args["mapType"] as String)
-                val url = args["url"] as String
-
-                launchMap(mapType, url, result)
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    if (packageName != null) {
+                        intent.setPackage(packageName)
+                    }
+                    context.startActivity(intent)
+                    result.success(null)
+                } catch (e: Exception) {
+                    result.error("LAUNCH_FAILED", "Failed to launch URL: ${e.message}", null)
+                }
             }
 
-            "isMapAvailable" -> {
-                val args = call.arguments as Map<*, *>
-                result.success(isMapAvailable(args["mapType"] as String))
+            "getInstalledMaps" -> {
+                val installed = mapPackages.filter { (_, packageName) ->
+                    context.packageManager?.getLaunchIntentForPackage(packageName) != null
+                }.map { (mapType, _) ->
+                    mapOf("mapType" to mapType)
+                }
+                result.success(installed)
             }
 
             else -> result.notImplemented()

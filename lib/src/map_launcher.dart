@@ -1,80 +1,112 @@
-import 'dart:async';
-
 import 'package:map_launcher/map_launcher_platform_interface.dart';
-import 'package:map_launcher/src/models.dart';
+import 'package:map_launcher/src/maps/map_registry.dart';
+import 'package:map_launcher/src/models/location.dart';
+import 'package:map_launcher/src/models/supported_map.dart';
+import 'package:map_launcher/src/models/travel_mode.dart';
+import 'package:map_launcher/src/requests/directions_request.dart';
+import 'package:map_launcher/src/requests/marker_request.dart';
 
-/// Provides a simple interface for launching installed map applications
-/// to display markers, show directions, or query availability.
-class MapLauncher {
-  MapLauncher._();
-
-  /// Returns a list of [AvailableMap] objects representing the map apps
-  /// currently installed on the device.
-  static Future<List<AvailableMap>> get installedMaps async {
-    return MapLauncherPlatform.instance.installedMaps;
+/// Entry point for launching map applications across all Flutter platforms.
+///
+/// Provides a builder-style API: create a request with [marker] or
+/// [directions], then call [MarkerRequest.show] to open or
+/// [MarkerRequest.getSupportedMaps] to discover available maps.
+///
+/// ```dart
+/// import 'package:map_launcher/map_launcher.dart';
+///
+/// // Show a marker
+/// await MapLauncher.marker(.coords(59.33, 18.07, title: 'Gamla Stan')).show();
+///
+/// // Show directions
+/// await MapLauncher.directions(
+///   .coords(59.33, 18.07, title: 'Gamla Stan'),
+///   from: .coords(59.33, 18.10),
+///   mode: TravelMode.walking,
+/// ).show();
+///
+/// // Search
+/// await MapLauncher.marker(.search('Fika near Södermalm')).show();
+///
+/// // Specific app with extras
+/// await MapLauncher.marker(.coords(59.33, 18.07)).show(
+///   map: .google,
+///   extra: GoogleExtra(queryPlaceId: 'ChIJLU7j...'),
+/// );
+///
+/// // Discover available maps
+/// final maps = await MapLauncher.marker(.coords(59.33, 18.07)).getSupportedMaps();
+/// ```
+abstract final class MapLauncher {
+  /// Creates a marker request for [location].
+  ///
+  /// Use with Dart 3.6+ shorthand:
+  /// ```dart
+  /// MapLauncher.marker(.coords(59.33, 18.07, title: 'Gamla Stan'))
+  /// MapLauncher.marker(.search('Fika near Södermalm'))
+  /// ```
+  ///
+  /// * [zoom] Optional map zoom level (integer). Not supported by all maps.
+  /// * [extra] Additional query parameters appended to the generated URL.
+  static MarkerRequest marker(
+    Location location, {
+    int? zoom,
+    Map<String, String>? extra,
+  }) {
+    return MarkerRequest(location: location, zoom: zoom, extra: extra);
   }
 
-  /// Opens the map application specified by [mapType] and displays a marker at [coords].
+  /// Creates a directions request to [destination].
   ///
-  /// - [mapType]: The map application to launch.
-  /// - [coords]: Coordinates where the marker should be placed.
-  /// - [title]: Title for the marker.
-  /// - [description]: Optional description for the marker.
-  /// - [zoom]: Optional zoom level (default is 16).
-  /// - [extraParams]: Extra map-specific query parameters.
-  static Future<void> showMarker({
-    required MapType mapType,
-    required Coords coords,
-    required String title,
-    String? description,
-    int zoom = 16,
-    Map<String, String>? extraParams,
-  }) async {
-    return MapLauncherPlatform.instance.showMarker(
-      mapType: mapType,
-      coords: coords,
-      title: title,
-      description: description,
-      zoom: zoom,
-      extraParams: extraParams,
-    );
-  }
-
-  /// Opens the map application specified by [mapType] and shows directions to [destination].
+  /// [from] accepts both coordinates and search text:
+  /// ```dart
+  /// MapLauncher.directions(
+  ///   .coords(59.33, 18.07),
+  ///   from: .search('Stockholm Central'),
+  ///   mode: .walking,
+  /// )
+  /// ```
   ///
-  /// - [mapType]: The map application to launch.
-  /// - [destination]: Coordinates of the destination.
-  /// - [destinationTitle]: Optional label for the destination.
-  /// - [origin]: Optional starting point. If omitted, the map app may use the current location.
-  /// - [originTitle]: Optional label for the origin.
-  /// - [waypoints]: Optional list of intermediate waypoints along the route.
-  /// - [directionsMode]: Mode of transport (default is [DirectionsMode.driving]).
-  /// - [extraParams]: Extra map-specific query parameters.
-  static Future<void> showDirections({
-    required MapType mapType,
-    required Coords destination,
-    String? destinationTitle,
-    Coords? origin,
-    String? originTitle,
-    List<Waypoint>? waypoints,
-    DirectionsMode? directionsMode = DirectionsMode.driving,
-    Map<String, String>? extraParams,
-  }) async {
-    MapLauncherPlatform.instance.showDirections(
-      mapType: mapType,
+  /// * [mode] Travel mode (driving, walking, transit, bicycling). Defaults to
+  ///   the map app's default when null.
+  /// * [waypoints] Intermediate stops (coordinates only). Not supported by all maps.
+  /// * [extra] Additional query parameters appended to the generated URL.
+  static DirectionsRequest directions(
+    Location destination, {
+    Location? from,
+    TravelMode? mode,
+    List<LocationCoords>? waypoints,
+    Map<String, String>? extra,
+  }) {
+    return DirectionsRequest(
       destination: destination,
-      destinationTitle: destinationTitle,
-      origin: origin,
-      originTitle: originTitle,
+      from: from,
+      mode: mode,
       waypoints: waypoints,
-      directionsMode: directionsMode,
-      extraParams: extraParams,
+      extra: extra,
     );
   }
 
-  /// Returns `true` if the map app of type [mapType] is installed on the device,
-  /// `false` otherwise.
-  static Future<bool> isMapAvailable(MapType mapType) async {
-    return MapLauncherPlatform.instance.isMapAvailable(mapType);
+  /// Returns all maps available on this platform, regardless of request type.
+  ///
+  /// Returns maps that are either natively installed or have
+  /// universal link support (can open in browser).
+  ///
+  /// For request-specific filtering, use [MarkerRequest.getSupportedMaps] or
+  /// [DirectionsRequest.getSupportedMaps] instead.
+  /// For store links and map info without an async call, use [MapType] directly
+  /// (e.g. [MapType.appStoreUrl]).
+  static Future<List<SupportedMap>> getAvailableMaps() async {
+    final installedMaps = await MapLauncherPlatform.instance.getInstalledMaps();
+    final results = <SupportedMap>[];
+
+    for (final mapType in MapRegistry.supportedMaps) {
+      final isInstalled = installedMaps.contains(mapType);
+      if (isInstalled || mapType.hasUniversalLink) {
+        results.add(SupportedMap(mapType: mapType, isInstalled: isInstalled));
+      }
+    }
+
+    return results;
   }
 }
