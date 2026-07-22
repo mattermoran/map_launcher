@@ -2,21 +2,32 @@
 
 **Breaking Changes:**
 
-- **New builder-style API**: `MapLauncher.marker(location).show()` and `MapLauncher.directions(destination).show()` replace the old `MapLauncher.showMarker()` / `MapLauncher.showDirections()` methods.
-- **Sealed `Location` type**: Use `Location.coords(lat, lng)` / `Location.search('query')` (or shorthand `.coords()` / `.search()`) instead of separate coordinate and search parameters.
-- **`MapType` enum now carries metadata**: Display name, store IDs, and icons are now properties on `MapType` itself, available without platform calls.
-- **`SupportedMap` replaces `AvailableMap`**: Combines `MapType` with runtime installation status.
-- **Minimum SDK**: Requires Dart 3.11+ and Flutter 3.3+.
+- **New builder-style API**: `MapLauncher.showMarker()` / `MapLauncher.showDirections()` → `MapLauncher.marker(...).show()` / `MapLauncher.directions(...).show()`. Methods on `AvailableMap` are gone too.
+- **`AvailableMap` → `SupportedMap`**: No longer carries `mapName` or `icon` — those are now properties on `MapType` itself (`MapType.displayName`, `MapType.icon`). `SupportedMap` only pairs a `MapType` with `isInstalled`.
+- **`Coords` → `LocationCoords`**: `Coords(latitude, longitude)` → `.coords(lat, lng, title: '...')`. Title moved from `showMarker()` into the location. `latitude`/`longitude` fields renamed to `lat`/`lng`.
+- **`Waypoint` removed**: Use `LocationCoords` directly in the waypoints list.
+- **`DirectionsMode` → `TravelMode`**: Same values (driving, walking, transit, bicycling), renamed.
+- **`extraParams` → `extra`**: Now accepts typed extras (`GoogleExtra`, `AppleExtra`, etc.) or raw `Map<String, String>`. Passed via `show(extra: ...)` instead of the old method parameter.
+- **`MapType` enum values reordered**: `google` is now before `googleGo`. Enum carries `displayName`, `playStoreId`, `appStoreId`, `hasUniversalLink`, `icon`.
+- **`MapLauncher.getAvailableMaps()` → `MapLauncher.getAvailableMaps()`**: Same name, but returns `List<SupportedMap>` instead of `List<AvailableMap>`.
+- **`isMapAvailable()` removed**: Use `getSupportedMaps()` on a request instead.
+- **Minimum SDK**: Dart 3.11+, Flutter 3.3+.
 
 **New Features:**
 
 - **Desktop & web support**: macOS, Windows, Linux, and web platforms via universal links (HTTPS URLs).
 - **Scheme-to-universal fallback**: On mobile, if a native app scheme URL fails (app not installed), automatically falls back to the universal HTTPS URL.
+- **Search-based markers and directions**: Google and Apple Maps support text queries for both markers and destinations.
 - **URL inspection**: `getUrl()`, `getUniversalUrl()`, and `getSchemeUrl()` let you preview URLs without launching.
 - **Extras system**: Type-safe, map-specific parameters via `GoogleExtra`, `AppleExtra`, `WazeExtra`, `TencentExtra`, `YandexNaviExtra`.
 - **`getSupportedMaps()`**: Per-request map discovery that respects capabilities (marker support, search support, waypoint support).
 - **`getAvailableMaps()`**: Platform-wide map discovery returning both installed and universal-link maps.
 - **Store URLs on `MapType`**: `appStoreUrl` and `playStoreUrl` getters for linking to app store pages.
+- **`MapLaunchException`**: Typed exception with the URL and underlying cause when a launch fails.
+
+**Docs:**
+
+- Added `CONTRIBUTING.md` with step-by-step guide for adding new map providers.
 
 ## 4.6.0
 
