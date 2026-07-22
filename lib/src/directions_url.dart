@@ -100,6 +100,20 @@ String getMapDirectionsUrl({
         },
       );
 
+    case MapType.magicEarth:
+      // Valueless switches injected after the leading '?'. iOS starts
+      // navigation with the bare mode switch; Android needs get_directions too.
+      final mode = getMagicEarthDirectionsMode(directionsMode);
+      final flags = Platform.isIOS ? mode : 'get_directions&$mode';
+      return buildUrl(
+        url: 'magicearth://',
+        queryParams: {
+          'lat': destination.latitude.toString(),
+          'lon': destination.longitude.toString(),
+          ...?extraParams,
+        },
+      ).replaceFirst('?', '?$flags&');
+
     case MapType.osmand:
     case MapType.osmandplus:
       if (Platform.isIOS) {

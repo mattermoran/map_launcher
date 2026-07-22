@@ -122,6 +122,18 @@ String getMapMarkerUrl({
         },
       );
 
+    case MapType.magicEarth:
+      return buildUrl(
+        url: 'magicearth://',
+        queryParams: {
+          'lat': coords.latitude.toString(),
+          'lon': coords.longitude.toString(),
+          'name': ?title,
+          'zoom': zoom.toString(),
+          ...?extraParams,
+        },
+      ).replaceFirst('?', '?show_on_map&');
+
     case MapType.osmand:
     case MapType.osmandplus:
       if (Platform.isIOS) {

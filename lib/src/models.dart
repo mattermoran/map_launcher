@@ -34,6 +34,9 @@ enum MapType {
   /// Maps.me.
   mapswithme,
 
+  /// Magic Earth.
+  magicEarth,
+
   /// OsmAnd.
   osmand,
 
