@@ -97,6 +97,9 @@ enum MapType {
 
   /// Air Navigation Pro.
   airnavPro,
+
+  /// SPEDION Navigation
+  spedionNavigation,
 }
 
 /// Defines the supported modes of transportation for [AvailableMap.showDirections].

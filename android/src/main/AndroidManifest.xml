@@ -30,6 +30,7 @@
     <package android:name="com.tranzmate" /> <!-- Moovit -->
     <package android:name="org.rajman.neshan.traffic.tehran.navigator" /> <!-- Neshan -->
     <package android:name="com.xample.airnavigation" /> <!-- AirNav Pro -->
+    <package android:name="de.spedion.mobile.android.spediontrucknavigation" /> <!-- SPEDION Navigation -->
   </queries>
 
 </manifest>
