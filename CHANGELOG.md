@@ -1,3 +1,7 @@
+## 5.0.1
+
+- fix: remove `dart:io` from web import
+
 ## 5.0.0
 
 **Breaking Changes:**
