@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
@@ -43,10 +41,9 @@ class MethodChannelMapLauncher extends MapLauncherPlatform {
   }
 
   @override
-  MapPlatform? get platform {
-    if (kIsWeb) return null;
-    if (Platform.isIOS) return .ios;
-    if (Platform.isAndroid) return .android;
-    return null; // desktop
-  }
+  MapPlatform? get platform => switch (defaultTargetPlatform) {
+    TargetPlatform.iOS => .ios,
+    TargetPlatform.android => .android,
+    _ => null,
+  };
 }

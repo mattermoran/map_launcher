@@ -142,7 +142,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "5.0.0-dev.1"
+    version: "5.0.0"
   matcher:
     dependency: transitive
     description:

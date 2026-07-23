@@ -45,7 +45,10 @@ export 'src/extras/tencent_extra.dart';
 export 'src/extras/waze_extra.dart';
 export 'src/extras/yandex_navi_extra.dart';
 
-// Platform implementation — needed for Flutter's generated plugin registrant.
-// Desktop uses dartPluginClass, so the class must be reachable from the barrel.
-// Web uses pluginClass (JS-style registration) and doesn't need an export here.
-export 'map_launcher_desktop.dart';
+// Flutter's generated plugin registrant imports from this barrel file
+// (it ignores the fileName field in pubspec.yaml for dartPluginClass).
+// Conditional export: on native platforms, export the real desktop class;
+// on web, export an empty stub so dart:io stays out of the import chain.
+export 'map_launcher_desktop_stub.dart'
+    if (dart.library.io) 'map_launcher_desktop.dart';
+
