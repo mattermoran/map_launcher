@@ -1,17 +1,27 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/google_go_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Google Maps Go — Android only, coordinates, directions with travel mode.
-class GoogleMapsGoBuilder extends MapUrlBuilder {
-  /// Creates a [GoogleMapsGoBuilder].
-  const GoogleMapsGoBuilder();
+/// Google Maps Go. Android only, coordinates, directions with travel mode.
+class GoogleMapsGo extends MapApp {
+  /// Creates a [GoogleMapsGo].
+  const GoogleMapsGo();
 
   @override
-  MapType get mapType => .googleGo;
+  String get id => 'googleGo';
+
+  @override
+  String get name => 'Google Maps Go';
+
+  @override
+  String? get playStoreId => 'com.google.android.apps.mapslite';
+
+  @override
+  Uint8List get iconBytes => googleGoIcon;
 
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;

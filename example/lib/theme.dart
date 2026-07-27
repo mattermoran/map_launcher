@@ -5,7 +5,7 @@ abstract final class AppTheme {
     brightness: .dark,
     useMaterial3: true,
     colorScheme: .fromSeed(
-      seedColor: const Color(0xFF4A90D9), // Calm blue — not AI purple
+      seedColor: const Color(0xFF4A90D9),
       brightness: .dark,
     ),
     filledButtonTheme: FilledButtonThemeData(

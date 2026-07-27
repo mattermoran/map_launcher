@@ -2,17 +2,16 @@ import 'package:map_launcher/src/maps/baidu.dart';
 import 'package:map_launcher/src/maps/amap.dart';
 import 'package:map_launcher/src/maps/tencent.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:test/test.dart';
 
 void main() {
   final coords = LocationCoords(39.908, 116.397, title: 'Beijing');
 
   group('BaiduMaps', () {
-    const baidu = BaiduMapsBuilder();
+    const baidu = BaiduMaps();
 
-    test('type is MapType.baidu', () {
-      expect(baidu.mapType, equals(MapType.baidu));
+    test('type is baidu', () {
+      expect(baidu.id, equals('baidu'));
     });
 
     test('markerUrl returns null (scheme only)', () {
@@ -76,10 +75,10 @@ void main() {
   });
 
   group('Amap', () {
-    const amap = AmapBuilder();
+    const amap = Amap();
 
-    test('type is MapType.amap', () {
-      expect(amap.mapType, equals(MapType.amap));
+    test('type is amap', () {
+      expect(amap.id, equals('amap'));
     });
 
     test('markerUrl returns null (scheme only)', () {
@@ -115,10 +114,10 @@ void main() {
   });
 
   group('TencentMaps', () {
-    const tencent = TencentMapsBuilder();
+    const tencent = TencentMaps();
 
-    test('type is MapType.tencent', () {
-      expect(tencent.mapType, equals(MapType.tencent));
+    test('type is tencent', () {
+      expect(tencent.id, equals('tencent'));
     });
 
     test('markerUrl returns null (scheme only)', () {

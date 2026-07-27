@@ -1,21 +1,39 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/yandex_maps_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Yandex Maps — coordinates, directions with origin, waypoints, travel mode.
-class YandexMapsBuilder extends MapUrlBuilder {
-  /// Creates a [YandexMapsBuilder].
-  const YandexMapsBuilder();
+/// Yandex Maps. Supports coordinates, directions with origin, waypoints, and travel mode.
+class YandexMaps extends MapApp {
+  /// Creates a [YandexMaps].
+  const YandexMaps();
+
+  @override
+  String get id => 'yandexMaps';
+
+  @override
+  String get name => 'Yandex Maps';
+
+  @override
+  bool get hasUniversalLink => true;
+
+  @override
+  String? get playStoreId => 'ru.yandex.yandexmaps';
+
+  @override
+  String? get appStoreId => '313877526';
+
+  @override
+  String? get iosScheme => 'yandexmaps://';
+
+  @override
+  Uint8List get iconBytes => yandexMapsIcon;
 
   @override
   bool get supportsWaypoints => true;
-
-  @override
-  MapType get mapType => .yandexMaps;
-
   @override
   String markerUrl(LocationCoords coords, {int? zoom}) => buildUrl(
     url: 'https://yandex.com/maps/',

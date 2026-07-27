@@ -5,9 +5,9 @@
 ///
 /// `null` represents web/desktop where scheme URLs don't work.
 enum MapPlatform {
-  /// iOS — uses iOS-specific URL schemes.
+  /// iOS. Uses iOS-specific URL schemes.
   ios,
 
-  /// Android — uses Android-specific URL schemes.
+  /// Android. Uses Android-specific URL schemes.
   android,
 }

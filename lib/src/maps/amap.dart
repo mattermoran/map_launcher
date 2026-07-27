@@ -1,17 +1,33 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/amap_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Amap (Gaode Maps) — mobile only, directions with origin and travel mode.
-class AmapBuilder extends MapUrlBuilder {
-  /// Creates an [AmapBuilder].
-  const AmapBuilder();
+/// Amap (Gaode Maps). Mobile only, directions with origin and travel mode.
+class Amap extends MapApp {
+  /// Creates a [Amap].
+  const Amap();
 
   @override
-  MapType get mapType => .amap;
+  String get id => 'amap';
+
+  @override
+  String get name => 'Amap';
+
+  @override
+  String? get playStoreId => 'com.autonavi.minimap';
+
+  @override
+  String? get appStoreId => '461703208';
+
+  @override
+  String? get iosScheme => 'iosamap://';
+
+  @override
+  Uint8List get iconBytes => amapIcon;
 
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;

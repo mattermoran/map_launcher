@@ -1,16 +1,35 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/double_gis_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 
-/// 2GIS — coordinates, directions with origin and travel mode.
-class DoubleGisBuilder extends MapUrlBuilder {
-  /// Creates a [DoubleGisBuilder].
-  const DoubleGisBuilder();
+/// 2GIS. Supports coordinates, directions with origin and travel mode.
+class DoubleGis extends MapApp {
+  /// Creates a [DoubleGis].
+  const DoubleGis();
 
   @override
-  MapType get mapType => .doubleGis;
+  String get id => 'doubleGis';
+
+  @override
+  String get name => '2GIS';
+
+  @override
+  bool get hasUniversalLink => true;
+
+  @override
+  String? get playStoreId => 'ru.dublgis.dgismobile';
+
+  @override
+  String? get appStoreId => '481627348';
+
+  @override
+  String? get iosScheme => 'dgis://';
+
+  @override
+  Uint8List get iconBytes => doubleGisIcon;
 
   @override
   String markerUrl(LocationCoords coords, {int? zoom}) =>

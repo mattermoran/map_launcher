@@ -1,18 +1,34 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/tencent_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Tencent (QQ Maps) — mobile only, directions with origin and travel mode.
-class TencentMapsBuilder extends MapUrlBuilder {
-  /// Creates a [TencentMapsBuilder].
-  const TencentMapsBuilder();
+/// Tencent (QQ Maps). Mobile only, directions with origin and travel mode.
+class TencentMaps extends MapApp {
+  /// Creates a [TencentMaps].
+  const TencentMaps();
 
   @override
-  MapType get mapType => .tencent;
+  String get id => 'tencent';
+
+  @override
+  String get name => 'Tencent (QQ Maps)';
+
+  @override
+  String? get playStoreId => 'com.tencent.map';
+
+  @override
+  String? get appStoreId => '481623196';
+
+  @override
+  String? get iosScheme => 'qqmap://';
+
+  @override
+  Uint8List get iconBytes => tencentIcon;
 
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;

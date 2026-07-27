@@ -1,16 +1,35 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/mappls_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Mappls (MapmyIndia) — coordinates, directions with travel mode.
-class MapplsBuilder extends MapUrlBuilder {
-  /// Creates a [MapplsBuilder].
-  const MapplsBuilder();
+/// Mappls (MapmyIndia). Supports coordinates, directions with travel mode.
+class Mappls extends MapApp {
+  /// Creates a [Mappls].
+  const Mappls();
 
   @override
-  MapType get mapType => .mappls;
+  String get id => 'mappls';
+
+  @override
+  String get name => 'Mappls';
+
+  @override
+  bool get hasUniversalLink => true;
+
+  @override
+  String? get playStoreId => 'com.mmi.maps';
+
+  @override
+  String? get appStoreId => '370210646';
+
+  @override
+  String? get iosScheme => 'mappls://';
+
+  @override
+  Uint8List get iconBytes => mapplsIcon;
 
   @override
   String markerUrl(LocationCoords coords, {int? zoom}) =>

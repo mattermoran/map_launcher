@@ -21,7 +21,6 @@
     <package android:name="com.tomtom.gplay.navapp.gofleet" /> <!-- TomTom Go Fleet -->
     <package android:name="com.sygic.truck" /> <!-- Sygic Truck -->
     <package android:name="nl.flitsmeister" /> <!-- Flitsmeister -->
-    <package android:name="nl.flitsmeister.flux" /> <!-- Truckmeister -->
     <package android:name="com.nhn.android.nmap" /> <!-- Naver Map -->
     <package android:name="net.daum.android.map" /> <!-- Kakao Maps -->
     <package android:name="com.skt.tmap.ku" /> <!-- TMap -->
@@ -31,7 +30,6 @@
     <package android:name="org.rajman.neshan.traffic.tehran.navigator" /> <!-- Neshan -->
     <package android:name="com.xample.airnavigation" /> <!-- AirNav Pro -->
     <package android:name="com.mapswithme.maps.pro" /> <!-- MAPS.ME -->
-    <package android:name="de.spedion.mobile.android.spediontrucknavigation" /> <!-- SPEDION Navigation -->
     <package android:name="com.generalmagic.magicearth" /> <!-- Magic Earth -->
   </queries>
 

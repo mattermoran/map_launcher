@@ -1,9 +1,8 @@
 import 'package:map_launcher/map_launcher_platform_interface.dart';
-import 'package:map_launcher/src/maps/map_registry.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/location.dart';
 import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/supported_map.dart';
 import 'package:map_launcher/src/utils/launch_helper.dart';
 
@@ -22,8 +21,8 @@ import 'package:map_launcher/src/utils/launch_helper.dart';
 ///
 /// // With discovery
 /// final marker = MapLauncher.marker(.coords(48.85, 2.29));
-/// final maps = await marker.getSupportedMaps();
-/// await marker.show(map: maps.first.mapType);
+/// final maps = await marker.getSupportedMaps([.apple, .google, .waze]);
+/// await maps.first.show();
 /// ```
 class MarkerRequest {
   /// Creates a [MarkerRequest]. Prefer [MapLauncher.marker].
@@ -44,13 +43,14 @@ class MarkerRequest {
 
   /// Shows the marker in a map app.
   ///
-  /// If [map] is null, uses the best available app
+  /// If [map] is null, uses the best available app from [defaultMaps]
   /// (Apple Maps on iOS, Google Maps elsewhere, with fallback).
   ///
   /// * [extra] Additional query parameters merged with constructor [extra];
   ///   values from this call take precedence on conflict.
-  Future<void> show({MapType? map, Map<String, String>? extra}) async {
-    final targetMap = map ?? await resolveBestMap(getSupportedMaps);
+  Future<void> show({MapApp? map, Map<String, String>? extra}) async {
+    final targetMap =
+        map ?? await resolveBestMap(() => getSupportedMaps(defaultMaps));
     if (targetMap == null) {
       throw UnsupportedError('No map app available for this marker request.');
     }
@@ -58,7 +58,7 @@ class MarkerRequest {
     final url = getUrl(map: targetMap);
     if (url == null) {
       throw UnsupportedError(
-        '${targetMap.displayName} does not support this marker type.',
+        '${targetMap.name} does not support this marker type.',
       );
     }
 
@@ -69,9 +69,12 @@ class MarkerRequest {
       mergedExtra.isEmpty ? null : mergedExtra,
     );
     try {
-      await MapLauncherPlatform.instance.launch(finalUrl, mapType: targetMap);
+      await MapLauncherPlatform.instance.launch(
+        finalUrl,
+        androidPackageName: targetMap.playStoreId,
+      );
     } on Exception {
-      // Scheme URL may fail if app is not installed — fall back to universal.
+      // Scheme URL may fail if app is not installed. Fall back to universal.
       final universalUrl = getUniversalUrl(map: targetMap);
       if (universalUrl != null && universalUrl != finalUrl) {
         final fallbackUrl = appendQueryParams(
@@ -79,11 +82,14 @@ class MarkerRequest {
           mergedExtra.isEmpty ? null : mergedExtra,
         );
         try {
-          await MapLauncherPlatform.instance.launch(fallbackUrl, mapType: targetMap);
+          await MapLauncherPlatform.instance.launch(
+            fallbackUrl,
+            androidPackageName: targetMap.playStoreId,
+          );
           return;
         } on Exception catch (e) {
           throw MapLaunchException(
-            'Failed to launch ${targetMap.displayName}',
+            'Failed to launch ${targetMap.name}',
             url: fallbackUrl,
             cause: e,
           );
@@ -97,11 +103,8 @@ class MarkerRequest {
   ///
   /// On mobile, prefers the native scheme URL. On web/desktop, always
   /// returns the universal HTTPS URL. Returns `null` if unsupported.
-  String? getUrl({required MapType map}) {
-    final builder = MapRegistry.getBuilder(map);
-    if (builder == null) return null;
-
-    return builder.bestMarkerUrl(
+  String? getUrl({required MapApp map}) {
+    return map.bestMarkerUrl(
       location,
       zoom: zoom,
       platform: MapLauncherPlatform.instance.platform,
@@ -112,13 +115,10 @@ class MarkerRequest {
   ///
   /// Unlike [getUrl], this always returns the web-openable URL, never
   /// a custom scheme.
-  String? getUniversalUrl({required MapType map}) {
-    final builder = MapRegistry.getBuilder(map);
-    if (builder == null) return null;
-
+  String? getUniversalUrl({required MapApp map}) {
     return switch (location) {
-      LocationCoords coords => builder.markerUrl(coords, zoom: zoom),
-      LocationSearch search => builder.markerSearchUrl(search.query),
+      LocationCoords coords => map.markerUrl(coords, zoom: zoom),
+      LocationSearch search => map.markerSearchUrl(search.query),
     };
   }
 
@@ -130,51 +130,55 @@ class MarkerRequest {
   /// Pass [platform] to override platform detection (useful for previewing
   /// URLs for other platforms). Returns `null` on web/desktop if no
   /// [platform] is specified.
-  String? getSchemeUrl({required MapType map, MapPlatform? platform}) {
+  String? getSchemeUrl({required MapApp map, MapPlatform? platform}) {
     final resolved = platform ?? MapLauncherPlatform.instance.platform;
     if (resolved == null) return null;
 
-    final builder = MapRegistry.getBuilder(map);
-    if (builder == null) return null;
-
     return switch (location) {
-      LocationCoords coords => builder.markerSchemeUrl(
+      LocationCoords coords => map.markerSchemeUrl(
         coords,
         zoom: zoom,
         platform: resolved,
       ),
-      LocationSearch search => builder.markerSchemeSearchUrl(
+      LocationSearch search => map.markerSchemeSearchUrl(
         search.query,
         platform: resolved,
       ),
     };
   }
 
-  /// Returns maps that support this marker request on this device.
+  /// Returns maps from [maps] that support this marker request on this device.
   ///
   /// Accounts for:
-  /// - Location type (coordinates vs search — fewer apps support search)
+  /// - Location type (coordinates vs search; fewer apps support search)
   /// - Installation status (native app detected)
   /// - Universal link availability (works via browser)
-  Future<List<SupportedMap>> getSupportedMaps() async {
-    final installedMaps = await MapLauncherPlatform.instance.getInstalledMaps();
+  Future<List<SupportedMap>> getSupportedMaps(List<MapApp> maps) async {
+    final installedIds = await MapLauncherPlatform.instance.getInstalledMaps(
+      maps,
+    );
     final results = <SupportedMap>[];
 
-    for (final mapType in MapRegistry.supportedMaps) {
-      final builder = MapRegistry.getBuilder(mapType)!;
-
-      // Check if this builder supports the location type
+    for (final map in maps) {
+      // Check if this map supports the location type
       final isSupported = switch (location) {
-        LocationCoords() => builder.supportsMarkerCoords,
-        LocationSearch() => builder.supportsMarkerSearch,
+        LocationCoords() => map.supportsMarkerCoords,
+        LocationSearch() => map.supportsMarkerSearch,
       };
       if (!isSupported) continue;
 
-      final isInstalled = installedMaps.contains(mapType);
+      final isInstalled = installedIds.contains(map.id);
 
       // Include if installed natively OR has universal link (browser fallback)
-      if (isInstalled || mapType.hasUniversalLink) {
-        results.add(SupportedMap(mapType: mapType, isInstalled: isInstalled));
+      if (isInstalled || map.hasUniversalLink) {
+        results.add(
+          SupportedMap.launchable(
+            map: map,
+            isInstalled: isInstalled,
+            launcher: ({Map<String, String>? extra}) =>
+                show(map: map, extra: extra),
+          ),
+        );
       }
     }
 

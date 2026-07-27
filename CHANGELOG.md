@@ -1,21 +1,61 @@
+## 6.0.0
+
+Add your own map apps, ship only the maps you use, and launch them in one line.
+
+Maps are now `MapApp` objects instead of enum values. **Subclass `MapApp`** to
+add any map app without forking the plugin. **Only the maps you reference are
+compiled into your app**, so URL schemes, package names, and icons of unused
+maps never touch your binary. And discovery results are **directly launchable**:
+`maps.first.show()`.
+
+See [MIGRATION.md](https://github.com/mattermoran/map_launcher/blob/master/MIGRATION.md) for the full 5.x → 6.0 guide.
+
+**New Features:**
+
+- **Custom maps**: subclass `MapApp` to add any map app (regional, proprietary,
+  internal) without forking the plugin. Works everywhere a built-in map does,
+  including discovery and launching.
+- **Tree-shakeable maps**: referencing `MapApp.waze` compiles in only Waze's
+  code, strings, and icon. Unreferenced maps are stripped completely from
+  release binaries, verified by scanning AOT snapshots.
+- **Launchable discovery results**: `final maps = await request.getSupportedMaps([...])`
+  then `maps.first.show()`. No more request/mapType plumbing in pickers.
+- **Misconfiguration warning (iOS)**: debug builds print a warning when a map
+  passed to discovery is missing from `LSApplicationQueriesSchemes`, naming
+  the exact scheme to add. Previously indistinguishable from "not installed".
+- **Official app icons**: 256×256 PNG icons sourced from iTunes and Google Play
+  Store APIs, embedded as `Uint8List`. No `flutter_svg` dependency needed.
+  Run `dart run tool/fetch_icons.dart` to refresh.
+- **Generic native layer**: iOS/Android detection is driven entirely from
+  Dart. The native code has zero map-specific knowledge.
+
+**Breaking Changes:**
+
+- **`MapType` enum → `MapApp` objects**: `MapType.google` → `MapApp.google`.
+  Dot-shorthand call sites like `show(map: .google)` compile unchanged.
+- **Discovery takes an explicit list**: `getSupportedMaps()` →
+  `getSupportedMaps([.apple, .google, .waze])`, `getAvailableMaps()` →
+  `getAvailableMaps(myMaps)`. Use `MapApp.all` for every supported map (this
+  opts out of tree shaking).
+- **Icons are PNG bytes, not SVG assets**: `SvgPicture.asset(map.icon)` →
+  `Image.memory(map.iconBytes)`. No extra dependencies needed. `flutter_svg`
+  is no longer required.
+- **`SupportedMap`**: `map.mapType` → `map.map` (a `MapApp`),
+  `map.displayName` → `map.name`. Entries returned by a request are directly
+  launchable via `map.show()`.
+- **Persisted map names**: `MapType.values.byName(saved)` →
+  `myMaps.firstWhere((m) => m.id == saved)`. `MapApp.id` matches the old
+  enum names, so stored preferences keep working.
+- **Removed maps**: `truckmeister` (discontinued by Flitsmeister) and
+  `spedionNavigation` (integrated module in the SPEDION fleet app, not a
+  standalone map) have been removed. Use the custom `MapApp` subclass feature
+  to add them back if needed.
+
 ## 5.0.1
 
 - fix: remove `dart:io` from web import
 
 ## 5.0.0
-
-**Breaking Changes:**
-
-- **New builder-style API**: `MapLauncher.showMarker()` / `MapLauncher.showDirections()` → `MapLauncher.marker(...).show()` / `MapLauncher.directions(...).show()`. Methods on `AvailableMap` are gone too.
-- **`AvailableMap` → `SupportedMap`**: No longer carries `mapName` or `icon` — those are now properties on `MapType` itself (`MapType.displayName`, `MapType.icon`). `SupportedMap` only pairs a `MapType` with `isInstalled`.
-- **`Coords` → `LocationCoords`**: `Coords(latitude, longitude)` → `.coords(lat, lng, title: '...')`. Title moved from `showMarker()` into the location. `latitude`/`longitude` fields renamed to `lat`/`lng`.
-- **`Waypoint` removed**: Use `LocationCoords` directly in the waypoints list.
-- **`DirectionsMode` → `TravelMode`**: Same values (driving, walking, transit, bicycling), renamed.
-- **`extraParams` → `extra`**: Now accepts typed extras (`GoogleExtra`, `AppleExtra`, etc.) or raw `Map<String, String>`. Passed via `show(extra: ...)` instead of the old method parameter.
-- **`MapType` enum values reordered**: `google` is now before `googleGo`. Enum carries `displayName`, `playStoreId`, `appStoreId`, `hasUniversalLink`, `icon`.
-- **`MapLauncher.getAvailableMaps()` → `MapLauncher.getAvailableMaps()`**: Same name, but returns `List<SupportedMap>` instead of `List<AvailableMap>`.
-- **`isMapAvailable()` removed**: Use `getSupportedMaps()` on a request instead.
-- **Minimum SDK**: Dart 3.11+, Flutter 3.3+.
 
 **New Features:**
 
@@ -28,6 +68,19 @@
 - **`getAvailableMaps()`**: Platform-wide map discovery returning both installed and universal-link maps.
 - **Store URLs on `MapType`**: `appStoreUrl` and `playStoreUrl` getters for linking to app store pages.
 - **`MapLaunchException`**: Typed exception with the URL and underlying cause when a launch fails.
+
+**Breaking Changes:**
+
+- **New builder-style API**: `MapLauncher.showMarker()` / `MapLauncher.showDirections()` → `MapLauncher.marker(...).show()` / `MapLauncher.directions(...).show()`. Methods on `AvailableMap` are gone too.
+- **`AvailableMap` → `SupportedMap`**: No longer carries `mapName` or `icon`. Those are now properties on `MapType` itself (`MapType.displayName`, `MapType.icon`). `SupportedMap` only pairs a `MapType` with `isInstalled`.
+- **`Coords` → `LocationCoords`**: `Coords(latitude, longitude)` → `.coords(lat, lng, title: '...')`. Title moved from `showMarker()` into the location. `latitude`/`longitude` fields renamed to `lat`/`lng`.
+- **`Waypoint` removed**: Use `LocationCoords` directly in the waypoints list.
+- **`DirectionsMode` → `TravelMode`**: Same values (driving, walking, transit, bicycling), renamed.
+- **`extraParams` → `extra`**: Now accepts typed extras (`GoogleExtra`, `AppleExtra`, etc.) or raw `Map<String, String>`. Passed via `show(extra: ...)` instead of the old method parameter.
+- **`MapType` enum values reordered**: `google` is now before `googleGo`. Enum carries `displayName`, `playStoreId`, `appStoreId`, `hasUniversalLink`, `icon`.
+- **`MapLauncher.getAvailableMaps()` → `MapLauncher.getAvailableMaps()`**: Same name, but returns `List<SupportedMap>` instead of `List<AvailableMap>`.
+- **`isMapAvailable()` removed**: Use `getSupportedMaps()` on a request instead.
+- **Minimum SDK**: Dart 3.11+, Flutter 3.3+.
 
 **Docs:**
 

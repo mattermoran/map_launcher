@@ -1,16 +1,35 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/here_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// HERE WeGo — coordinates, directions with origin and travel mode.
-class HereWeGoBuilder extends MapUrlBuilder {
-  /// Creates a [HereWeGoBuilder].
-  const HereWeGoBuilder();
+/// HERE WeGo. Supports coordinates, directions with origin and travel mode.
+class HereWeGo extends MapApp {
+  /// Creates a [HereWeGo].
+  const HereWeGo();
 
   @override
-  MapType get mapType => .here;
+  String get id => 'here';
+
+  @override
+  String get name => 'HERE WeGo';
+
+  @override
+  bool get hasUniversalLink => true;
+
+  @override
+  String? get playStoreId => 'com.here.app.maps';
+
+  @override
+  String? get appStoreId => '955837609';
+
+  @override
+  String? get iosScheme => 'here-location://';
+
+  @override
+  Uint8List get iconBytes => hereIcon;
 
   @override
   String markerUrl(LocationCoords coords, {int? zoom}) {

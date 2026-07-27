@@ -4,36 +4,57 @@
 
 Most contributions add support for a new map app. Follow these steps:
 
-### 1. Add the enum entry
+### 1. Create a `MapApp` subclass
 
-In [`lib/src/models/map_type.dart`](lib/src/models/map_type.dart), add your map to the `MapType` enum:
+Create `lib/src/maps/my_map.dart` with a class extending [`MapApp`](lib/src/maps/map_app.dart). See existing maps like [`GoogleMaps`](lib/src/maps/google_maps.dart) for the pattern.
+
+At minimum you need:
+
+- `id`: unique identifier (camelCase, e.g. `'myMap'`)
+- `name`: display name shown to users
+- `iconBytes`: the PNG icon (see step 4)
+- `markerUrl()`: show a location
+- `directionsUrl()`: show directions
+
+Override `markerSchemeUrl()` / `directionsSchemeUrl()` for native URL schemes, and return `null` for any method your map doesn't support.
+
+Set `hasUniversalLink: true` only if the map has HTTPS URLs that work in any browser.
+
+### 2. Register the map
+
+In [`lib/src/maps/map_app.dart`](lib/src/maps/map_app.dart):
+
+- Import your new class
+- Add a `static const` field (e.g. `static const myMap = MyMap()`)
+- Add it to the `MapApp.all` list
+
+### 3. Export from the barrel file
+
+In [`lib/map_launcher.dart`](lib/map_launcher.dart), add an export for your map file:
 
 ```dart
-/// My Map App.
-myMap(
-  displayName: 'My Map App',
-  playStoreId: 'com.example.mymap',    // Android package name, or omit
-  appStoreId: '123456789',              // App Store numeric ID, or omit
-),
+export 'src/maps/my_map.dart';
 ```
 
-- Set `hasUniversalLink: true` only if the map has HTTPS URLs that work in any browser.
-- Use the exact Google Play / App Store IDs (check the store listing URL).
+### 4. Add an icon
 
-### 2. Create a URL builder
+Icons are 256×256 PNGs stored in `assets/icons/`. The filename must match the `id` exactly (e.g. `myMap.png`).
 
-Create `lib/src/maps/my_map.dart` implementing `MapUrlBuilder`. See existing builders for the pattern — at minimum you need:
+To fetch icons automatically from the App Store / Play Store:
 
-- `markerUrl()` / `markerSchemeUrl()` — show a location
-- `directionsUrl()` / `directionsSchemeUrl()` — show directions
+```bash
+dart run tool/fetch_icons.dart --only myMap
+```
 
-Return `null` for any method your map doesn't support.
+Then regenerate Dart icon constants:
 
-### 3. Register the builder
+```bash
+dart run tool/generate_icons.dart
+```
 
-In [`lib/src/maps/map_registry.dart`](lib/src/maps/map_registry.dart), import your builder and add it to the `_builders` map.
+This creates `lib/src/maps/icons/my_map_icon.dart` with a `Uint8List` constant that your `iconBytes` getter should return.
 
-### 4. Add native detection
+### 5. Add native detection
 
 **Android** (`android/src/main/kotlin/.../MapLauncherPlugin.kt`):
 
@@ -53,11 +74,11 @@ In [`lib/src/maps/map_registry.dart`](lib/src/maps/map_registry.dart), import yo
 
 Skip the platform if your map doesn't support it (e.g., Android-only apps don't need iOS entries).
 
-### 5. Add an icon
+### 6. Add tests
 
-Add an SVG icon at `assets/icons/<enumName>.svg`. The filename must match the enum value name exactly.
+Add a test file at `test/maps/my_map_test.dart` covering the URLs your map generates. See existing test files in `test/maps/` for examples.
 
-### 6. Update docs
+### 7. Update docs
 
 - Add your map to the supported maps list and capability tables in [`README.md`](README.md).
 
@@ -72,7 +93,7 @@ cd example && flutter pub get && cd ..
 flutter test
 
 # Run analysis
-flutter analyze
+dart analyze
 ```
 
 ## Running the Example App
@@ -85,26 +106,35 @@ flutter run
 ## Pull Request Guidelines
 
 - One map per PR (keeps review simple).
-- Include the SVG icon.
-- Make sure `flutter analyze` and `flutter test` pass.
+- Include the PNG icon (generated via `tool/fetch_icons.dart` and `tool/generate_icons.dart`).
+- Make sure `dart analyze` and `flutter test` pass.
 - Add your map to the README tables.
 
 ## Architecture Overview
 
 ```
 lib/
-├── map_launcher.dart              # Public barrel file
+├── map_launcher.dart              # Public barrel file (exports all public API)
 ├── map_launcher_platform_interface.dart  # Platform contract
 ├── map_launcher_method_channel.dart      # Mobile implementation
 ├── map_launcher_web.dart                 # Web implementation
 ├── map_launcher_desktop.dart             # Desktop implementation
 └── src/
     ├── map_launcher.dart          # MapLauncher entry point
-    ├── models/                    # Data types (MapType, Location, etc.)
-    ├── maps/                      # URL builders (one per map app)
+    ├── models/                    # Data types (Location, TravelMode, etc.)
+    ├── maps/                      # MapApp subclasses (one per map app)
+    │   ├── map_app.dart           # Base class + static const instances + all list
+    │   ├── google_maps.dart       # Example: GoogleMaps extends MapApp
+    │   └── icons/                 # Generated Dart icon constants (Uint8List)
     ├── requests/                  # MarkerRequest, DirectionsRequest
     ├── extras/                    # Map-specific parameter helpers
     └── utils/                     # URL building utilities
+
+assets/icons/                      # 256×256 PNG icons (source files)
+tool/
+├── fetch_icons.dart               # Downloads icons from App Store / Play Store
+└── generate_icons.dart            # Converts PNGs to Dart Uint8List constants
+test/maps/                         # Tests for individual map URL builders
 ```
 
-The plugin is intentionally thin on the native side — it only detects installed apps and launches URLs. All URL construction happens in Dart.
+The plugin is intentionally thin on the native side. It only detects installed apps and launches URLs. All URL construction happens in Dart.

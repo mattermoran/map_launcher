@@ -1,17 +1,33 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/baidu_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Baidu Maps — mobile only, directions with origin and travel mode.
-class BaiduMapsBuilder extends MapUrlBuilder {
-  /// Creates a [BaiduMapsBuilder].
-  const BaiduMapsBuilder();
+/// Baidu Maps. Mobile only, directions with origin and travel mode.
+class BaiduMaps extends MapApp {
+  /// Creates a [BaiduMaps].
+  const BaiduMaps();
 
   @override
-  MapType get mapType => .baidu;
+  String get id => 'baidu';
+
+  @override
+  String get name => 'Baidu Maps';
+
+  @override
+  String? get playStoreId => 'com.baidu.BaiduMap';
+
+  @override
+  String? get appStoreId => '452186370';
+
+  @override
+  String? get iosScheme => 'baidumap://';
+
+  @override
+  Uint8List get iconBytes => baiduIcon;
 
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;

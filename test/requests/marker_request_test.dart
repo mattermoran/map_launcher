@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:map_launcher/map_launcher_platform_interface.dart';
 import 'package:map_launcher/src/models/location.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
-import 'package:map_launcher/src/models/map_type.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/requests/marker_request.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -115,7 +115,7 @@ void main() {
     test('returns null when platform is null (web/desktop)', () {
       mockPlatform.platformResponse = null;
       final req = MarkerRequest(location: LocationCoords(48.85, 2.29));
-      // Don't pass platform — it falls back to the instance.platform which is null
+      // Don't pass platform. Falls back to instance.platform which is null
       final url = req.getSchemeUrl(map: .google);
       expect(url, isNull);
     });
@@ -133,7 +133,7 @@ void main() {
     test('falls back to universal URL when scheme launch fails', () async {
       mockPlatform.platformResponse = .ios;
       mockPlatform.failOnScheme = true;
-      mockPlatform.installedMapsResponse = [.google];
+      mockPlatform.installedIds = {'google'};
 
       final req = MarkerRequest(location: LocationCoords(48.85, 2.29));
       await req.show(map: .google);
@@ -159,7 +159,7 @@ class MockMapLauncherPlatform extends Fake
     with MockPlatformInterfaceMixin
     implements MapLauncherPlatform {
   String? launchedUrl;
-  List<MapType> installedMapsResponse = [];
+  Set<String> installedIds = {};
   MapPlatform? platformResponse = .android;
 
   /// When true, launch() throws on non-HTTPS (scheme) URLs.
@@ -169,7 +169,7 @@ class MockMapLauncherPlatform extends Fake
   bool failAlways = false;
 
   @override
-  Future<void> launch(String url, {MapType? mapType}) async {
+  Future<void> launch(String url, {String? androidPackageName}) async {
     if (failAlways) throw Exception('Launch failed');
     if (failOnScheme && !url.startsWith('https://')) {
       throw Exception('Scheme launch failed');
@@ -178,8 +178,8 @@ class MockMapLauncherPlatform extends Fake
   }
 
   @override
-  Future<List<MapType>> getInstalledMaps() async {
-    return installedMapsResponse;
+  Future<Set<String>> getInstalledMaps(List<MapApp> maps) async {
+    return installedIds;
   }
 
   @override

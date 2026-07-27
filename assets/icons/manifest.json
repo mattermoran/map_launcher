@@ -1,0 +1,171 @@
+{
+  "airnavPro": {
+    "source": "playstore",
+    "fetched_at": "2026-07-27T20:21:10.490484Z",
+    "play_store_id": "com.xample.airnavigation"
+  },
+  "amap": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.372327Z",
+    "app_store_id": "461703208",
+    "country": "cn"
+  },
+  "apple": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.063600Z",
+    "app_store_id": "915056765",
+    "country": "us"
+  },
+  "baidu": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.405932Z",
+    "app_store_id": "452186370",
+    "country": "cn"
+  },
+  "citymapper": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.489837Z",
+    "app_store_id": "469463298",
+    "country": "us"
+  },
+  "copilot": {
+    "source": "playstore",
+    "fetched_at": "2026-07-27T20:21:09.859675Z",
+    "play_store_id": "com.alk.copilot.mapviewer"
+  },
+  "doubleGis": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.208654Z",
+    "app_store_id": "481627348",
+    "country": "ru"
+  },
+  "flitsmeister": {
+    "source": "playstore",
+    "fetched_at": "2026-07-27T20:21:09.949620Z",
+    "play_store_id": "nl.flitsmeister"
+  },
+  "google": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.094484Z",
+    "app_store_id": "585027354",
+    "country": "us"
+  },
+  "googleGo": {
+    "source": "playstore",
+    "fetched_at": "2026-07-27T20:21:09.332625Z",
+    "play_store_id": "com.google.android.apps.mapslite"
+  },
+  "here": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.243719Z",
+    "app_store_id": "955837609",
+    "country": "us"
+  },
+  "kakao": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:10.333250Z",
+    "app_store_id": "304608425",
+    "country": "kr"
+  },
+  "magicEarth": {
+    "source": "playstore",
+    "fetched_at": "2026-07-27T20:21:10.750118Z",
+    "play_store_id": "com.generalmagic.magicearth"
+  },
+  "mappls": {
+    "source": "playstore",
+    "fetched_at": "2026-07-27T20:21:09.305425Z",
+    "play_store_id": "com.mmi.maps"
+  },
+  "mapswithme": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.522719Z",
+    "app_store_id": "510623322",
+    "country": "us"
+  },
+  "mapyCz": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.273686Z",
+    "app_store_id": "411411020",
+    "country": "cz"
+  },
+  "moovit": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:10.409999Z",
+    "app_store_id": "498477945",
+    "country": "us"
+  },
+  "naver": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:10.292575Z",
+    "app_store_id": "311867728",
+    "country": "kr"
+  },
+  "neshan": {
+    "source": "playstore",
+    "fetched_at": "2026-07-27T20:21:10.455457Z",
+    "play_store_id": "org.rajman.neshan.traffic.tehran.navigator"
+  },
+  "osmand": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.571285Z",
+    "app_store_id": "934850257",
+    "country": "us"
+  },
+  "osmandplus": {
+    "source": "playstore",
+    "fetched_at": "2026-07-27T20:21:09.631957Z",
+    "play_store_id": "net.osmand.plus"
+  },
+  "petal": {
+    "source": "playstore",
+    "fetched_at": "2026-07-27T20:21:09.709374Z",
+    "play_store_id": "com.huawei.maps.app"
+  },
+  "sygicTruck": {
+    "source": "playstore",
+    "fetched_at": "2026-07-27T20:21:09.909785Z",
+    "play_store_id": "com.sygic.truck"
+  },
+  "tencent": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.675057Z",
+    "app_store_id": "481623196",
+    "country": "cn"
+  },
+  "tmap": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:10.367463Z",
+    "app_store_id": "431589174",
+    "country": "kr"
+  },
+  "tomtomgo": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.753105Z",
+    "app_store_id": "884963367",
+    "country": "us"
+  },
+  "tomtomgofleet": {
+    "source": "playstore",
+    "fetched_at": "2026-07-27T20:21:09.807166Z",
+    "play_store_id": "com.tomtom.gplay.navapp.gofleet"
+  },
+  "waze": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.131172Z",
+    "app_store_id": "323229106",
+    "country": "us"
+  },
+  "yandexMaps": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.166567Z",
+    "app_store_id": "313877526",
+    "country": "ru"
+  },
+  "yandexNavi": {
+    "source": "itunes",
+    "fetched_at": "2026-07-27T20:21:09.461433Z",
+    "app_store_id": "474500851",
+    "country": "ru"
+  }
+}

@@ -1,15 +1,37 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/google_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Google Maps — supports coordinates, text queries, directions with
+/// Google Maps. Supports coordinates, text queries, directions with
 /// origin, waypoints, and travel mode.
-class GoogleMapsBuilder extends MapUrlBuilder {
-  /// Creates a [GoogleMapsBuilder].
-  const GoogleMapsBuilder();
+class GoogleMaps extends MapApp {
+  /// Creates a [GoogleMaps].
+  const GoogleMaps();
+
+  @override
+  String get id => 'google';
+
+  @override
+  String get name => 'Google Maps';
+
+  @override
+  bool get hasUniversalLink => true;
+
+  @override
+  String? get playStoreId => 'com.google.android.apps.maps';
+
+  @override
+  String? get appStoreId => '585027354';
+
+  @override
+  String? get iosScheme => 'comgooglemaps://';
+
+  @override
+  Uint8List get iconBytes => googleIcon;
 
   @override
   bool get supportsMarkerSearch => true;
@@ -19,10 +41,6 @@ class GoogleMapsBuilder extends MapUrlBuilder {
 
   @override
   bool get supportsWaypoints => true;
-
-  @override
-  MapType get mapType => .google;
-
   @override
   String markerUrl(LocationCoords coords, {int? zoom}) => buildUrl(
     url: 'https://www.google.com/maps/search/',

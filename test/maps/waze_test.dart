@@ -1,14 +1,13 @@
 import 'package:map_launcher/src/maps/waze.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:test/test.dart';
 
 void main() {
-  const waze = WazeBuilder();
+  const waze = Waze();
 
   group('Waze', () {
-    test('type is MapType.waze', () {
-      expect(waze.mapType, equals(MapType.waze));
+    test('type is waze', () {
+      expect(waze.id, equals('waze'));
     });
 
     test('supportsMarkerCoords is false (navigation only)', () {

@@ -34,3 +34,6 @@ build/
 
 # FVM Version Cache
 .fvm/
+
+# Icon fetch cache (raw downloads before resize)
+.cache/

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:map_launcher/map_launcher_platform_interface.dart';
-import 'package:map_launcher/src/models/map_type.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/supported_map.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/utils/launch_helper.dart';
@@ -13,10 +13,10 @@ class FakePlatform extends MapLauncherPlatform {
   MapPlatform? get platform => platformOverride;
 
   @override
-  Future<void> launch(String url, {MapType? mapType}) async {}
+  Future<void> launch(String url, {String? androidPackageName}) async {}
 
   @override
-  Future<List<MapType>> getInstalledMaps() async => [];
+  Future<Set<String>> getInstalledMaps(List<MapApp> maps) async => {};
 }
 
 void main() {
@@ -97,11 +97,11 @@ void main() {
         platformOverride: MapPlatform.ios,
       );
       final apps = [
-        const SupportedMap(mapType: MapType.google, isInstalled: true),
-        const SupportedMap(mapType: MapType.apple, isInstalled: true),
+        const SupportedMap(map: .google, isInstalled: true),
+        const SupportedMap(map: .apple, isInstalled: true),
       ];
       final result = await resolveBestMap(() async => apps);
-      expect(result, MapType.apple);
+      expect(result, MapApp.apple);
     });
 
     test('returns Google Maps when NOT on iOS and Google is in list', () async {
@@ -109,11 +109,11 @@ void main() {
         platformOverride: MapPlatform.android,
       );
       final apps = [
-        const SupportedMap(mapType: MapType.apple, isInstalled: true),
-        const SupportedMap(mapType: MapType.google, isInstalled: true),
+        const SupportedMap(map: .apple, isInstalled: true),
+        const SupportedMap(map: .google, isInstalled: true),
       ];
       final result = await resolveBestMap(() async => apps);
-      expect(result, MapType.google);
+      expect(result, MapApp.google);
     });
 
     test('returns first installed app when default is not in list', () async {
@@ -121,12 +121,12 @@ void main() {
         platformOverride: MapPlatform.android,
       );
       final apps = [
-        const SupportedMap(mapType: MapType.waze, isInstalled: false),
-        const SupportedMap(mapType: MapType.yandexMaps, isInstalled: true),
-        const SupportedMap(mapType: MapType.here, isInstalled: true),
+        const SupportedMap(map: .waze, isInstalled: false),
+        const SupportedMap(map: .yandexMaps, isInstalled: true),
+        const SupportedMap(map: .here, isInstalled: true),
       ];
       final result = await resolveBestMap(() async => apps);
-      expect(result, MapType.yandexMaps);
+      expect(result, MapApp.yandexMaps);
     });
 
     test('returns first app when no installed apps match', () async {
@@ -134,11 +134,11 @@ void main() {
         platformOverride: MapPlatform.android,
       );
       final apps = [
-        const SupportedMap(mapType: MapType.waze, isInstalled: false),
-        const SupportedMap(mapType: MapType.yandexMaps, isInstalled: false),
+        const SupportedMap(map: .waze, isInstalled: false),
+        const SupportedMap(map: .yandexMaps, isInstalled: false),
       ];
       final result = await resolveBestMap(() async => apps);
-      expect(result, MapType.waze);
+      expect(result, MapApp.waze);
     });
 
     test('prefers default over other installed apps', () async {
@@ -146,12 +146,12 @@ void main() {
         platformOverride: MapPlatform.android,
       );
       final apps = [
-        const SupportedMap(mapType: MapType.waze, isInstalled: true),
-        const SupportedMap(mapType: MapType.google, isInstalled: true),
-        const SupportedMap(mapType: MapType.yandexMaps, isInstalled: true),
+        const SupportedMap(map: .waze, isInstalled: true),
+        const SupportedMap(map: .google, isInstalled: true),
+        const SupportedMap(map: .yandexMaps, isInstalled: true),
       ];
       final result = await resolveBestMap(() async => apps);
-      expect(result, MapType.google);
+      expect(result, MapApp.google);
     });
   });
 }
