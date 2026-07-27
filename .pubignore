@@ -1,0 +1,5 @@
+# Files excluded from pub.dev package archive.
+# pub falls back to .gitignore for untracked files; this covers tracked files
+# that shouldn't ship in the package.
+
+tool/

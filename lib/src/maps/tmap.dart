@@ -1,17 +1,33 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/tmap_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// TMap — mobile only, directions with origin.
-class TMapBuilder extends MapUrlBuilder {
-  /// Creates a [TMapBuilder].
-  const TMapBuilder();
+/// TMap. Mobile only, directions with origin.
+class TMap extends MapApp {
+  /// Creates a [TMap].
+  const TMap();
 
   @override
-  MapType get mapType => .tmap;
+  String get id => 'tmap';
+
+  @override
+  String get name => 'TMap';
+
+  @override
+  String? get playStoreId => 'com.skt.tmap.ku';
+
+  @override
+  String? get appStoreId => '431589174';
+
+  @override
+  String? get iosScheme => 'tmap://';
+
+  @override
+  Uint8List get iconBytes => tmapIcon;
 
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;

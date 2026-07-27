@@ -1,21 +1,36 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/naver_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Naver Map — mobile only, directions with origin.
-class NaverMapBuilder extends MapUrlBuilder {
-  /// Creates a [NaverMapBuilder].
-  const NaverMapBuilder();
+/// Naver Map. Mobile only, directions with origin.
+class NaverMap extends MapApp {
+  /// Creates a [NaverMap].
+  const NaverMap();
+
+  @override
+  String get id => 'naver';
+
+  @override
+  String get name => 'Naver Map';
+
+  @override
+  String? get playStoreId => 'com.nhn.android.nmap';
+
+  @override
+  String? get appStoreId => '311867728';
+
+  @override
+  String? get iosScheme => 'nmap://';
+
+  @override
+  Uint8List get iconBytes => naverIcon;
 
   @override
   bool supportsTravelMode(TravelMode mode) => mode == .driving;
-
-  @override
-  MapType get mapType => .naver;
-
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 

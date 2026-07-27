@@ -1,7 +1,6 @@
-import 'package:flutter/foundation.dart'
-    show TargetPlatform, defaultTargetPlatform;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:map_launcher/map_launcher.dart';
 import 'package:map_launcher/map_launcher_platform_interface.dart';
 
@@ -19,7 +18,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _tab = 0;
 
-  // Editable params
   double _destLat = DemoData.destination.lat;
   double _destLng = DemoData.destination.lng;
   String _destTitle = DemoData.destination.title ?? '';
@@ -46,16 +44,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadMaps() async {
-    final all = await MapLauncher.getAvailableMaps();
-    final marker = await MapLauncher.marker(_dest).getSupportedMaps();
+    final all = await MapLauncher.getAvailableMaps(MapApp.all);
+    final marker = await MapLauncher.marker(_dest).getSupportedMaps(MapApp.all);
     final directions = await MapLauncher.directions(
       _dest,
       from: _origin,
       mode: _travelMode,
-    ).getSupportedMaps();
+    ).getSupportedMaps(MapApp.all);
     final search = await MapLauncher.marker(
       LocationSearch(_searchQuery),
-    ).getSupportedMaps();
+    ).getSupportedMaps(MapApp.all);
 
     if (mounted) {
       setState(() {
@@ -73,17 +71,15 @@ class _HomePageState extends State<HomePage> {
       '$_originTitle → $_destTitle · ${_travelMode.name}';
   String get _searchSubtitle => '"$_searchQuery"';
 
-
   List<_MapEntry> _entriesFor(List<SupportedMap>? supported) {
-    final supportedSet =
-        supported?.map((m) => m.mapType).toSet() ?? <MapType>{};
+    final supportedIds = supported?.map((m) => m.map.id).toSet() ?? <String>{};
     final availableMap = {
-      for (final m in _allMaps ?? <SupportedMap>[]) m.mapType: m,
+      for (final m in _allMaps ?? <SupportedMap>[]) m.map.id: m,
     };
 
-    final entries = MapType.values.map((mt) {
-      final isSupported = supportedSet.contains(mt);
-      final available = availableMap[mt];
+    final entries = MapApp.all.map((mapApp) {
+      final isSupported = supportedIds.contains(mapApp.id);
+      final available = availableMap[mapApp.id];
       final isAvailable = available != null;
       final isInstalled = available?.isInstalled ?? false;
 
@@ -98,30 +94,29 @@ class _HomePageState extends State<HomePage> {
         status = _MapStatus.notInstalled;
       }
 
-      return _MapEntry(mapType: mt, status: status);
+      return _MapEntry(map: mapApp, status: status);
     }).toList();
 
     entries.sort((a, b) => a.status.index.compareTo(b.status.index));
     return entries;
   }
 
-
-  String? _storeUrlFor(MapType mapType) => switch (defaultTargetPlatform) {
-    .iOS || .macOS => mapType.appStoreUrl,
-    .android => mapType.playStoreUrl,
-    _ => mapType.appStoreUrl ?? mapType.playStoreUrl,
+  String? _storeUrlFor(MapApp map) => switch (defaultTargetPlatform) {
+    .iOS || .macOS => map.appStoreUrl,
+    .android => map.playStoreUrl,
+    _ => map.appStoreUrl ?? map.playStoreUrl,
   };
 
-  void _showInstallDialog(MapType mapType) {
-    final storeUrl = _storeUrlFor(mapType);
+  void _showInstallDialog(MapApp map) {
+    final storeUrl = _storeUrlFor(map);
     if (storeUrl == null) return;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(mapType.displayName),
+        title: Text(map.name),
         content: Text(
-          '${mapType.displayName} is not installed. '
+          '${map.name} is not installed. '
           'Would you like to open the store page?',
         ),
         actions: [
@@ -141,8 +136,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showOpenOrInstallSheet(MapType mapType, VoidCallback onOpen) {
-    final storeUrl = _storeUrlFor(mapType);
+  void _showOpenOrInstallSheet(MapApp map, VoidCallback onOpen) {
+    final storeUrl = _storeUrlFor(map);
 
     showModalBottomSheet(
       context: context,
@@ -155,7 +150,7 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: const .only(left: 24, right: 24, bottom: 16),
                 child: Text(
-                  mapType.displayName,
+                  map.name,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -190,14 +185,13 @@ class _HomePageState extends State<HomePage> {
       case .installed:
         launch();
       case .supported:
-        _showOpenOrInstallSheet(entry.mapType, launch);
+        _showOpenOrInstallSheet(entry.map, launch);
       case .notInstalled:
-        _showInstallDialog(entry.mapType);
+        _showInstallDialog(entry.map);
       case .notSupported:
         break;
     }
   }
-
 
   void _showEditSheet() {
     showModalBottomSheet(
@@ -255,7 +249,7 @@ class _HomePageState extends State<HomePage> {
           onEdit: _showEditSheet,
           onTap: (entry) => _handleTap(
             entry,
-            () => MapLauncher.marker(_dest).show(map: entry.mapType),
+            () => MapLauncher.marker(_dest).show(map: entry.map),
           ),
         ),
         _MapGrid(
@@ -270,7 +264,7 @@ class _HomePageState extends State<HomePage> {
               _dest,
               from: _origin,
               mode: _travelMode,
-            ).show(map: entry.mapType),
+            ).show(map: entry.map),
           ),
         ),
         _MapGrid(
@@ -283,19 +277,19 @@ class _HomePageState extends State<HomePage> {
             entry,
             () => MapLauncher.marker(
               LocationSearch(_searchQuery),
-            ).show(map: entry.mapType),
+            ).show(map: entry.map),
           ),
         ),
         _MapGrid(
           title: 'Install',
-          entries: MapType.values
-              .map((mt) => _MapEntry(mapType: mt, status: _MapStatus.supported))
+          entries: MapApp.all
+              .map((m) => _MapEntry(map: m, status: _MapStatus.supported))
               .toList(),
           subtitle: 'Tap to open store page',
           loading: _allMaps == null,
           showInstallIcon: true,
           onTap: (entry) {
-            final url = _storeUrlFor(entry.mapType);
+            final url = _storeUrlFor(entry.map);
             if (url != null) MapLauncherPlatform.instance.launch(url);
           },
         ),
@@ -330,13 +324,11 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-
 class _MapEntry {
-  const _MapEntry({required this.mapType, required this.status});
-  final MapType mapType;
+  const _MapEntry({required this.map, required this.status});
+  final MapApp map;
   final _MapStatus status;
 }
-
 
 class _MapGrid extends StatelessWidget {
   const _MapGrid({
@@ -420,14 +412,17 @@ class _MapGrid extends StatelessWidget {
                               child: Column(
                                 mainAxisSize: .min,
                                 children: [
-                                  SvgPicture.asset(
-                                    entry.mapType.icon,
-                                    height: 40,
-                                    width: 40,
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.memory(
+                                      entry.map.iconBytes,
+                                      height: 40,
+                                      width: 40,
+                                    ),
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    entry.mapType.displayName,
+                                    entry.map.name,
                                     textAlign: .center,
                                     maxLines: 2,
                                     overflow: .ellipsis,
@@ -463,7 +458,6 @@ class _MapGrid extends StatelessWidget {
   }
 }
 
-
 class _StatusLabel extends StatelessWidget {
   const _StatusLabel({required this.status});
   final _MapStatus status;
@@ -490,7 +484,6 @@ class _StatusLabel extends StatelessWidget {
     };
   }
 }
-
 
 class _EditForm extends StatefulWidget {
   const _EditForm({
@@ -595,7 +588,6 @@ class _EditFormState extends State<_EditForm> {
             ),
             const SizedBox(height: 16),
 
-            // Marker + Directions: destination
             if (tab == 0 || tab == 1) ...[
               Text(
                 tab == 1 ? 'Destination' : 'Location',
@@ -644,7 +636,6 @@ class _EditFormState extends State<_EditForm> {
               ),
             ],
 
-            // Directions: origin + mode
             if (tab == 1) ...[
               const SizedBox(height: 20),
               Text('Origin', style: Theme.of(context).textTheme.labelLarge),
@@ -706,7 +697,6 @@ class _EditFormState extends State<_EditForm> {
               ),
             ],
 
-            // Search: query
             if (tab == 2) ...[
               TextField(
                 controller: _searchC,

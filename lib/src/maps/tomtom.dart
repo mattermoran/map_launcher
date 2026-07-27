@@ -1,17 +1,34 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/tomtomgo_icon.dart';
+import 'package:map_launcher/src/maps/icons/tomtomgofleet_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// TomTom Go — navigation only, destination only.
-class TomTomGoBuilder extends MapUrlBuilder {
-  /// Creates a [TomTomGoBuilder].
-  const TomTomGoBuilder();
+/// TomTom Go. Navigation only, destination only.
+class TomTomGo extends MapApp {
+  /// Creates a [TomTomGo].
+  const TomTomGo();
 
   @override
-  MapType get mapType => .tomtomgo;
+  String get id => 'tomtomgo';
+
+  @override
+  String get name => 'TomTom Go';
+
+  @override
+  String? get playStoreId => 'com.tomtom.gplay.navapp';
+
+  @override
+  String? get appStoreId => '884963367';
+
+  @override
+  String? get iosScheme => 'tomtomgo://';
+
+  @override
+  Uint8List get iconBytes => tomtomgoIcon;
 
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
@@ -69,11 +86,28 @@ class TomTomGoBuilder extends MapUrlBuilder {
   }
 }
 
-/// TomTom Go Fleet — Android only, navigation only.
-class TomTomGoFleetBuilder extends TomTomGoBuilder {
-  /// Creates a [TomTomGoFleetBuilder].
-  const TomTomGoFleetBuilder();
+/// TomTom Go Fleet. Android only, navigation only.
+class TomTomGoFleet extends TomTomGo {
+  /// Creates a [TomTomGoFleet].
+  const TomTomGoFleet();
 
   @override
-  MapType get mapType => .tomtomgofleet;
+  String get id => 'tomtomgofleet';
+
+  @override
+  String get name => 'TomTom Go Fleet';
+
+  @override
+  String? get playStoreId => 'com.tomtom.gplay.navapp.gofleet';
+
+  // TomTom Go Fleet is Android-only; null keeps it from inheriting
+  // TomTom Go's iOS identifiers (double-reporting on iOS, wrong store link).
+  @override
+  String? get appStoreId => null;
+
+  @override
+  String? get iosScheme => null;
+
+  @override
+  Uint8List get iconBytes => tomtomgofleetIcon;
 }

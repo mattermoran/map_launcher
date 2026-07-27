@@ -1,14 +1,13 @@
 import 'package:map_launcher/src/maps/double_gis.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:test/test.dart';
 
 void main() {
-  const gis = DoubleGisBuilder();
+  const gis = DoubleGis();
 
   group('DoubleGis', () {
-    test('type is MapType.doubleGis', () {
-      expect(gis.mapType, equals(MapType.doubleGis));
+    test('type is doubleGis', () {
+      expect(gis.id, equals('doubleGis'));
     });
 
     group('markerUrl', () {

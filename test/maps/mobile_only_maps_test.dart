@@ -6,17 +6,16 @@ import 'package:map_launcher/src/maps/sygic_truck.dart';
 import 'package:map_launcher/src/maps/mapswithme.dart';
 import 'package:map_launcher/src/maps/google_go.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:test/test.dart';
 
 void main() {
   final coords = LocationCoords(37.759, -122.510, title: 'Beach');
 
   group('YandexNavi', () {
-    const navi = YandexNaviBuilder();
+    const navi = YandexNavi();
 
-    test('type is MapType.yandexNavi', () {
-      expect(navi.mapType, equals(MapType.yandexNavi));
+    test('type is yandexNavi', () {
+      expect(navi.id, equals('yandexNavi'));
     });
 
     test('markerSchemeUrl uses yandexnavi://show_point_on_map', () {
@@ -53,10 +52,10 @@ void main() {
   });
 
   group('Moovit', () {
-    const moovit = MoovitBuilder();
+    const moovit = Moovit();
 
-    test('type is MapType.moovit', () {
-      expect(moovit.mapType, equals(MapType.moovit));
+    test('type is moovit', () {
+      expect(moovit.id, equals('moovit'));
     });
 
     test('markerSchemeUrl uses moovit://nearby', () {
@@ -97,10 +96,10 @@ void main() {
   });
 
   group('Neshan', () {
-    const neshan = NeshanBuilder();
+    const neshan = Neshan();
 
-    test('type is MapType.neshan', () {
-      expect(neshan.mapType, equals(MapType.neshan));
+    test('type is neshan', () {
+      expect(neshan.id, equals('neshan'));
     });
 
     test('markerSchemeUrl iOS uses neshan://', () {
@@ -126,10 +125,10 @@ void main() {
   });
 
   group('CoPilot', () {
-    const copilot = CoPilotBuilder();
+    const copilot = CoPilot();
 
-    test('type is MapType.copilot', () {
-      expect(copilot.mapType, equals(MapType.copilot));
+    test('type is copilot', () {
+      expect(copilot.id, equals('copilot'));
     });
 
     test('markerSchemeUrl uses copilot://mydestination VIEW', () {
@@ -149,10 +148,10 @@ void main() {
   });
 
   group('SygicTruck', () {
-    const sygic = SygicTruckBuilder();
+    const sygic = SygicTruck();
 
-    test('type is MapType.sygicTruck', () {
-      expect(sygic.mapType, equals(MapType.sygicTruck));
+    test('type is sygicTruck', () {
+      expect(sygic.id, equals('sygicTruck'));
     });
 
     test('markerSchemeUrl uses pipe-separated format with show', () {
@@ -172,10 +171,10 @@ void main() {
   });
 
   group('MapsMe', () {
-    const mapsme = MapsMeBuilder();
+    const mapsme = MapsMe();
 
-    test('type is MapType.mapswithme', () {
-      expect(mapsme.mapType, equals(MapType.mapswithme));
+    test('type is mapswithme', () {
+      expect(mapsme.id, equals('mapswithme'));
     });
 
     test('markerSchemeUrl uses mapsme://map', () {
@@ -200,10 +199,10 @@ void main() {
   });
 
   group('GoogleMapsGo', () {
-    const go = GoogleMapsGoBuilder();
+    const go = GoogleMapsGo();
 
-    test('type is MapType.googleGo', () {
-      expect(go.mapType, equals(MapType.googleGo));
+    test('type is googleGo', () {
+      expect(go.id, equals('googleGo'));
     });
 
     test('markerSchemeUrl uses geo: scheme', () {

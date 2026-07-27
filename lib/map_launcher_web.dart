@@ -1,5 +1,5 @@
 import 'package:map_launcher/map_launcher_platform_interface.dart';
-import 'package:map_launcher/src/models/map_type.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:web/web.dart' as web;
 
 /// Web implementation.
@@ -13,15 +13,15 @@ class MapLauncherWeb extends MapLauncherPlatform {
   }
 
   @override
-  Future<void> launch(String url, {MapType? mapType}) async {
+  Future<void> launch(String url, {String? androidPackageName}) async {
     web.window.open(url, '_blank');
   }
 
   @override
-  Future<List<MapType>> getInstalledMaps() async {
-    // Web doesn't have "installed" map apps — universal links only
-    return [];
+  Future<Set<String>> getInstalledMaps(List<MapApp> maps) async {
+    // Web doesn't have "installed" map apps. Universal links only.
+    return {};
   }
 
-  // platform defaults to null (web) from base class — no override needed
+  // platform defaults to null (web) from base class, no override needed
 }

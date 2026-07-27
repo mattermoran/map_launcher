@@ -1,17 +1,27 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/petal_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Petal Maps — Android only, directions with origin and travel mode.
-class PetalMapsBuilder extends MapUrlBuilder {
-  /// Creates a [PetalMapsBuilder].
-  const PetalMapsBuilder();
+/// Petal Maps. Android only, directions with origin and travel mode.
+class PetalMaps extends MapApp {
+  /// Creates a [PetalMaps].
+  const PetalMaps();
 
   @override
-  MapType get mapType => .petal;
+  String get id => 'petal';
+
+  @override
+  String get name => 'Petal Maps';
+
+  @override
+  String? get playStoreId => 'com.huawei.maps.app';
+
+  @override
+  Uint8List get iconBytes => petalIcon;
 
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;

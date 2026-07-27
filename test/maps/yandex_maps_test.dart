@@ -1,14 +1,13 @@
 import 'package:map_launcher/src/maps/yandex_maps.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:test/test.dart';
 
 void main() {
-  const yandex = YandexMapsBuilder();
+  const yandex = YandexMaps();
 
   group('YandexMaps', () {
-    test('type is MapType.yandexMaps', () {
-      expect(yandex.mapType, equals(MapType.yandexMaps));
+    test('type is yandexMaps', () {
+      expect(yandex.id, equals('yandexMaps'));
     });
 
     group('markerUrl', () {

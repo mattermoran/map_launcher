@@ -1,38 +1,7 @@
 import Flutter
 import UIKit
 
-/// Map of Dart MapType enum name → iOS URL scheme prefix.
-///
-/// Used to detect installed map apps via `UIApplication.canOpenURL`.
-/// Each scheme must be declared in the host app's `Info.plist` under
-/// `LSApplicationQueriesSchemes`.
-private let mapSchemes: [String: String] = [
-    "apple": "", // Apple Maps is always available on iOS
-    "google": "comgooglemaps://",
-    "amap": "iosamap://",
-    "baidu": "baidumap://",
-    "waze": "waze://",
-    "yandexNavi": "yandexnavi://",
-    "yandexMaps": "yandexmaps://",
-    "citymapper": "citymapper://",
-    "mapswithme": "mapswithme://",
-    "osmand": "osmandmaps://",
-    "doubleGis": "dgis://",
-    "tencent": "qqmap://",
-    "here": "here-location://",
-    "tomtomgo": "tomtomgo://",
-    "sygicTruck": "com.sygic.aura://",
-    "copilot": "copilot://",
-    "naver": "nmap://",
-    "kakao": "kakaomap://",
-    "tmap": "tmap://",
-    "mapyCz": "szn-mapy://",
-    "mappls": "mappls://",
-    "moovit": "moovit://",
-    "neshan": "neshan://",
-    "airnavPro": "airnavpro://",
-    "magicEarth": "magicearth://",
-]
+
 
 /// Flutter plugin for map_launcher on iOS.
 ///
@@ -79,30 +48,32 @@ public class MapLauncherPlugin: NSObject, FlutterPlugin {
             }
 
         case "getInstalledMaps":
-            let installed = mapSchemes.compactMap { (mapType, scheme) -> [String: String]? in
-                if isMapAvailable(mapType: mapType, scheme: scheme) {
-                    return ["mapType": mapType]
+            let probes = call.arguments as? [String: String] ?? [:]
+            // Schemes must be declared in the host app's Info.plist under
+            // LSApplicationQueriesSchemes for canOpenURL to work. Report
+            // undeclared ones separately so the Dart side can warn: for
+            // those, canOpenURL returns false whether or not the app is
+            // installed, which is otherwise indistinguishable.
+            let declared = Set(
+                (Bundle.main.object(forInfoDictionaryKey: "LSApplicationQueriesSchemes")
+                    as? [String] ?? []).map { $0.lowercased() }
+            )
+            var installed: [String] = []
+            var undeclared: [String] = []
+            for (id, probe) in probes {
+                guard let url = URL(string: probe),
+                      let scheme = url.scheme?.lowercased() else { continue }
+                if !declared.contains(scheme) {
+                    undeclared.append(id)
+                } else if UIApplication.shared.canOpenURL(url) {
+                    installed.append(id)
                 }
-                return nil
             }
-            result(installed)
+            result(["installed": installed, "undeclared": undeclared])
 
         default:
             result(FlutterMethodNotImplemented)
         }
     }
 
-    /// Checks whether a map app is available on the device.
-    ///
-    /// Apple Maps is always available. Other apps are detected
-    /// via `UIApplication.canOpenURL` using their URL scheme prefix.
-    private func isMapAvailable(mapType: String, scheme: String) -> Bool {
-        if mapType == "apple" {
-            return true
-        }
-        guard !scheme.isEmpty, let url = URL(string: scheme) else {
-            return false
-        }
-        return UIApplication.shared.canOpenURL(url)
-    }
 }

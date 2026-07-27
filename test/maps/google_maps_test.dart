@@ -1,15 +1,14 @@
 import 'package:map_launcher/src/maps/google_maps.dart';
 import 'package:map_launcher/src/maps/waze.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:test/test.dart';
 
 void main() {
-  const google = GoogleMapsBuilder();
+  const google = GoogleMaps();
 
   group('GoogleMaps', () {
-    test('type is MapType.google', () {
-      expect(google.mapType, equals(MapType.google));
+    test('type is google', () {
+      expect(google.id, equals('google'));
     });
 
     group('markerUrl', () {
@@ -156,7 +155,7 @@ void main() {
 
       test('returns null for search destination on unsupported builder', () {
         // Waze doesn't support directions search
-        const waze = WazeBuilder();
+        const waze = Waze();
         final url = waze.bestDirectionsUrl(
           destination: LocationSearch('Coffee shop'),
         );

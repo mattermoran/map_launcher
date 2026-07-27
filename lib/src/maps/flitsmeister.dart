@@ -1,18 +1,28 @@
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show protected;
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/flitsmeister_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Flitsmeister — traffic/navigation only.
-class FlitsmeisterBuilder extends MapUrlBuilder {
-  /// Creates a [FlitsmeisterBuilder].
-  const FlitsmeisterBuilder();
+/// Flitsmeister. Traffic/navigation only.
+class Flitsmeister extends MapApp {
+  /// Creates a [Flitsmeister].
+  const Flitsmeister();
 
   @override
-  MapType get mapType => .flitsmeister;
+  String get id => 'flitsmeister';
+
+  @override
+  String get name => 'Flitsmeister';
+
+  @override
+  String? get playStoreId => 'nl.flitsmeister';
+
+  @override
+  Uint8List get iconBytes => flitsmeisterIcon;
 
   /// The URL scheme for this map app.
   @protected

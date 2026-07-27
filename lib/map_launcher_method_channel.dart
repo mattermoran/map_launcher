@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 
 import 'map_launcher_platform_interface.dart';
 
@@ -15,29 +15,78 @@ class MethodChannelMapLauncher extends MapLauncherPlatform {
   final methodChannel = const MethodChannel('map_launcher');
 
   @override
-  Future<void> launch(String url, {MapType? mapType}) async {
+  Future<void> launch(String url, {String? androidPackageName}) async {
     await methodChannel.invokeMethod('launch', {
       'url': url,
-      if (mapType?.playStoreId != null) 'packageName': mapType!.playStoreId,
+      'packageName': ?androidPackageName,
     });
   }
 
   @override
-  Future<List<MapType>> getInstalledMaps() async {
-    final result = await methodChannel.invokeMethod('getInstalledMaps');
-    if (result == null) return [];
-    final maps = result as List;
-    return maps
-        .map((map) {
-          final typeName = (map as Map)['mapType'] as String;
-          try {
-            return MapType.values.byName(typeName);
-          } catch (_) {
-            return null;
-          }
+  Future<Set<String>> getInstalledMaps(List<MapApp> maps) async {
+    // Build probe payload: id → scheme (iOS) or id → package (Android).
+    final probes = <String, String>{
+      for (final m in maps)
+        if (platform == MapPlatform.ios && m.iosScheme != null)
+          m.id: m.iosScheme!
+        else if (platform == MapPlatform.android && m.playStoreId != null)
+          m.id: m.playStoreId!,
+    };
+
+    final result = await methodChannel.invokeMethod('getInstalledMaps', probes);
+    final installed = <String>{};
+    if (result is Map) {
+      final installedIds = result['installed'];
+      if (installedIds is List) {
+        installed.addAll(installedIds.cast<String>());
+      }
+      final undeclaredIds = result['undeclared'];
+      if (undeclaredIds is List) {
+        _warnUndeclaredSchemes(undeclaredIds.cast<String>(), maps);
+      }
+    }
+
+    // Add maps that need no probe (e.g. Apple Maps on iOS).
+    if (platform != null) {
+      for (final m in maps) {
+        if (m.isAlwaysAvailable(platform!)) installed.add(m.id);
+      }
+    }
+
+    return installed;
+  }
+
+  /// Map ids already warned about, to avoid repeating the message every time
+  /// detection runs (e.g. on each picker open).
+  @visibleForTesting
+  static final warnedUndeclaredIds = <String>{};
+
+  /// Warns (debug builds only) about maps whose iOS URL scheme is missing
+  /// from the host app's `LSApplicationQueriesSchemes`. For those,
+  /// `canOpenURL` always returns false, so the map silently never shows up
+  /// as installed. This makes the misconfiguration visible.
+  void _warnUndeclaredSchemes(List<String> ids, List<MapApp> maps) {
+    if (!kDebugMode) return;
+    // One message per call covering every newly-seen map, so passing a large
+    // list (e.g. MapApp.all) doesn't print a wall of separate warnings.
+    final newIds = <String>[];
+    for (final id in ids) {
+      if (warnedUndeclaredIds.add(id)) newIds.add(id);
+    }
+    if (newIds.isEmpty) return;
+    final lines = newIds
+        .map((id) {
+          final map = maps.where((m) => m.id == id).firstOrNull;
+          final scheme = map?.iosScheme?.split(':').first ?? id;
+          return "  MapApp.$id → add '$scheme'";
         })
-        .whereType<MapType>()
-        .toList();
+        .join('\n');
+    debugPrint(
+      'map_launcher: ${newIds.length} map(s) can never be detected on iOS. '
+      'URL scheme missing from LSApplicationQueriesSchemes in your '
+      'Info.plist:\n$lines\n'
+      'See https://github.com/mattermoran/map_launcher#setup',
+    );
   }
 
   @override

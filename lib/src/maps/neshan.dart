@@ -1,17 +1,33 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/neshan_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Neshan — mobile only, directions with origin.
-class NeshanBuilder extends MapUrlBuilder {
-  /// Creates a [NeshanBuilder].
-  const NeshanBuilder();
+/// Neshan. Mobile only, directions with origin.
+class Neshan extends MapApp {
+  /// Creates a [Neshan].
+  const Neshan();
 
   @override
-  MapType get mapType => .neshan;
+  String get id => 'neshan';
+
+  @override
+  String get name => 'Neshan';
+
+  @override
+  String? get playStoreId => 'org.rajman.neshan.traffic.tehran.navigator';
+
+  @override
+  String? get appStoreId => '1596368814';
+
+  @override
+  String? get iosScheme => 'neshan://';
+
+  @override
+  Uint8List get iconBytes => neshanIcon;
 
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;

@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:map_launcher/map_launcher_platform_interface.dart';
 import 'package:map_launcher/src/models/location.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
-import 'package:map_launcher/src/models/map_type.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/requests/directions_request.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -19,7 +19,7 @@ void main() {
   group('DirectionsRequest.show() error paths', () {
     test('throws UnsupportedError when getUrl returns null', () async {
       // Citymapper doesn't support coords directions via universal URL
-      // when no scheme is available — let's verify getUrl returns null first
+      // when no scheme is available. Verify getUrl returns null first
       final req = DirectionsRequest(destination: LocationCoords(48.85, 2.29));
       final url = req.getUrl(map: .citymapper);
 
@@ -225,7 +225,7 @@ void main() {
     test('falls back to universal URL when scheme launch fails', () async {
       mockPlatform.platformResponse = .ios;
       mockPlatform.failOnScheme = true;
-      mockPlatform.installedMapsResponse = [.google];
+      mockPlatform.installedIds = {'google'};
 
       final req = DirectionsRequest(
         destination: LocationCoords(48.85, 2.29),
@@ -249,23 +249,23 @@ void main() {
     });
   });
 
-  group('DirectionsRequest.getSupportedMaps() filtering', () {
+  group('DirectionsRequest.getSupportedMaps(MapApp.all) filtering', () {
     test('travel mode does not filter out maps', () async {
-      // Walking mode — Waze only supports driving, but should still appear
-      mockPlatform.installedMapsResponse = [.google, .waze, .apple];
+      // Walking mode. Waze only supports driving, but should still appear
+      mockPlatform.installedIds = {'google', 'waze', 'apple'};
       final walkingReq = DirectionsRequest(
         destination: LocationCoords(48.85, 2.29),
         mode: .walking,
       );
-      final walkingMaps = await walkingReq.getSupportedMaps();
-      final walkingTypes = walkingMaps.map((m) => m.mapType).toSet();
+      final walkingMaps = await walkingReq.getSupportedMaps(MapApp.all);
+      final walkingTypes = walkingMaps.map((m) => m.map).toSet();
 
       final drivingReq = DirectionsRequest(
         destination: LocationCoords(48.85, 2.29),
         mode: .driving,
       );
-      final drivingMaps = await drivingReq.getSupportedMaps();
-      final drivingTypes = drivingMaps.map((m) => m.mapType).toSet();
+      final drivingMaps = await drivingReq.getSupportedMaps(MapApp.all);
+      final drivingTypes = drivingMaps.map((m) => m.map).toSet();
 
       // Both modes should return the same set of maps
       expect(walkingTypes, equals(drivingTypes));
@@ -278,7 +278,7 @@ class MockMapLauncherPlatform extends Fake
     with MockPlatformInterfaceMixin
     implements MapLauncherPlatform {
   String? launchedUrl;
-  List<MapType> installedMapsResponse = [];
+  Set<String> installedIds = {};
   MapPlatform? platformResponse = .android;
 
   /// When true, launch() throws on non-HTTPS (scheme) URLs.
@@ -288,7 +288,7 @@ class MockMapLauncherPlatform extends Fake
   bool failAlways = false;
 
   @override
-  Future<void> launch(String url, {MapType? mapType}) async {
+  Future<void> launch(String url, {String? androidPackageName}) async {
     if (failAlways) throw Exception('Launch failed');
     if (failOnScheme && !url.startsWith('https://')) {
       throw Exception('Scheme launch failed');
@@ -297,8 +297,8 @@ class MockMapLauncherPlatform extends Fake
   }
 
   @override
-  Future<List<MapType>> getInstalledMaps() async {
-    return installedMapsResponse;
+  Future<Set<String>> getInstalledMaps(List<MapApp> maps) async {
+    return installedIds;
   }
 
   @override

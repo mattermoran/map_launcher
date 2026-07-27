@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:map_launcher/map_launcher_platform_interface.dart';
-import 'package:map_launcher/src/models/map_type.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
 
 /// Desktop (macOS, Windows, Linux) implementation.
 ///
@@ -14,7 +14,7 @@ class MapLauncherDesktop extends MapLauncherPlatform {
   }
 
   @override
-  Future<void> launch(String url, {MapType? mapType}) async {
+  Future<void> launch(String url, {String? androidPackageName}) async {
     final uri = Uri.tryParse(url);
     if (uri == null || !uri.hasScheme) {
       throw ArgumentError.value(url, 'url', 'Invalid URL: must have a scheme');
@@ -37,10 +37,10 @@ class MapLauncherDesktop extends MapLauncherPlatform {
   }
 
   @override
-  Future<List<MapType>> getInstalledMaps() async {
-    // Desktop doesn't have "installed" map apps — universal links only
-    return [];
+  Future<Set<String>> getInstalledMaps(List<MapApp> maps) async {
+    // Desktop doesn't have "installed" map apps. Universal links only.
+    return {};
   }
 
-  // platform defaults to null (desktop) from base class — no override needed
+  // platform defaults to null (desktop) from base class, no override needed
 }

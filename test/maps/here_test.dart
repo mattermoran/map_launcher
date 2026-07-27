@@ -1,14 +1,13 @@
 import 'package:map_launcher/src/maps/here.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:test/test.dart';
 
 void main() {
-  const here = HereWeGoBuilder();
+  const here = HereWeGo();
 
   group('HereWeGo', () {
-    test('type is MapType.here', () {
-      expect(here.mapType, equals(MapType.here));
+    test('type is here', () {
+      expect(here.id, equals('here'));
     });
 
     group('markerUrl', () {

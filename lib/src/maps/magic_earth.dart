@@ -1,21 +1,37 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/magic_earth_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Magic Earth — mobile only, uses `magicearth://` scheme.
+/// Magic Earth. Mobile only, uses `magicearth://` scheme.
 ///
 /// Marker: `magicearth://?show_on_map&lat=..&lon=..&name=..&zoom=..`
 /// Directions: `magicearth://?<mode>&lat=..&lon=..` (iOS)
 ///             `magicearth://?get_directions&<mode>&lat=..&lon=..` (Android)
-class MagicEarthBuilder extends MapUrlBuilder {
-  /// Creates a [MagicEarthBuilder].
-  const MagicEarthBuilder();
+class MagicEarth extends MapApp {
+  /// Creates a [MagicEarth].
+  const MagicEarth();
 
   @override
-  MapType get mapType => .magicEarth;
+  String get id => 'magicEarth';
+
+  @override
+  String get name => 'Magic Earth';
+
+  @override
+  String? get playStoreId => 'com.generalmagic.magicearth';
+
+  @override
+  String? get appStoreId => '476085748';
+
+  @override
+  String? get iosScheme => 'magicearth://';
+
+  @override
+  Uint8List get iconBytes => magicEarthIcon;
 
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;

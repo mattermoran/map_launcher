@@ -1,18 +1,37 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/mapswithme_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// MAPS.ME — mobile only, destination only.
-class MapsMeBuilder extends MapUrlBuilder {
-  /// Creates a [MapsMeBuilder].
-  const MapsMeBuilder();
+/// MAPS.ME. Mobile only, destination only.
+class MapsMe extends MapApp {
+  /// Creates a [MapsMe].
+  const MapsMe();
 
   @override
-  MapType get mapType => .mapswithme;
+  String get id => 'mapswithme';
+
+  @override
+  String get name => 'MAPS.ME';
+
+  @override
+  String? get playStoreId => 'com.mapswithme.maps.pro';
+
+  @override
+  String? get appStoreId => '510623322';
+
+  // The app registers both mapswithme:// and mapsme://. Detection uses
+  // mapswithme:// because that is the scheme consumers declare in
+  // LSApplicationQueriesSchemes (per the README, unchanged since 5.x).
+  @override
+  String? get iosScheme => 'mapswithme://';
+
+  @override
+  Uint8List get iconBytes => mapswithmeIcon;
 
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;

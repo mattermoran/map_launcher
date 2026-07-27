@@ -2,17 +2,16 @@ import 'package:map_launcher/src/maps/naver.dart';
 import 'package:map_launcher/src/maps/kakao.dart';
 import 'package:map_launcher/src/maps/tmap.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:test/test.dart';
 
 void main() {
   final coords = LocationCoords(37.566, 126.978, title: 'Seoul');
 
   group('NaverMap', () {
-    const naver = NaverMapBuilder();
+    const naver = NaverMap();
 
-    test('type is MapType.naver', () {
-      expect(naver.mapType, equals(MapType.naver));
+    test('type is naver', () {
+      expect(naver.id, equals('naver'));
     });
 
     test('markerSchemeUrl uses nmap://place', () {
@@ -54,10 +53,10 @@ void main() {
   });
 
   group('KakaoMap', () {
-    const kakao = KakaoMapBuilder();
+    const kakao = KakaoMap();
 
-    test('type is MapType.kakao', () {
-      expect(kakao.mapType, equals(MapType.kakao));
+    test('type is kakao', () {
+      expect(kakao.id, equals('kakao'));
     });
 
     test('markerSchemeUrl uses kakaomap://look', () {
@@ -86,10 +85,10 @@ void main() {
   });
 
   group('TMap', () {
-    const tmap = TMapBuilder();
+    const tmap = TMap();
 
-    test('type is MapType.tmap', () {
-      expect(tmap.mapType, equals(MapType.tmap));
+    test('type is tmap', () {
+      expect(tmap.id, equals('tmap'));
     });
 
     test('markerSchemeUrl uses tmap://viewmap', () {

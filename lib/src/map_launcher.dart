@@ -1,5 +1,5 @@
 import 'package:map_launcher/map_launcher_platform_interface.dart';
-import 'package:map_launcher/src/maps/map_registry.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/location.dart';
 import 'package:map_launcher/src/models/supported_map.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
@@ -15,7 +15,7 @@ import 'package:map_launcher/src/requests/marker_request.dart';
 /// ```dart
 /// import 'package:map_launcher/map_launcher.dart';
 ///
-/// // Show a marker
+/// // Show a marker (uses Apple Maps on iOS, Google Maps elsewhere)
 /// await MapLauncher.marker(.coords(59.33, 18.07, title: 'Gamla Stan')).show();
 ///
 /// // Show directions
@@ -25,9 +25,6 @@ import 'package:map_launcher/src/requests/marker_request.dart';
 ///   mode: TravelMode.walking,
 /// ).show();
 ///
-/// // Search
-/// await MapLauncher.marker(.search('Fika near Södermalm')).show();
-///
 /// // Specific app with extras
 /// await MapLauncher.marker(.coords(59.33, 18.07)).show(
 ///   map: .google,
@@ -35,7 +32,8 @@ import 'package:map_launcher/src/requests/marker_request.dart';
 /// );
 ///
 /// // Discover available maps
-/// final maps = await MapLauncher.marker(.coords(59.33, 18.07)).getSupportedMaps();
+/// final maps = await MapLauncher.marker(.coords(59.33, 18.07))
+///     .getSupportedMaps([.apple, .google, .waze]);
 /// ```
 abstract final class MapLauncher {
   /// Creates a marker request for [location].
@@ -87,23 +85,23 @@ abstract final class MapLauncher {
     );
   }
 
-  /// Returns all maps available on this platform, regardless of request type.
+  /// Returns all maps from [maps] available on this platform.
   ///
   /// Returns maps that are either natively installed or have
   /// universal link support (can open in browser).
   ///
   /// For request-specific filtering, use [MarkerRequest.getSupportedMaps] or
   /// [DirectionsRequest.getSupportedMaps] instead.
-  /// For store links and map info without an async call, use [MapType] directly
-  /// (e.g. [MapType.appStoreUrl]).
-  static Future<List<SupportedMap>> getAvailableMaps() async {
-    final installedMaps = await MapLauncherPlatform.instance.getInstalledMaps();
+  static Future<List<SupportedMap>> getAvailableMaps(List<MapApp> maps) async {
+    final installedIds = await MapLauncherPlatform.instance.getInstalledMaps(
+      maps,
+    );
     final results = <SupportedMap>[];
 
-    for (final mapType in MapRegistry.supportedMaps) {
-      final isInstalled = installedMaps.contains(mapType);
-      if (isInstalled || mapType.hasUniversalLink) {
-        results.add(SupportedMap(mapType: mapType, isInstalled: isInstalled));
+    for (final map in maps) {
+      final isInstalled = installedIds.contains(map.id);
+      if (isInstalled || map.hasUniversalLink) {
+        results.add(SupportedMap(map: map, isInstalled: isInstalled));
       }
     }
 

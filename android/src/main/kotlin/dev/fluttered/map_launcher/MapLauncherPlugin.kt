@@ -9,42 +9,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import androidx.core.net.toUri
 
-/// Map of Dart MapType enum name → Android package name.
-///
-/// Used to detect installed map apps via [PackageManager.getLaunchIntentForPackage].
-private val mapPackages = mapOf(
-    "google" to "com.google.android.apps.maps",
-    "googleGo" to "com.google.android.apps.mapslite",
-    "amap" to "com.autonavi.minimap",
-    "baidu" to "com.baidu.BaiduMap",
-    "waze" to "com.waze",
-    "yandexNavi" to "ru.yandex.yandexnavi",
-    "yandexMaps" to "ru.yandex.yandexmaps",
-    "citymapper" to "com.citymapper.app.release",
-    "mapswithme" to "com.mapswithme.maps.pro",
-    "osmand" to "net.osmand",
-    "osmandplus" to "net.osmand.plus",
-    "doubleGis" to "ru.dublgis.dgismobile",
-    "tencent" to "com.tencent.map",
-    "here" to "com.here.app.maps",
-    "petal" to "com.huawei.maps.app",
-    "tomtomgo" to "com.tomtom.gplay.navapp",
-    "tomtomgofleet" to "com.tomtom.gplay.navapp.gofleet",
-    "sygicTruck" to "com.sygic.truck",
-    "copilot" to "com.alk.copilot.mapviewer",
-    "flitsmeister" to "nl.flitsmeister",
-    "truckmeister" to "nl.flitsmeister.flux",
-    "naver" to "com.nhn.android.nmap",
-    "kakao" to "net.daum.android.map",
-    "tmap" to "com.skt.tmap.ku",
-    "mapyCz" to "cz.seznam.mapy",
-    "mappls" to "com.mmi.maps",
-    "moovit" to "com.tranzmate",
-    "neshan" to "org.rajman.neshan.traffic.tehran.navigator",
-    "airnavPro" to "com.xample.airnavigation",
-    "spedionNavigation" to "de.spedion.mobile.android.spediontrucknavigation",
-    "magicEarth" to "com.generalmagic.magicearth",
-)
+
 
 /// Flutter plugin for map_launcher on Android.
 ///
@@ -84,12 +49,14 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             "getInstalledMaps" -> {
-                val installed = mapPackages.filter { (_, packageName) ->
-                    context.packageManager?.getLaunchIntentForPackage(packageName) != null
-                }.map { (mapType, _) ->
-                    mapOf("mapType" to mapType)
-                }
-                result.success(installed)
+                @Suppress("UNCHECKED_CAST")
+                val probes = call.arguments as? Map<String, String> ?: emptyMap()
+                val installed = probes.filter { (_, pkg) ->
+                    context.packageManager.getLaunchIntentForPackage(pkg) != null
+                }.keys.toList()
+                // Same shape as iOS; Android has no way to introspect the
+                // merged <queries> block, so "undeclared" is always empty.
+                result.success(mapOf("installed" to installed))
             }
 
             else -> result.notImplemented()

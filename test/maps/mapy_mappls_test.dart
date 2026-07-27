@@ -1,15 +1,14 @@
 import 'package:map_launcher/src/maps/mapy_cz.dart';
 import 'package:map_launcher/src/maps/mappls.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('MapyCz', () {
-    const mapy = MapyCzBuilder();
+    const mapy = MapyCz();
 
-    test('type is MapType.mapyCz', () {
-      expect(mapy.mapType, equals(MapType.mapyCz));
+    test('type is mapyCz', () {
+      expect(mapy.id, equals('mapyCz'));
     });
 
     test('markerUrl generates mapy.cz URL with lnglat', () {
@@ -33,10 +32,10 @@ void main() {
   });
 
   group('Mappls', () {
-    const mappls = MapplsBuilder();
+    const mappls = Mappls();
 
-    test('type is MapType.mappls', () {
-      expect(mappls.mapType, equals(MapType.mappls));
+    test('type is mappls', () {
+      expect(mappls.id, equals('mappls'));
     });
 
     test('markerUrl generates mappls.com URL', () {

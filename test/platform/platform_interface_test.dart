@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:map_launcher/map_launcher_method_channel.dart';
 import 'package:map_launcher/map_launcher_platform_interface.dart';
-import 'package:map_launcher/src/models/map_type.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -45,7 +45,10 @@ void main() {
 
     test('getInstalledMaps throws UnimplementedError by default', () {
       final platform = _ExtendsMapLauncherPlatform();
-      expect(() => platform.getInstalledMaps(), throwsUnimplementedError);
+      expect(
+        () => platform.getInstalledMaps(MapApp.all),
+        throwsUnimplementedError,
+      );
     });
 
     test('platform returns null by default', () {
@@ -69,17 +72,17 @@ class MockMapLauncherPlatform extends Fake
     with MockPlatformInterfaceMixin
     implements MapLauncherPlatform {
   String? launchedUrl;
-  List<MapType> installedMapsResponse = [];
+  Set<String> installedIds = {};
   MapPlatform? platformResponse = .android;
 
   @override
-  Future<void> launch(String url, {MapType? mapType}) async {
+  Future<void> launch(String url, {String? androidPackageName}) async {
     launchedUrl = url;
   }
 
   @override
-  Future<List<MapType>> getInstalledMaps() async {
-    return installedMapsResponse;
+  Future<Set<String>> getInstalledMaps(List<MapApp> maps) async {
+    return installedIds;
   }
 
   @override

@@ -1,17 +1,33 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/moovit_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Moovit — mobile only, directions with origin.
-class MoovitBuilder extends MapUrlBuilder {
-  /// Creates a [MoovitBuilder].
-  const MoovitBuilder();
+/// Moovit. Mobile only, directions with origin.
+class Moovit extends MapApp {
+  /// Creates a [Moovit].
+  const Moovit();
 
   @override
-  MapType get mapType => .moovit;
+  String get id => 'moovit';
+
+  @override
+  String get name => 'Moovit';
+
+  @override
+  String? get playStoreId => 'com.tranzmate';
+
+  @override
+  String? get appStoreId => '498477945';
+
+  @override
+  String? get iosScheme => 'moovit://';
+
+  @override
+  Uint8List get iconBytes => moovitIcon;
 
   @override
   bool get supportsMarkerCoords => false;

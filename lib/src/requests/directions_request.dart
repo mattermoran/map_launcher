@@ -1,10 +1,8 @@
 import 'package:map_launcher/map_launcher_platform_interface.dart';
-import 'package:map_launcher/src/maps/map_registry.dart';
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/location.dart';
 import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/supported_map.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/launch_helper.dart';
@@ -57,13 +55,14 @@ class DirectionsRequest {
 
   /// Shows directions in a map app.
   ///
-  /// If [map] is null, uses the best available app
+  /// If [map] is null, uses the best available app from [defaultMaps]
   /// (Apple Maps on iOS, Google Maps elsewhere, with fallback).
   ///
   /// * [extra] Additional query parameters merged with constructor [extra];
   ///   values from this call take precedence on conflict.
-  Future<void> show({MapType? map, Map<String, String>? extra}) async {
-    final targetMap = map ?? await resolveBestMap(getSupportedMaps);
+  Future<void> show({MapApp? map, Map<String, String>? extra}) async {
+    final targetMap =
+        map ?? await resolveBestMap(() => getSupportedMaps(defaultMaps));
     if (targetMap == null) {
       throw UnsupportedError(
         'No map app available for this directions request.',
@@ -73,7 +72,7 @@ class DirectionsRequest {
     final url = getUrl(map: targetMap);
     if (url == null) {
       throw UnsupportedError(
-        '${targetMap.displayName} does not support this directions type.',
+        '${targetMap.name} does not support this directions type.',
       );
     }
 
@@ -84,9 +83,12 @@ class DirectionsRequest {
       mergedExtra.isEmpty ? null : mergedExtra,
     );
     try {
-      await MapLauncherPlatform.instance.launch(finalUrl, mapType: targetMap);
+      await MapLauncherPlatform.instance.launch(
+        finalUrl,
+        androidPackageName: targetMap.playStoreId,
+      );
     } on Exception {
-      // Scheme URL may fail if app is not installed — fall back to universal.
+      // Scheme URL may fail if app is not installed. Fall back to universal.
       final universalUrl = getUniversalUrl(map: targetMap);
       if (universalUrl != null && universalUrl != finalUrl) {
         final fallbackUrl = appendQueryParams(
@@ -94,11 +96,14 @@ class DirectionsRequest {
           mergedExtra.isEmpty ? null : mergedExtra,
         );
         try {
-          await MapLauncherPlatform.instance.launch(fallbackUrl, mapType: targetMap);
+          await MapLauncherPlatform.instance.launch(
+            fallbackUrl,
+            androidPackageName: targetMap.playStoreId,
+          );
           return;
         } on Exception catch (e) {
           throw MapLaunchException(
-            'Failed to launch ${targetMap.displayName}',
+            'Failed to launch ${targetMap.name}',
             url: fallbackUrl,
             cause: e,
           );
@@ -112,13 +117,10 @@ class DirectionsRequest {
   ///
   /// On mobile, prefers the native scheme URL. On web/desktop, always
   /// returns the universal HTTPS URL. Returns `null` if unsupported.
-  String? getUrl({required MapType map}) {
-    final builder = MapRegistry.getBuilder(map);
-    if (builder == null) return null;
-
+  String? getUrl({required MapApp map}) {
     final coordsOrigin = from is LocationCoords ? from as LocationCoords : null;
 
-    String? url = builder.bestDirectionsUrl(
+    String? url = map.bestDirectionsUrl(
       destination: destination,
       origin: coordsOrigin,
       waypoints: waypoints,
@@ -126,31 +128,28 @@ class DirectionsRequest {
       platform: MapLauncherPlatform.instance.platform,
     );
 
-    return _appendSearchOrigin(url, builder);
+    return _appendSearchOrigin(url, map);
   }
 
   /// Returns the universal (HTTPS) URL for [map], or `null` if unsupported.
-  String? getUniversalUrl({required MapType map}) {
-    final builder = MapRegistry.getBuilder(map);
-    if (builder == null) return null;
-
+  String? getUniversalUrl({required MapApp map}) {
     final coordsOrigin = from is LocationCoords ? from as LocationCoords : null;
 
     String? url = switch (destination) {
-      LocationCoords coords => builder.directionsUrl(
+      LocationCoords coords => map.directionsUrl(
         destination: coords,
         origin: coordsOrigin,
         waypoints: waypoints,
         travelMode: mode,
       ),
-      LocationSearch search => builder.directionsSearchUrl(
+      LocationSearch search => map.directionsSearchUrl(
         search.query,
         origin: coordsOrigin,
         travelMode: mode,
       ),
     };
 
-    return _appendSearchOrigin(url, builder);
+    return _appendSearchOrigin(url, map);
   }
 
   /// Returns the native scheme URL for [map], or `null` if none.
@@ -158,24 +157,21 @@ class DirectionsRequest {
   /// Pass [platform] to override platform detection (useful for previewing
   /// URLs for other platforms). Returns `null` on web/desktop if no
   /// [platform] is specified.
-  String? getSchemeUrl({required MapType map, MapPlatform? platform}) {
+  String? getSchemeUrl({required MapApp map, MapPlatform? platform}) {
     final resolved = platform ?? MapLauncherPlatform.instance.platform;
     if (resolved == null) return null;
-
-    final builder = MapRegistry.getBuilder(map);
-    if (builder == null) return null;
 
     final coordsOrigin = from is LocationCoords ? from as LocationCoords : null;
 
     return switch (destination) {
-      LocationCoords coords => builder.directionsSchemeUrl(
+      LocationCoords coords => map.directionsSchemeUrl(
         destination: coords,
         origin: coordsOrigin,
         waypoints: waypoints,
         travelMode: mode,
         platform: resolved,
       ),
-      LocationSearch search => builder.directionsSchemeSearchUrl(
+      LocationSearch search => map.directionsSchemeSearchUrl(
         search.query,
         origin: coordsOrigin,
         travelMode: mode,
@@ -184,39 +180,46 @@ class DirectionsRequest {
     };
   }
 
-  /// Returns maps that support this directions request on this device.
+  /// Returns maps from [maps] that support this directions request on this device.
   ///
   /// Accounts for:
   /// - Destination type (coordinates vs search)
   /// - Travel mode support
   /// - Waypoint support (if waypoints are specified)
   /// - Installation status and universal link availability
-  Future<List<SupportedMap>> getSupportedMaps() async {
-    final installedMaps = await MapLauncherPlatform.instance.getInstalledMaps();
+  Future<List<SupportedMap>> getSupportedMaps(List<MapApp> maps) async {
+    final installedIds = await MapLauncherPlatform.instance.getInstalledMaps(
+      maps,
+    );
     final results = <SupportedMap>[];
 
-    for (final mapType in MapRegistry.supportedMaps) {
-      final builder = MapRegistry.getBuilder(mapType)!;
-
+    for (final map in maps) {
       // Check destination type support
       final isSupported = switch (destination) {
-        LocationCoords() => builder.supportsDirectionsCoords,
-        LocationSearch() => builder.supportsDirectionsSearch,
+        LocationCoords() => map.supportsDirectionsCoords,
+        LocationSearch() => map.supportsDirectionsSearch,
       };
       if (!isSupported) continue;
 
       // Check waypoint support if waypoints are specified
       if (waypoints != null &&
           waypoints!.isNotEmpty &&
-          !builder.supportsWaypoints) {
+          !map.supportsWaypoints) {
         continue;
       }
 
-      final isInstalled = installedMaps.contains(mapType);
+      final isInstalled = installedIds.contains(map.id);
 
       // Include if installed natively OR has universal link
-      if (isInstalled || mapType.hasUniversalLink) {
-        results.add(SupportedMap(mapType: mapType, isInstalled: isInstalled));
+      if (isInstalled || map.hasUniversalLink) {
+        results.add(
+          SupportedMap.launchable(
+            map: map,
+            isInstalled: isInstalled,
+            launcher: ({Map<String, String>? extra}) =>
+                show(map: map, extra: extra),
+          ),
+        );
       }
     }
 
@@ -227,12 +230,12 @@ class DirectionsRequest {
   ///
   /// Only maps that support search-based directions (e.g. Google, Apple) are
   /// likely to understand an `origin=<query>` or `saddr=<query>` param.
-  /// For other maps, appending it would produce a garbage URL, so we skip it
-  /// — losing the origin is better than a broken link.
-  String? _appendSearchOrigin(String? url, MapUrlBuilder builder) {
+  /// For other maps, appending it would produce a garbage URL, so we skip it.
+  /// Losing the origin is better than a broken link.
+  String? _appendSearchOrigin(String? url, MapApp map) {
     if (url == null || from is! LocationSearch) return url;
-    if (!builder.supportsDirectionsSearch) return url;
-    final originKey = builder.mapType == .apple ? 'saddr' : 'origin';
+    if (!map.supportsDirectionsSearch) return url;
+    final originKey = map.id == 'apple' ? 'saddr' : 'origin';
     return appendQueryParams(url, {originKey: (from as LocationSearch).query});
   }
 }

@@ -1,21 +1,36 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/yandex_navi_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Yandex Navigator — mobile only, directions with origin and waypoints.
-class YandexNaviBuilder extends MapUrlBuilder {
-  /// Creates a [YandexNaviBuilder].
-  const YandexNaviBuilder();
+/// Yandex Navigator. Mobile only, directions with origin and waypoints.
+class YandexNavi extends MapApp {
+  /// Creates a [YandexNavi].
+  const YandexNavi();
+
+  @override
+  String get id => 'yandexNavi';
+
+  @override
+  String get name => 'Yandex Navigator';
+
+  @override
+  String? get playStoreId => 'ru.yandex.yandexnavi';
+
+  @override
+  String? get appStoreId => '474500851';
+
+  @override
+  String? get iosScheme => 'yandexnavi://';
+
+  @override
+  Uint8List get iconBytes => yandexNaviIcon;
 
   @override
   bool get supportsWaypoints => true;
-
-  @override
-  MapType get mapType => .yandexNavi;
-
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 

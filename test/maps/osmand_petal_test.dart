@@ -1,17 +1,16 @@
 import 'package:map_launcher/src/maps/osmand.dart';
 import 'package:map_launcher/src/maps/petal.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:test/test.dart';
 
 void main() {
   final coords = LocationCoords(52.520, 13.405, title: 'Berlin');
 
   group('OsmAnd', () {
-    const osmand = OsmAndBuilder();
+    const osmand = OsmAnd();
 
-    test('type is MapType.osmand', () {
-      expect(osmand.mapType, equals(MapType.osmand));
+    test('type is osmand', () {
+      expect(osmand.id, equals('osmand'));
     });
 
     test('markerUrl returns null (scheme only)', () {
@@ -58,10 +57,10 @@ void main() {
   });
 
   group('OsmAndPlus', () {
-    const plus = OsmAndPlusBuilder();
+    const plus = OsmAndPlus();
 
-    test('type is MapType.osmandplus', () {
-      expect(plus.mapType, equals(MapType.osmandplus));
+    test('type is osmandplus', () {
+      expect(plus.id, equals('osmandplus'));
     });
 
     test('inherits OsmAnd functionality', () {
@@ -72,10 +71,10 @@ void main() {
   });
 
   group('PetalMaps', () {
-    const petal = PetalMapsBuilder();
+    const petal = PetalMaps();
 
-    test('type is MapType.petal', () {
-      expect(petal.mapType, equals(MapType.petal));
+    test('type is petal', () {
+      expect(petal.id, equals('petal'));
     });
 
     test('markerUrl returns null (scheme only)', () {

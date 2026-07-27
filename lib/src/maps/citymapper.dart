@@ -1,24 +1,39 @@
-import 'package:map_launcher/src/maps/map_url_builder.dart';
+import 'dart:typed_data';
+import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/maps/icons/citymapper_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Citymapper — directions only, with optional origin.
-class CitymapperBuilder extends MapUrlBuilder {
-  /// Creates a [CitymapperBuilder].
-  const CitymapperBuilder();
+/// Citymapper. Directions only, with optional origin.
+class Citymapper extends MapApp {
+  /// Creates a [Citymapper].
+  const Citymapper();
+
+  @override
+  String get id => 'citymapper';
+
+  @override
+  String get name => 'Citymapper';
+
+  @override
+  String? get playStoreId => 'com.citymapper.app.release';
+
+  @override
+  String? get appStoreId => '469463298';
+
+  @override
+  String? get iosScheme => 'citymapper://';
+
+  @override
+  Uint8List get iconBytes => citymapperIcon;
 
   /// Intentionally `false` even though [markerSchemeUrl] returns a non-null
-  /// URL. Citymapper is a nav-only app — [markerSchemeUrl] routes to
+  /// URL. Citymapper is a nav-only app, so [markerSchemeUrl] routes to
   /// directions as a best-effort fallback, not a true marker pin.
   @override
   bool get supportsMarkerCoords => false;
-
-  @override
-  MapType get mapType => .citymapper;
-
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 

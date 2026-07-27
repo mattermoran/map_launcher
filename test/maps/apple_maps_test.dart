@@ -1,15 +1,14 @@
 import 'package:map_launcher/src/maps/apple_maps.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_type.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:test/test.dart';
 
 void main() {
-  const apple = AppleMapsBuilder();
+  const apple = AppleMaps();
 
   group('AppleMaps', () {
-    test('type is MapType.apple', () {
-      expect(apple.mapType, equals(MapType.apple));
+    test('type is apple', () {
+      expect(apple.id, equals('apple'));
     });
 
     group('markerUrl', () {
