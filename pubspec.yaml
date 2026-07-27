@@ -48,3 +48,7 @@ screenshots:
     path: screenshots/marker.webp
   - description: 'Show directions demo'
     path: screenshots/directions.webp
+
+# Base64-encoded PNG icon data triggers pub's OAuth token detector.
+false_secrets:
+  - /lib/src/maps/icons/**
