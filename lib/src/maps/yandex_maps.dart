@@ -52,7 +52,7 @@ class YandexMaps extends MapApp {
     TravelMode? travelMode,
   }) {
     final rtext = [
-      if (origin != null) origin.latlng,
+      origin?.latlng ?? '',
       if (waypoints != null) ...waypoints.map((w) => w.latlng),
       destination.latlng,
     ].join('~');
@@ -88,7 +88,7 @@ class YandexMaps extends MapApp {
     required MapPlatform platform,
   }) {
     final rtext = [
-      if (origin != null) origin.latlng,
+      origin?.latlng ?? '',
       if (waypoints != null) ...waypoints.map((w) => w.latlng),
       destination.latlng,
     ].join('~');

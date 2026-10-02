@@ -1,9 +1,12 @@
 import 'package:map_launcher/src/maps/yandex_maps.dart';
 import 'package:map_launcher/src/models/location.dart';
+import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:test/test.dart';
 
 void main() {
   const yandex = YandexMaps();
+
+  String rtext(String url) => Uri.parse(url).queryParameters['rtext']!;
 
   group('YandexMaps', () {
     test('type is yandexMaps', () {
@@ -63,6 +66,33 @@ void main() {
         );
         expect(url, contains('rtt=mt'));
       });
+
+      test('decoded rtext preserves the current-location origin segment', () {
+        expect(
+          rtext(
+            yandex.directionsUrl(destination: LocationCoords(55.751, 37.618)),
+          ),
+          '~55.751,37.618',
+        );
+        expect(
+          rtext(
+            yandex.directionsUrl(
+              destination: LocationCoords(55.751, 37.618),
+              origin: LocationCoords(55.733, 37.587),
+            ),
+          ),
+          '55.733,37.587~55.751,37.618',
+        );
+        expect(
+          rtext(
+            yandex.directionsUrl(
+              destination: LocationCoords(55.751, 37.618),
+              waypoints: [LocationCoords(55.74, 37.6)],
+            ),
+          ),
+          '~55.74,37.6~55.751,37.618',
+        );
+      });
     });
 
     group('markerSchemeUrl', () {
@@ -85,6 +115,32 @@ void main() {
         expect(url, startsWith('yandexmaps://'));
         expect(url, contains('rtext='));
       });
+
+      for (final platform in <MapPlatform>[.android, .ios]) {
+        test('decoded $platform rtext handles origin and waypoints', () {
+          String schemeRtext({
+            LocationCoords? origin,
+            List<LocationCoords>? waypoints,
+          }) => rtext(
+            yandex.directionsSchemeUrl(
+              destination: LocationCoords(55.751, 37.618),
+              origin: origin,
+              waypoints: waypoints,
+              platform: platform,
+            )!,
+          );
+
+          expect(schemeRtext(), '~55.751,37.618');
+          expect(
+            schemeRtext(origin: LocationCoords(55.733, 37.587)),
+            '55.733,37.587~55.751,37.618',
+          );
+          expect(
+            schemeRtext(waypoints: [LocationCoords(55.74, 37.6)]),
+            '~55.74,37.6~55.751,37.618',
+          );
+        });
+      }
     });
   });
 }
