@@ -56,6 +56,7 @@ void main(List<String> args) async {
       String? source;
 
       if (!noCache && cacheFile.existsSync()) {
+        rawBytes = cacheFile.readAsBytesSync();
         // Preserve previously recorded source
         source = (manifest[map.id] as Map?)?['source'] as String?;
       } else {
@@ -79,31 +80,41 @@ void main(List<String> args) async {
         continue;
       }
 
-      // Resize to 256x256 using sips (macOS built-in)
+      // Use macOS's built-in sips, or ImageMagick on other platforms.
       final tempRaw = File('${cacheDir.path}/${map.id}_temp.png');
-      tempRaw.writeAsBytesSync(rawBytes);
-      final sipsResult = Process.runSync('sips', [
-        '-z',
-        '256',
-        '256',
-        '-s',
-        'format',
-        'png',
-        tempRaw.path,
-        '--out',
-        tempRaw.path,
-      ]);
-      if (sipsResult.exitCode != 0) {
-        stderr.writeln(
-          '✗  ${map.id}: sips resize failed: ${sipsResult.stderr}',
-        );
-        failed++;
-        tempRaw.deleteSync();
-        continue;
+      late final List<int> resizedBytes;
+      try {
+        tempRaw.writeAsBytesSync(rawBytes);
+        final result = Platform.isMacOS
+            ? Process.runSync('sips', [
+                '-z',
+                '256',
+                '256',
+                '-s',
+                'format',
+                'png',
+                tempRaw.path,
+                '--out',
+                tempRaw.path,
+              ])
+            : Process.runSync('magick', [
+                tempRaw.path,
+                '-resize',
+                '256x256!',
+                'png:${tempRaw.path}',
+              ]);
+        if (result.exitCode != 0) {
+          throw ProcessException(
+            Platform.isMacOS ? 'sips' : 'magick',
+            [],
+            'Icon resize failed: ${result.stderr}',
+            result.exitCode,
+          );
+        }
+        resizedBytes = tempRaw.readAsBytesSync();
+      } finally {
+        if (tempRaw.existsSync()) tempRaw.deleteSync();
       }
-
-      final resizedBytes = tempRaw.readAsBytesSync();
-      tempRaw.deleteSync();
 
       if (outputFile.existsSync()) {
         final existingBytes = outputFile.readAsBytesSync();
@@ -147,6 +158,7 @@ void main(List<String> args) async {
     '$skipped skipped, $failed failed',
   );
   stdout.writeln('Manifest: ${manifestFile.path}');
+  if (failed > 0) exitCode = 1;
 }
 
 Map<String, dynamic> _manifestEntry(_MapEntry map, String? source) => {
