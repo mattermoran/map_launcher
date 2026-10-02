@@ -3,17 +3,34 @@ import 'package:map_launcher/map_launcher_platform_interface.dart';
 import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/supported_map.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
+import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:map_launcher/src/utils/launch_helper.dart';
 
 class FakePlatform extends MapLauncherPlatform {
-  FakePlatform({this.platformOverride});
+  FakePlatform({
+    this.platformOverride,
+    this.failPackage,
+    this.failScheme = false,
+    this.failAlways = false,
+  });
   final MapPlatform? platformOverride;
+  final String? failPackage;
+  final bool failScheme;
+  final bool failAlways;
+  final attempts = <({String url, String? package})>[];
 
   @override
   MapPlatform? get platform => platformOverride;
 
   @override
-  Future<void> launch(String url, {String? androidPackageName}) async {}
+  Future<void> launch(String url, {String? androidPackageName}) async {
+    attempts.add((url: url, package: androidPackageName));
+    if (failAlways ||
+        (failPackage != null && androidPackageName == failPackage) ||
+        (failScheme && !url.startsWith('https://'))) {
+      throw Exception('failed');
+    }
+  }
 
   @override
   Future<Set<String>> getInstalledMaps(List<MapApp> maps) async => {};
@@ -152,6 +169,46 @@ void main() {
       ];
       final result = await resolveBestMap(() async => apps);
       expect(result, MapApp.google);
+    });
+  });
+
+  group('launchMapUrl', () {
+    test(
+      'Android package failure retries the identical URL untargeted',
+      () async {
+        final fake = FakePlatform(
+          platformOverride: .android,
+          failPackage: MapApp.google.playStoreId,
+        );
+        MapLauncherPlatform.instance = fake;
+        await launchMapUrl(
+          map: .google,
+          url: 'https://example.test/map',
+          universalUrl: 'https://example.test/map',
+        );
+        expect(fake.attempts, hasLength(2));
+        expect(fake.attempts[0].url, fake.attempts[1].url);
+        expect(fake.attempts[0].package, MapApp.google.playStoreId);
+        expect(fake.attempts[1].package, isNull);
+      },
+    );
+
+    test('scheme and fallback failures report fallback cause', () async {
+      final allFail = FakePlatform(platformOverride: .ios, failAlways: true);
+      MapLauncherPlatform.instance = allFail;
+      await expectLater(
+        launchMapUrl(
+          map: .google,
+          url: 'comgooglemaps://?q=test',
+          universalUrl: 'https://example.test/map',
+        ),
+        throwsA(
+          isA<MapLaunchException>()
+              .having((e) => e.url, 'url', 'https://example.test/map')
+              .having((e) => e.cause, 'cause', isA<Exception>()),
+        ),
+      );
+      expect(allFail.attempts, hasLength(2));
     });
   });
 }

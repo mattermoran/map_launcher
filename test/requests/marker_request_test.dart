@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:map_launcher/map_launcher_platform_interface.dart';
 import 'package:map_launcher/src/models/location.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
+import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/requests/marker_request.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -142,14 +143,103 @@ void main() {
       // then launched universal (https://www.google.com/maps/...)
       expect(mockPlatform.launchedUrl, startsWith('https://'));
       expect(mockPlatform.launchedUrl, contains('google.com'));
+      expect(mockPlatform.attempts, hasLength(2));
+      expect(mockPlatform.attempts.first.package, isNull);
+      expect(mockPlatform.attempts.last.package, isNull);
     });
 
-    test('rethrows if both scheme and universal fail', () async {
+    test(
+      'scheme fallback removes target and preserves merged extras once',
+      () async {
+        mockPlatform.platformResponse = .ios;
+        mockPlatform.failOnScheme = true;
+
+        await MarkerRequest(
+          location: LocationCoords(48.85, 2.29),
+          extra: {'keep': 'yes', 'winner': 'constructor'},
+        ).show(map: .google, extra: {'winner': 'show'});
+
+        expect(mockPlatform.attempts, hasLength(2));
+        final fallback = mockPlatform.attempts.last;
+        expect(fallback.package, isNull);
+        expect(RegExp('keep=yes').allMatches(fallback.url), hasLength(1));
+        expect(RegExp('winner=show').allMatches(fallback.url), hasLength(1));
+        expect(fallback.url, isNot(contains('winner=constructor')));
+      },
+    );
+
+    test(
+      'Android HTTPS package failure retries same URL without package',
+      () async {
+        mockPlatform.platformResponse = .android;
+        mockPlatform.failWhenPackaged = true;
+
+        await MarkerRequest(
+          location: LocationCoords(48.85, 2.29),
+        ).show(map: .google);
+
+        expect(mockPlatform.attempts, hasLength(2));
+        expect(mockPlatform.attempts[0].url, mockPlatform.attempts[1].url);
+        expect(mockPlatform.attempts[0].package, MapApp.google.playStoreId);
+        expect(mockPlatform.attempts[1].package, isNull);
+      },
+    );
+
+    test('web failure is not retried, even with extras', () async {
+      mockPlatform.platformResponse = null;
+      mockPlatform.failAlways = true;
+      final cause = Exception('web failed');
+      mockPlatform.failure = cause;
+      final req = MarkerRequest(
+        location: LocationCoords(48.85, 2.29),
+        extra: {'foo': 'bar'},
+      );
+
+      await expectLater(
+        req.show(map: .google),
+        throwsA(
+          isA<MapLaunchException>().having((e) => e.cause, 'cause', cause),
+        ),
+      );
+      expect(mockPlatform.attempts, hasLength(1));
+    });
+
+    test(
+      'native-only failure includes attempted URL and original cause',
+      () async {
+        mockPlatform.platformResponse = .ios;
+        mockPlatform.failAlways = true;
+        final cause = Exception('native failed');
+        mockPlatform.failure = cause;
+        final req = MarkerRequest(location: LocationCoords(48.85, 2.29));
+
+        await expectLater(
+          req.show(map: .citymapper),
+          throwsA(
+            isA<MapLaunchException>()
+                .having((e) => e.url, 'url', startsWith('citymapper://'))
+                .having((e) => e.cause, 'cause', cause),
+          ),
+        );
+        expect(mockPlatform.attempts, hasLength(1));
+      },
+    );
+
+    test('fallback failure preserves fallback cause and URL', () async {
       mockPlatform.platformResponse = .ios;
       mockPlatform.failAlways = true;
+      final cause = Exception('both failed');
+      mockPlatform.failure = cause;
 
-      final req = MarkerRequest(location: LocationCoords(48.85, 2.29));
-      expect(() => req.show(map: .google), throwsException);
+      await expectLater(
+        MarkerRequest(location: LocationCoords(48.85, 2.29)).show(map: .google),
+        throwsA(
+          isA<MapLaunchException>()
+              .having((e) => e.url, 'url', startsWith('https://'))
+              .having((e) => e.cause, 'cause', cause),
+        ),
+      );
+      expect(mockPlatform.attempts, hasLength(2));
     });
   });
 }
@@ -159,6 +249,7 @@ class MockMapLauncherPlatform extends Fake
     with MockPlatformInterfaceMixin
     implements MapLauncherPlatform {
   String? launchedUrl;
+  final List<LaunchAttempt> attempts = [];
   Set<String> installedIds = {};
   MapPlatform? platformResponse = .android;
 
@@ -167,10 +258,15 @@ class MockMapLauncherPlatform extends Fake
 
   /// When true, launch() always throws.
   bool failAlways = false;
+  bool failWhenPackaged = false;
+  Exception failure = Exception('Launch failed');
 
   @override
   Future<void> launch(String url, {String? androidPackageName}) async {
-    if (failAlways) throw Exception('Launch failed');
+    attempts.add(LaunchAttempt(url, androidPackageName));
+    if (failAlways || (failWhenPackaged && androidPackageName != null)) {
+      throw failure;
+    }
     if (failOnScheme && !url.startsWith('https://')) {
       throw Exception('Scheme launch failed');
     }
@@ -184,4 +280,10 @@ class MockMapLauncherPlatform extends Fake
 
   @override
   MapPlatform? get platform => platformResponse;
+}
+
+class LaunchAttempt {
+  const LaunchAttempt(this.url, this.package);
+  final String url;
+  final String? package;
 }

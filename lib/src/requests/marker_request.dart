@@ -1,7 +1,6 @@
 import 'package:map_launcher/map_launcher_platform_interface.dart';
 import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/location.dart';
-import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/supported_map.dart';
 import 'package:map_launcher/src/utils/launch_helper.dart';
@@ -49,6 +48,7 @@ class MarkerRequest {
   /// * [extra] Additional query parameters merged with constructor [extra];
   ///   values from this call take precedence on conflict.
   Future<void> show({MapApp? map, Map<String, String>? extra}) async {
+    final mergedExtra = {...?this.extra, ...?extra};
     final targetMap =
         map ?? await resolveBestMap(() => getSupportedMaps(defaultMaps));
     if (targetMap == null) {
@@ -62,41 +62,12 @@ class MarkerRequest {
       );
     }
 
-    // Merge constructor extra with show() extra; show() wins on conflict.
-    final mergedExtra = {...?this.extra, ...?extra};
-    final finalUrl = appendQueryParams(
-      url,
-      mergedExtra.isEmpty ? null : mergedExtra,
+    await launchMapUrl(
+      map: targetMap,
+      url: url,
+      universalUrl: getUniversalUrl(map: targetMap),
+      extra: mergedExtra,
     );
-    try {
-      await MapLauncherPlatform.instance.launch(
-        finalUrl,
-        androidPackageName: targetMap.playStoreId,
-      );
-    } on Exception {
-      // Scheme URL may fail if app is not installed. Fall back to universal.
-      final universalUrl = getUniversalUrl(map: targetMap);
-      if (universalUrl != null && universalUrl != finalUrl) {
-        final fallbackUrl = appendQueryParams(
-          universalUrl,
-          mergedExtra.isEmpty ? null : mergedExtra,
-        );
-        try {
-          await MapLauncherPlatform.instance.launch(
-            fallbackUrl,
-            androidPackageName: targetMap.playStoreId,
-          );
-          return;
-        } on Exception catch (e) {
-          throw MapLaunchException(
-            'Failed to launch ${targetMap.name}',
-            url: fallbackUrl,
-            cause: e,
-          );
-        }
-      }
-      rethrow;
-    }
   }
 
   /// Returns the URL that would be opened for [map], without opening.

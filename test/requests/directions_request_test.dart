@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:map_launcher/map_launcher_platform_interface.dart';
 import 'package:map_launcher/src/models/location.dart';
+import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/requests/directions_request.dart';
@@ -18,24 +19,20 @@ void main() {
 
   group('DirectionsRequest.show() error paths', () {
     test('throws UnsupportedError when getUrl returns null', () async {
-      // Citymapper doesn't support coords directions via universal URL
-      // when no scheme is available. Verify getUrl returns null first
+      mockPlatform.platformResponse = null;
       final req = DirectionsRequest(destination: LocationCoords(48.85, 2.29));
       final url = req.getUrl(map: .citymapper);
-
-      // If citymapper does support it, we need a different approach
-      if (url == null) {
-        expect(
-          () => req.show(map: .citymapper),
-          throwsA(
-            isA<UnsupportedError>().having(
-              (e) => e.message,
-              'message',
-              contains('does not support this directions type'),
-            ),
+      expect(url, isNull);
+      await expectLater(
+        req.show(map: .citymapper),
+        throwsA(
+          isA<UnsupportedError>().having(
+            (e) => e.message,
+            'message',
+            contains('does not support this directions type'),
           ),
-        );
-      }
+        ),
+      );
     });
   });
 
@@ -228,8 +225,8 @@ void main() {
       mockPlatform.installedIds = {'google'};
 
       final req = DirectionsRequest(
-        destination: LocationCoords(48.85, 2.29),
-        from: LocationCoords(48.86, 2.34),
+        destination: LocationSearch('Eiffel Tower'),
+        from: LocationSearch('Louvre Museum'),
         mode: .driving,
       );
       await req.show(map: .google);
@@ -238,15 +235,94 @@ void main() {
       // then launched universal HTTPS URL
       expect(mockPlatform.launchedUrl, startsWith('https://'));
       expect(mockPlatform.launchedUrl, contains('google.com'));
+      expect(mockPlatform.attempts, hasLength(2));
+      expect(mockPlatform.attempts.last.package, isNull);
     });
 
-    test('rethrows if both scheme and universal fail', () async {
+    test(
+      'Android HTTPS package failure retries same URL without package',
+      () async {
+        mockPlatform.platformResponse = .android;
+        mockPlatform.failWhenPackaged = true;
+        await DirectionsRequest(
+          destination: LocationCoords(48.85, 2.29),
+        ).show(map: .google);
+        expect(mockPlatform.attempts, hasLength(2));
+        expect(mockPlatform.attempts[0].url, mockPlatform.attempts[1].url);
+        expect(mockPlatform.attempts[0].package, MapApp.google.playStoreId);
+        expect(mockPlatform.attempts[1].package, isNull);
+      },
+    );
+
+    test('fallback extras occur once and show values win', () async {
+      mockPlatform.platformResponse = .ios;
+      mockPlatform.failOnScheme = true;
+      await DirectionsRequest(
+        destination: LocationSearch('Eiffel Tower'),
+        extra: {'keep': 'yes', 'winner': 'old'},
+      ).show(map: .google, extra: {'winner': 'show'});
+      final url = mockPlatform.attempts.last.url;
+      expect(RegExp('keep=yes').allMatches(url), hasLength(1));
+      expect(RegExp('winner=show').allMatches(url), hasLength(1));
+      expect(url, isNot(contains('winner=old')));
+      expect(mockPlatform.attempts.last.package, isNull);
+    });
+
+    test('web failure is not retried even with extras', () async {
+      mockPlatform.platformResponse = null;
+      mockPlatform.failAlways = true;
+      final cause = Exception('web');
+      mockPlatform.failure = cause;
+      await expectLater(
+        DirectionsRequest(
+          destination: LocationCoords(1, 2),
+          extra: {'x': 'y'},
+        ).show(map: .google),
+        throwsA(
+          isA<MapLaunchException>().having((e) => e.cause, 'cause', cause),
+        ),
+      );
+      expect(mockPlatform.attempts, hasLength(1));
+    });
+
+    test('fallback error preserves fallback URL and cause', () async {
       mockPlatform.platformResponse = .ios;
       mockPlatform.failAlways = true;
-
-      final req = DirectionsRequest(destination: LocationCoords(48.85, 2.29));
-      expect(() => req.show(map: .google), throwsException);
+      final cause = Exception('fallback');
+      mockPlatform.failure = cause;
+      await expectLater(
+        DirectionsRequest(
+          destination: LocationSearch('Eiffel Tower'),
+        ).show(map: .google),
+        throwsA(
+          isA<MapLaunchException>()
+              .having((e) => e.url, 'url', startsWith('https://'))
+              .having((e) => e.cause, 'cause', cause),
+        ),
+      );
+      expect(mockPlatform.attempts, hasLength(2));
     });
+
+    test(
+      'native-only error preserves attempted URL and original cause',
+      () async {
+        mockPlatform.platformResponse = .ios;
+        mockPlatform.failAlways = true;
+        final cause = Exception('native');
+        mockPlatform.failure = cause;
+        await expectLater(
+          DirectionsRequest(
+            destination: LocationCoords(1, 2),
+          ).show(map: .citymapper),
+          throwsA(
+            isA<MapLaunchException>()
+                .having((e) => e.url, 'url', startsWith('citymapper://'))
+                .having((e) => e.cause, 'cause', cause),
+          ),
+        );
+        expect(mockPlatform.attempts, hasLength(1));
+      },
+    );
   });
 
   group('DirectionsRequest.getSupportedMaps(MapApp.all) filtering', () {
@@ -278,6 +354,7 @@ class MockMapLauncherPlatform extends Fake
     with MockPlatformInterfaceMixin
     implements MapLauncherPlatform {
   String? launchedUrl;
+  final List<LaunchAttempt> attempts = [];
   Set<String> installedIds = {};
   MapPlatform? platformResponse = .android;
 
@@ -286,10 +363,15 @@ class MockMapLauncherPlatform extends Fake
 
   /// When true, launch() always throws.
   bool failAlways = false;
+  bool failWhenPackaged = false;
+  Exception failure = Exception('Launch failed');
 
   @override
   Future<void> launch(String url, {String? androidPackageName}) async {
-    if (failAlways) throw Exception('Launch failed');
+    attempts.add(LaunchAttempt(url, androidPackageName));
+    if (failAlways || (failWhenPackaged && androidPackageName != null)) {
+      throw failure;
+    }
     if (failOnScheme && !url.startsWith('https://')) {
       throw Exception('Scheme launch failed');
     }
@@ -303,4 +385,10 @@ class MockMapLauncherPlatform extends Fake
 
   @override
   MapPlatform? get platform => platformResponse;
+}
+
+class LaunchAttempt {
+  const LaunchAttempt(this.url, this.package);
+  final String url;
+  final String? package;
 }

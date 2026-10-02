@@ -1,4 +1,5 @@
 import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:map_launcher/src/models/supported_map.dart';
 
 import 'package:map_launcher/map_launcher_platform_interface.dart';
@@ -21,6 +22,44 @@ String appendQueryParams(String url, Map<String, String>? extraParams) {
   final queryString = Uri(queryParameters: extraParams).query;
   final separator = baseUrl.contains('?') ? '&' : '?';
   return '$baseUrl$separator$queryString$fragment';
+}
+
+/// Launches a map, retrying its universal URL without an Android package target.
+/// All platform launch failures are exposed as [MapLaunchException].
+Future<void> launchMapUrl({
+  required MapApp map,
+  required String url,
+  required String? universalUrl,
+  Map<String, String>? extra,
+}) async {
+  final platform = MapLauncherPlatform.instance;
+  final packageName = platform.platform == .android ? map.playStoreId : null;
+  final primaryUrl = appendQueryParams(url, extra);
+  try {
+    await platform.launch(primaryUrl, androidPackageName: packageName);
+  } on Exception catch (error) {
+    final fallbackUrl = universalUrl == null
+        ? null
+        : appendQueryParams(universalUrl, extra);
+    if (fallbackUrl != null &&
+        (fallbackUrl != primaryUrl || packageName != null)) {
+      try {
+        await platform.launch(fallbackUrl);
+        return;
+      } on Exception catch (fallbackError) {
+        throw MapLaunchException(
+          'Failed to launch ${map.name}',
+          url: fallbackUrl,
+          cause: fallbackError,
+        );
+      }
+    }
+    throw MapLaunchException(
+      'Failed to launch ${map.name}',
+      url: primaryUrl,
+      cause: error,
+    );
+  }
 }
 
 /// Only Apple + Google are unconditionally compiled into every app. They are
