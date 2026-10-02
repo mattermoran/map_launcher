@@ -21,7 +21,7 @@ class AirNavPro extends MapApp {
   String? get playStoreId => 'com.xample.airnavigation';
 
   @override
-  String? get appStoreId => '304684223';
+  String? get appStoreId => '301046057';
 
   @override
   String? get iosScheme => 'airnavpro://';

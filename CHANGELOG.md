@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Correct Air Navigation Pro and Magic Earth App Store links and icon lookup IDs.
 - Fix CoPilot markers to send the required latitude and longitude fields.
 - Invalidate stale example discovery results after parameter changes and keep
   failed refreshes retryable.

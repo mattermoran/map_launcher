@@ -440,12 +440,12 @@ const _maps = <_MapEntry>[
   ),
   _MapEntry(
     'airnavPro',
-    appStoreId: '304684223',
+    appStoreId: '301046057',
     playStoreId: 'com.xample.airnavigation',
   ),
   _MapEntry(
     'magicEarth',
-    appStoreId: '476085748',
+    appStoreId: '1007331679',
     playStoreId: 'com.generalmagic.magicearth',
   ),
 ];

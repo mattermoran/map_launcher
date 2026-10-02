@@ -25,7 +25,7 @@ class MagicEarth extends MapApp {
   String? get playStoreId => 'com.generalmagic.magicearth';
 
   @override
-  String? get appStoreId => '476085748';
+  String? get appStoreId => '1007331679';
 
   @override
   String? get iosScheme => 'magicearth://';
