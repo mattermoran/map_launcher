@@ -31,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   List<SupportedMap>? _markerMaps;
   List<SupportedMap>? _directionsMaps;
   List<SupportedMap>? _searchMaps;
+  Object? _loadError;
 
   LocationCoords get _dest =>
       LocationCoords(_destLat, _destLng, title: _destTitle);
@@ -44,24 +45,54 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadMaps() async {
-    final all = await MapLauncher.getAvailableMaps(MapApp.all);
-    final marker = await MapLauncher.marker(_dest).getSupportedMaps(MapApp.all);
-    final directions = await MapLauncher.directions(
-      _dest,
-      from: _origin,
-      mode: _travelMode,
-    ).getSupportedMaps(MapApp.all);
-    final search = await MapLauncher.marker(
-      LocationSearch(_searchQuery),
-    ).getSupportedMaps(MapApp.all);
+    try {
+      final all = await MapLauncher.getAvailableMaps(MapApp.all);
+      final marker = await MapLauncher.marker(
+        _dest,
+      ).getSupportedMaps(MapApp.all);
+      final directions = await MapLauncher.directions(
+        _dest,
+        from: _origin,
+        mode: _travelMode,
+      ).getSupportedMaps(MapApp.all);
+      final search = await MapLauncher.marker(
+        LocationSearch(_searchQuery),
+      ).getSupportedMaps(MapApp.all);
 
-    if (mounted) {
+      if (!mounted) return;
       setState(() {
         _allMaps = all;
         _markerMaps = marker;
         _directionsMaps = directions;
         _searchMaps = search;
+        _loadError = null;
       });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _loadError = error);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Could not check available maps.'),
+          action: SnackBarAction(label: 'Retry', onPressed: _loadMaps),
+        ),
+      );
+    }
+  }
+
+  Future<void> _launch(Future<void> Function() action) async {
+    try {
+      await action();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Could not open the map. Please try again.'),
+          action: SnackBarAction(
+            label: 'Retry',
+            onPressed: () => _launch(action),
+          ),
+        ),
+      );
     }
   }
 
@@ -127,7 +158,7 @@ class _HomePageState extends State<HomePage> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              MapLauncherPlatform.instance.launch(storeUrl);
+              _launch(() => MapLauncherPlatform.instance.launch(storeUrl));
             },
             child: const Text('Install'),
           ),
@@ -136,7 +167,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showOpenOrInstallSheet(MapApp map, VoidCallback onOpen) {
+  void _showOpenOrInstallSheet(MapApp map, Future<void> Function() onOpen) {
     final storeUrl = _storeUrlFor(map);
 
     showModalBottomSheet(
@@ -160,7 +191,7 @@ class _HomePageState extends State<HomePage> {
                 subtitle: const Text('Use universal link'),
                 onTap: () {
                   Navigator.pop(context);
-                  onOpen();
+                  _launch(onOpen);
                 },
               ),
               if (storeUrl != null)
@@ -170,7 +201,9 @@ class _HomePageState extends State<HomePage> {
                   subtitle: const Text('Open store page'),
                   onTap: () {
                     Navigator.pop(context);
-                    MapLauncherPlatform.instance.launch(storeUrl);
+                    _launch(
+                      () => MapLauncherPlatform.instance.launch(storeUrl),
+                    );
                   },
                 ),
             ],
@@ -183,7 +216,7 @@ class _HomePageState extends State<HomePage> {
   void _handleTap(_MapEntry entry, Future<void> Function() launch) {
     switch (entry.status) {
       case .installed:
-        launch();
+        _launch(launch);
       case .supported:
         _showOpenOrInstallSheet(entry.map, launch);
       case .notInstalled:
@@ -246,6 +279,8 @@ class _HomePageState extends State<HomePage> {
           entries: _entriesFor(_markerMaps),
           subtitle: _markerSubtitle,
           loading: _allMaps == null,
+          loadError: _loadError != null,
+          onRetry: _loadMaps,
           onEdit: _showEditSheet,
           onTap: (entry) => _handleTap(
             entry,
@@ -257,6 +292,8 @@ class _HomePageState extends State<HomePage> {
           entries: _entriesFor(_directionsMaps),
           subtitle: _directionsSubtitle,
           loading: _allMaps == null,
+          loadError: _loadError != null,
+          onRetry: _loadMaps,
           onEdit: _showEditSheet,
           onTap: (entry) => _handleTap(
             entry,
@@ -272,6 +309,8 @@ class _HomePageState extends State<HomePage> {
           entries: _entriesFor(_searchMaps),
           subtitle: _searchSubtitle,
           loading: _allMaps == null,
+          loadError: _loadError != null,
+          onRetry: _loadMaps,
           onEdit: _showEditSheet,
           onTap: (entry) => _handleTap(
             entry,
@@ -287,10 +326,14 @@ class _HomePageState extends State<HomePage> {
               .toList(),
           subtitle: 'Tap to open store page',
           loading: _allMaps == null,
+          loadError: _loadError != null,
+          onRetry: _loadMaps,
           showInstallIcon: true,
           onTap: (entry) {
             final url = _storeUrlFor(entry.map);
-            if (url != null) MapLauncherPlatform.instance.launch(url);
+            if (url != null) {
+              _launch(() => MapLauncherPlatform.instance.launch(url));
+            }
           },
         ),
       ][_tab],
@@ -337,6 +380,8 @@ class _MapGrid extends StatelessWidget {
     required this.subtitle,
     required this.onTap,
     required this.loading,
+    required this.loadError,
+    required this.onRetry,
     this.onEdit,
     this.showInstallIcon = false,
   });
@@ -346,6 +391,8 @@ class _MapGrid extends StatelessWidget {
   final String subtitle;
   final void Function(_MapEntry entry) onTap;
   final bool loading;
+  final bool loadError;
+  final VoidCallback onRetry;
   final VoidCallback? onEdit;
   final bool showInstallIcon;
 
@@ -355,10 +402,24 @@ class _MapGrid extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     if (loading) {
+      if (loadError) {
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Could not load available maps.'),
+              const SizedBox(height: 8),
+              FilledButton(onPressed: onRetry, child: const Text('Retry')),
+            ],
+          ),
+        );
+      }
       return const Center(child: CircularProgressIndicator());
     }
 
-    final usable = entries.where((e) => e.status != .notSupported).length;
+    final usable = entries
+        .where((e) => e.status == .installed || e.status == .supported)
+        .length;
 
     return CustomScrollView(
       slivers: [
@@ -523,6 +584,7 @@ class _EditForm extends StatefulWidget {
 }
 
 class _EditFormState extends State<_EditForm> {
+  final _formKey = GlobalKey<FormState>();
   late final TextEditingController _destLatC;
   late final TextEditingController _destLngC;
   late final TextEditingController _destTitleC;
@@ -558,17 +620,29 @@ class _EditFormState extends State<_EditForm> {
   }
 
   void _apply() {
+    if (!_formKey.currentState!.validate()) return;
+
     widget.onApply(
-      destLat: double.tryParse(_destLatC.text) ?? widget.destLat,
-      destLng: double.tryParse(_destLngC.text) ?? widget.destLng,
+      destLat: double.parse(_destLatC.text),
+      destLng: double.parse(_destLngC.text),
       destTitle: _destTitleC.text,
-      originLat: double.tryParse(_originLatC.text) ?? widget.originLat,
-      originLng: double.tryParse(_originLngC.text) ?? widget.originLng,
+      originLat: double.parse(_originLatC.text),
+      originLng: double.parse(_originLngC.text),
       originTitle: _originTitleC.text,
       travelMode: _mode,
-      searchQuery: _searchC.text,
+      searchQuery: _searchC.text.trim(),
     );
     Navigator.pop(context);
+  }
+
+  String? _coordinateError(String? value, {required bool latitude}) {
+    final number = double.tryParse(value?.trim() ?? '');
+    if (number == null || !number.isFinite) return 'Enter a valid number';
+    final limit = latitude ? 90 : 180;
+    if (number < -limit || number > limit) {
+      return latitude ? 'Must be -90 to 90' : 'Must be -180 to 180';
+    }
+    return null;
   }
 
   @override
@@ -578,139 +652,159 @@ class _EditFormState extends State<_EditForm> {
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Edit Parameters',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 16),
-
-            if (tab == 0 || tab == 1) ...[
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
               Text(
-                tab == 1 ? 'Destination' : 'Location',
-                style: Theme.of(context).textTheme.labelLarge,
+                'Edit Parameters',
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _destLatC,
-                      decoration: const InputDecoration(
-                        labelText: 'Latitude',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      controller: _destLngC,
-                      decoration: const InputDecoration(
-                        labelText: 'Longitude',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _destTitleC,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
-                  isDense: true,
-                ),
-              ),
-            ],
+              const SizedBox(height: 16),
 
-            if (tab == 1) ...[
+              if (tab == 0 || tab == 1) ...[
+                Text(
+                  tab == 1 ? 'Destination' : 'Location',
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _destLatC,
+                        validator: (value) =>
+                            _coordinateError(value, latitude: true),
+                        decoration: const InputDecoration(
+                          labelText: 'Latitude',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                          signed: true,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _destLngC,
+                        validator: (value) =>
+                            _coordinateError(value, latitude: false),
+                        decoration: const InputDecoration(
+                          labelText: 'Longitude',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                          signed: true,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _destTitleC,
+                  decoration: const InputDecoration(
+                    labelText: 'Title',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                ),
+              ],
+
+              if (tab == 1) ...[
+                const SizedBox(height: 20),
+                Text('Origin', style: Theme.of(context).textTheme.labelLarge),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _originLatC,
+                        validator: (value) =>
+                            _coordinateError(value, latitude: true),
+                        decoration: const InputDecoration(
+                          labelText: 'Latitude',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                          signed: true,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _originLngC,
+                        validator: (value) =>
+                            _coordinateError(value, latitude: false),
+                        decoration: const InputDecoration(
+                          labelText: 'Longitude',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                          signed: true,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _originTitleC,
+                  decoration: const InputDecoration(
+                    labelText: 'Title',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<TravelMode>(
+                  initialValue: _mode,
+                  decoration: const InputDecoration(
+                    labelText: 'Travel Mode',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                  items: TravelMode.values
+                      .map(
+                        (m) => DropdownMenuItem(value: m, child: Text(m.name)),
+                      )
+                      .toList(),
+                  onChanged: (v) {
+                    if (v != null) setState(() => _mode = v);
+                  },
+                ),
+              ],
+
+              if (tab == 2) ...[
+                TextFormField(
+                  controller: _searchC,
+                  validator: (value) => (value == null || value.trim().isEmpty)
+                      ? 'Enter a search query'
+                      : null,
+                  decoration: const InputDecoration(
+                    labelText: 'Search query',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                ),
+              ],
+
               const SizedBox(height: 20),
-              Text('Origin', style: Theme.of(context).textTheme.labelLarge),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _originLatC,
-                      decoration: const InputDecoration(
-                        labelText: 'Latitude',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      controller: _originLngC,
-                      decoration: const InputDecoration(
-                        labelText: 'Longitude',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _originTitleC,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
-                  isDense: true,
-                ),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<TravelMode>(
-                initialValue: _mode,
-                decoration: const InputDecoration(
-                  labelText: 'Travel Mode',
-                  border: OutlineInputBorder(),
-                  isDense: true,
-                ),
-                items: TravelMode.values
-                    .map((m) => DropdownMenuItem(value: m, child: Text(m.name)))
-                    .toList(),
-                onChanged: (v) {
-                  if (v != null) setState(() => _mode = v);
-                },
-              ),
+              FilledButton(onPressed: _apply, child: const Text('Apply')),
             ],
-
-            if (tab == 2) ...[
-              TextField(
-                controller: _searchC,
-                decoration: const InputDecoration(
-                  labelText: 'Search query',
-                  border: OutlineInputBorder(),
-                  isDense: true,
-                ),
-              ),
-            ],
-
-            const SizedBox(height: 20),
-            FilledButton(onPressed: _apply, child: const Text('Apply')),
-          ],
+          ),
         ),
       ),
     );
