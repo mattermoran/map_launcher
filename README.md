@@ -19,6 +19,9 @@ Map implementations and icons are tree-shakeable in Dart release builds. Native 
 
 ### Supported Maps
 
+See the [map protocol research](docs/maps/README.md) for per-map documentation
+links, detailed parameter references, platform differences, and known gaps.
+
 | Map                                                                                                                                 | Marker | Search | Directions | Origin | Travel Mode | Waypoints | Platform |
 | ----------------------------------------------------------------------------------------------------------------------------------- | :----: | :----: | :--------: | :----: | :---------: | :-------: | -------- |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/google.png" width="20"> Google Maps                   |   ✓    |   ✓    |     ✓      |   ✓    |      ✓      |     ✓     | All      |

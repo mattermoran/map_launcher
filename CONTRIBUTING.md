@@ -79,6 +79,9 @@ Add a test file at `test/maps/my_map_test.dart` covering the URLs your map gener
 ### 7. Update docs
 
 - Add your map to the supported maps list and capability tables in [`README.md`](README.md).
+- Add or update its [protocol research record](docs/maps/README.md), including
+  provider documentation links, check date, parameter formats, platform limits,
+  and the distinction between documented features and implemented capabilities.
 
 ## Development Setup
 

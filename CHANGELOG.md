@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Add dated protocol research and documentation links for every existing map
+  integration and the remaining requested apps from issue #111.
 - Correct Air Navigation Pro and Magic Earth App Store links and icon lookup IDs.
 - Fix CoPilot markers to send the required latitude and longitude fields.
 - Invalidate stale example discovery results after parameter changes and keep
