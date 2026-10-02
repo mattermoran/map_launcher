@@ -217,9 +217,7 @@ class DirectionsRequest {
   String? _appendSearchOrigin(String? url, MapApp map) {
     if (url == null || from is! LocationSearch) return url;
     if (!map.supportsDirectionsSearch) return url;
-    final originKey = map.id == 'apple' || url.startsWith('comgooglemaps:')
-        ? 'saddr'
-        : 'origin';
+    final originKey = map.directionsSearchOriginKey(url);
     return appendQueryParams(url, {originKey: (from as LocationSearch).query});
   }
 }

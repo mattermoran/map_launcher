@@ -40,6 +40,10 @@ class GoogleMaps extends MapApp {
   bool get supportsDirectionsSearch => true;
 
   @override
+  String directionsSearchOriginKey(String url) =>
+      url.startsWith('comgooglemaps:') ? 'saddr' : 'origin';
+
+  @override
   bool get supportsWaypoints => true;
   @override
   String markerUrl(LocationCoords coords, {int? zoom}) => buildUrl(

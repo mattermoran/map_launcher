@@ -35,6 +35,10 @@ class AppleMaps extends MapApp {
 
   @override
   bool get supportsDirectionsSearch => true;
+
+  @override
+  String directionsSearchOriginKey(String url) => 'saddr';
+
   @override
   String markerUrl(LocationCoords coords, {int? zoom}) => buildUrl(
     url: 'https://maps.apple.com/',

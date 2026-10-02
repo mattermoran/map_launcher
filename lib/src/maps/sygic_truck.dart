@@ -33,6 +33,9 @@ class SygicTruck extends MapApp {
   bool get supportsMarkerCoords => false;
 
   @override
+  bool supportsTravelMode(TravelMode mode) => mode == TravelMode.driving;
+
+  @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 
   @override

@@ -271,6 +271,12 @@ abstract class MapApp {
     TravelMode? travelMode,
   }) => null;
 
+  /// Query parameter for a text origin in the generated directions [url].
+  ///
+  /// Override when a search-capable provider uses a key other than `origin`.
+  /// The URL allows native and universal links to use different parameters.
+  String directionsSearchOriginKey(String url) => 'origin';
+
   // ---------------------------------------------------------------------------
   // URL building: native scheme URLs (mobile-only)
   // ---------------------------------------------------------------------------
