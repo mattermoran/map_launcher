@@ -50,7 +50,8 @@ class CoPilot extends MapApp {
     queryParams: {
       'type': 'LOCATION',
       'action': 'VIEW',
-      'marker': coords.latlng,
+      'lat': coords.lat.toString(),
+      'long': coords.lng.toString(),
       if (coords.title != null) 'name': coords.title!,
     },
   );

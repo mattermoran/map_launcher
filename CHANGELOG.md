@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Fix CoPilot markers to send the required latitude and longitude fields.
 - Invalidate stale example discovery results after parameter changes and keep
   failed refreshes retryable.
 - Reject non-driving requests for Sygic Truck.

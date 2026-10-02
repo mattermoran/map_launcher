@@ -6,6 +6,7 @@ import 'package:map_launcher/src/maps/sygic_truck.dart';
 import 'package:map_launcher/src/maps/mapswithme.dart';
 import 'package:map_launcher/src/maps/google_go.dart';
 import 'package:map_launcher/src/models/location.dart';
+import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -131,11 +132,27 @@ void main() {
       expect(copilot.id, equals('copilot'));
     });
 
-    test('markerSchemeUrl uses copilot://mydestination VIEW', () {
-      final url = copilot.markerSchemeUrl(coords, platform: .android);
-      expect(url, contains('copilot://mydestination'));
-      expect(url, contains('action=VIEW'));
-    });
+    for (final platform in [MapPlatform.android, MapPlatform.ios]) {
+      test('markerSchemeUrl sends VIEW coordinates on $platform', () {
+        for (final title in [null, 'A & B + Café']) {
+          final url = Uri.parse(
+            copilot.markerSchemeUrl(
+              LocationCoords(40.388249, -74.654724, title: title),
+              platform: platform,
+            )!,
+          );
+          expect(url.scheme, 'copilot');
+          expect(url.host, 'mydestination');
+          expect(url.queryParameters, {
+            'type': 'LOCATION',
+            'action': 'VIEW',
+            'lat': '40.388249',
+            'long': '-74.654724',
+            'name': ?title,
+          });
+        }
+      });
+    }
 
     test('directionsSchemeUrl uses copilot://mydestination GOTO', () {
       final url = copilot.directionsSchemeUrl(
