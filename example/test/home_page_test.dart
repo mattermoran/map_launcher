@@ -78,6 +78,38 @@ void main() {
     expect(find.textContaining('48.8584, 2.2945'), findsOneWidget);
   });
 
+  testWidgets('failed refresh hides stale choices and remains retryable', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final platform = _FakePlatform();
+    MapLauncherPlatform.instance = platform;
+    await pumpHome(tester);
+    await tester.tap(find.text('Directions'));
+    await tester.pumpAndSettle();
+    expect(find.text('Waze'), findsOneWidget);
+    await tester.tap(find.byTooltip('Edit parameters'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(DropdownButtonFormField<TravelMode>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('walking').last);
+    await tester.pumpAndSettle();
+    platform.failDiscovery = true;
+    await tester.tap(find.text('Apply'));
+    await tester.pumpAndSettle();
+    expect(find.text('Waze'), findsNothing);
+    expect(find.text('Could not load available maps.'), findsOneWidget);
+    platform.failDiscovery = false;
+    await tester.tap(find.widgetWithText(FilledButton, 'Retry'));
+    await tester.pumpAndSettle();
+    expect(find.text('Could not load available maps.'), findsNothing);
+    expect(find.textContaining('walking'), findsOneWidget);
+    expect(find.text('Google Maps'), findsOneWidget);
+  });
+
   testWidgets('blank search remains visible and is not applied', (
     tester,
   ) async {

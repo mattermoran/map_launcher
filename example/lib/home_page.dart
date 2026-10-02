@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   List<SupportedMap>? _directionsMaps;
   List<SupportedMap>? _searchMaps;
   Object? _loadError;
+  int _loadGeneration = 0;
 
   LocationCoords get _dest =>
       LocationCoords(_destLat, _destLng, title: _destTitle);
@@ -45,21 +46,27 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadMaps() async {
+    final generation = ++_loadGeneration;
+    setState(() {
+      _allMaps = null;
+      _markerMaps = null;
+      _directionsMaps = null;
+      _searchMaps = null;
+      _loadError = null;
+    });
     try {
       final all = await MapLauncher.getAvailableMaps(MapApp.all);
-      final marker = await MapLauncher.marker(
-        _dest,
-      ).getSupportedMaps(MapApp.all);
+      final marker = await MapLauncher.marker(_dest)
+          .getSupportedMaps(MapApp.all);
       final directions = await MapLauncher.directions(
         _dest,
         from: _origin,
         mode: _travelMode,
       ).getSupportedMaps(MapApp.all);
-      final search = await MapLauncher.marker(
-        LocationSearch(_searchQuery),
-      ).getSupportedMaps(MapApp.all);
+      final search = await MapLauncher.marker(LocationSearch(_searchQuery))
+          .getSupportedMaps(MapApp.all);
 
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() {
         _allMaps = all;
         _markerMaps = marker;
@@ -68,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         _loadError = null;
       });
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted || generation != _loadGeneration) return;
       setState(() => _loadError = error);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -314,9 +321,9 @@ class _HomePageState extends State<HomePage> {
           onEdit: _showEditSheet,
           onTap: (entry) => _handleTap(
             entry,
-            () => MapLauncher.marker(
-              LocationSearch(_searchQuery),
-            ).show(map: entry.map),
+            () =>
+                MapLauncher.marker(LocationSearch(_searchQuery))
+                    .show(map: entry.map),
           ),
         ),
         _MapGrid(

@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Invalidate stale example discovery results after parameter changes and keep
+  failed refreshes retryable.
+- Reject non-driving requests for Sygic Truck.
+- Let map providers define text-origin parameter names independently of map IDs.
 - Upgrade development and example tooling to Flutter 3.47.6 / Dart 3.13.5.
   Align Android tooling with its plugin template (AGP 9.1.0, Kotlin 2.4.0,
   Gradle 9.3.1) and example deployment targets with iOS 15 / macOS 12.
