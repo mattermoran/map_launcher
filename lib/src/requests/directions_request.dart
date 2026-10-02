@@ -28,13 +28,16 @@ class DirectionsRequest {
   /// * [mode] Travel mode (driving, walking, transit, bicycling).
   /// * [waypoints] Intermediate stops (coordinates only). Not supported by all maps.
   /// * [extra] Additional query parameters appended to the generated URL.
-  const DirectionsRequest({
+  ///
+  /// Collections are copied into unmodifiable snapshots.
+  DirectionsRequest({
     required this.destination,
     this.from,
     this.mode,
-    this.waypoints,
-    this.extra,
-  });
+    List<LocationCoords>? waypoints,
+    Map<String, String>? extra,
+  }) : waypoints = waypoints == null ? null : List.unmodifiable(waypoints),
+       extra = extra == null ? null : Map.unmodifiable(extra);
 
   /// The destination (coordinates or search query).
   final Location destination;

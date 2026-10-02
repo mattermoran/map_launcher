@@ -29,7 +29,9 @@ class MarkerRequest {
   /// * [location] The location to show (coordinates or search query).
   /// * [zoom] Optional map zoom level. Not supported by all maps.
   /// * [extra] Additional query parameters appended to the generated URL.
-  const MarkerRequest({required this.location, this.zoom, this.extra});
+  ///   Copied into an unmodifiable snapshot.
+  MarkerRequest({required this.location, this.zoom, Map<String, String>? extra})
+    : extra = extra == null ? null : Map.unmodifiable(extra);
 
   /// The location to show (coordinates or search query).
   final Location location;
