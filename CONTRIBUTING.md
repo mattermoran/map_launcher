@@ -82,8 +82,10 @@ Add a test file at `test/maps/my_map_test.dart` covering the URLs your map gener
 
 ## Development Setup
 
-Use the Flutter version pinned in `.fvmrc` for the example. The plugin itself
-supports Flutter 3.41+ / Dart 3.11+.
+Use Flutter 3.47.6 (pinned in `.fvmrc`) and its bundled Dart 3.13.5 for
+development and the example. The plugin itself still supports Flutter 3.41+ /
+Dart 3.11+; the current SDK pin is not the minimum supported consumer version.
+The example follows the current template's iOS 15 and macOS 12 minimums.
 
 ```bash
 # Get dependencies

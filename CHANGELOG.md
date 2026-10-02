@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Upgrade development and example tooling to Flutter 3.47.6 / Dart 3.13.5.
+  Align Android tooling with its plugin template (AGP 9.1.0, Kotlin 2.4.0,
+  Gradle 9.3.1) and example deployment targets with iOS 15 / macOS 12.
+  Retain the plugin's Flutter 3.41 / Dart 3.11 minimum and AGP 8 coverage.
 - Fix Android builds on Flutter 3.41 / AGP 8 while retaining AGP 9 support (#227).
 - Fix Yandex Maps routes from the current location, including waypoints (#228).
 - Retry Android browser fallbacks without a package target, even for the same URL.
