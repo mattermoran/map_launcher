@@ -5,15 +5,16 @@
 Pod::Spec.new do |s|
   s.name             = 'map_launcher'
   s.version          = '0.0.1'
-  s.summary          = 'A new Flutter plugin project.'
+  s.summary          = 'A Flutter plugin for finding and launching installed map applications.'
   s.description      = <<-DESC
-A new Flutter plugin project.
+Find installed map applications and launch them with markers, directions, or searches.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://github.com/mattermoran/map_launcher'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = 'Alex Miller'
   s.source           = { :path => '.' }
   s.source_files = 'map_launcher/Sources/map_launcher/**/*'
+  s.resource_bundles = {'map_launcher_privacy' => ['map_launcher/Sources/map_launcher/PrivacyInfo.xcprivacy']}
   s.dependency 'Flutter'
   s.platform = :ios, '13.0'
 
@@ -21,9 +22,4 @@ A new Flutter plugin project.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 
-  # If your plugin requires a privacy manifest, for example if it uses any
-  # required reason APIs, update the PrivacyInfo.xcprivacy file to describe your
-  # plugin's privacy impact, and then uncomment this line. For more information,
-  # see https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
-  # s.resource_bundles = {'map_launcher_privacy' => ['map_launcher/Sources/map_launcher/PrivacyInfo.xcprivacy']}
 end
