@@ -14,7 +14,12 @@ class MapLauncherWeb extends MapLauncherPlatform {
 
   @override
   Future<void> launch(String url, {String? androidPackageName}) async {
-    web.window.open(url, '_blank');
+    final opened = web.window.open(url, '_blank');
+    if (opened == null) {
+      throw Exception(
+        'The browser blocked the map window. Allow popups and retry.',
+      );
+    }
   }
 
   @override
