@@ -47,6 +47,7 @@ class DirectionsRequest {
   final TravelMode? mode;
 
   /// Intermediate waypoints (coordinates only).
+  /// Requires a coordinate destination and a map with waypoint support.
   final List<LocationCoords>? waypoints;
 
   /// Extra query parameters appended to the URL.
@@ -89,6 +90,7 @@ class DirectionsRequest {
   /// On mobile, prefers the native scheme URL. On web/desktop, always
   /// returns the universal HTTPS URL. Returns `null` if unsupported.
   String? getUrl({required MapApp map}) {
+    if (!_supportsRequest(map)) return null;
     final coordsOrigin = from is LocationCoords ? from as LocationCoords : null;
 
     String? url = map.bestDirectionsUrl(
@@ -104,6 +106,7 @@ class DirectionsRequest {
 
   /// Returns the universal (HTTPS) URL for [map], or `null` if unsupported.
   String? getUniversalUrl({required MapApp map}) {
+    if (!_supportsRequest(map)) return null;
     final coordsOrigin = from is LocationCoords ? from as LocationCoords : null;
 
     String? url = switch (destination) {
@@ -129,12 +132,13 @@ class DirectionsRequest {
   /// URLs for other platforms). Returns `null` on web/desktop if no
   /// [platform] is specified.
   String? getSchemeUrl({required MapApp map, MapPlatform? platform}) {
+    if (!_supportsRequest(map)) return null;
     final resolved = platform ?? MapLauncherPlatform.instance.platform;
     if (resolved == null) return null;
 
     final coordsOrigin = from is LocationCoords ? from as LocationCoords : null;
 
-    return switch (destination) {
+    final url = switch (destination) {
       LocationCoords coords => map.directionsSchemeUrl(
         destination: coords,
         origin: coordsOrigin,
@@ -149,6 +153,7 @@ class DirectionsRequest {
         platform: resolved,
       ),
     };
+    return _appendSearchOrigin(url, map);
   }
 
   /// Returns maps from [maps] that support this directions request on this device.
@@ -165,24 +170,13 @@ class DirectionsRequest {
     final results = <SupportedMap>[];
 
     for (final map in maps) {
-      // Check destination type support
-      final isSupported = switch (destination) {
-        LocationCoords() => map.supportsDirectionsCoords,
-        LocationSearch() => map.supportsDirectionsSearch,
-      };
-      if (!isSupported) continue;
-
-      // Check waypoint support if waypoints are specified
-      if (waypoints != null &&
-          waypoints!.isNotEmpty &&
-          !map.supportsWaypoints) {
-        continue;
-      }
+      if (getUrl(map: map) == null) continue;
 
       final isInstalled = installedIds.contains(map.id);
 
-      // Include if installed natively OR has universal link
-      if (isInstalled || map.hasUniversalLink) {
+      // Universal support can differ by operation, even for the same map.
+      if (isInstalled ||
+          (map.hasUniversalLink && getUniversalUrl(map: map) != null)) {
         results.add(
           SupportedMap.launchable(
             map: map,
@@ -197,16 +191,32 @@ class DirectionsRequest {
     return results;
   }
 
+  bool _supportsRequest(MapApp map) {
+    final supportsDestination = switch (destination) {
+      LocationCoords() => map.supportsDirectionsCoords,
+      LocationSearch() => map.supportsDirectionsSearch,
+    };
+    if (!supportsDestination) return false;
+    if (mode != null && !map.supportsTravelMode(mode!)) return false;
+    if (from is LocationSearch && !map.supportsDirectionsSearch) return false;
+    // Search builders do not accept waypoints. Never silently drop stops.
+    if (waypoints != null && waypoints!.isNotEmpty) {
+      if (destination is LocationSearch || !map.supportsWaypoints) return false;
+    }
+    return true;
+  }
+
   /// Appends the search-based origin to [url] if the map supports it.
   ///
   /// Only maps that support search-based directions (e.g. Google, Apple) are
   /// likely to understand an `origin=<query>` or `saddr=<query>` param.
-  /// For other maps, appending it would produce a garbage URL, so we skip it.
-  /// Losing the origin is better than a broken link.
+  /// Requests with search origins are rejected for maps without search support.
   String? _appendSearchOrigin(String? url, MapApp map) {
     if (url == null || from is! LocationSearch) return url;
     if (!map.supportsDirectionsSearch) return url;
-    final originKey = map.id == 'apple' ? 'saddr' : 'origin';
+    final originKey = map.id == 'apple' || url.startsWith('comgooglemaps:')
+        ? 'saddr'
+        : 'origin';
     return appendQueryParams(url, {originKey: (from as LocationSearch).query});
   }
 }

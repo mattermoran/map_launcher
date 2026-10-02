@@ -38,7 +38,7 @@ import 'package:map_launcher/src/requests/marker_request.dart';
 abstract final class MapLauncher {
   /// Creates a marker request for [location].
   ///
-  /// Use with Dart 3.6+ shorthand:
+  /// Use with Dart 3.10+ shorthand:
   /// ```dart
   /// MapLauncher.marker(.coords(59.33, 18.07, title: 'Gamla Stan'))
   /// MapLauncher.marker(.search('Fika near Södermalm'))
@@ -67,7 +67,8 @@ abstract final class MapLauncher {
   ///
   /// * [mode] Travel mode (driving, walking, transit, bicycling). Defaults to
   ///   the map app's default when null.
-  /// * [waypoints] Intermediate stops (coordinates only). Not supported by all maps.
+  /// * [waypoints] Intermediate stops (coordinates only). Requires a coordinate
+  ///   destination and a map with waypoint support.
   /// * [extra] Additional query parameters appended to the generated URL.
   static DirectionsRequest directions(
     Location destination, {

@@ -92,6 +92,45 @@ class NavOnlyMap extends MapApp {
   }) => 'navonly://route?to=${destination.latlng}';
 }
 
+/// Universal search only; coordinate markers require an installed Android app.
+class PartialMap extends AcmeMaps {
+  const PartialMap();
+
+  @override
+  String? markerUrl(LocationCoords coords, {int? zoom}) => null;
+
+  @override
+  String? markerSchemeUrl(
+    LocationCoords coords, {
+    int? zoom,
+    required MapPlatform platform,
+  }) => platform == .android ? 'acmemaps://marker?ll=${coords.latlng}' : null;
+
+  @override
+  String? directionsUrl({
+    required LocationCoords destination,
+    LocationCoords? origin,
+    List<LocationCoords>? waypoints,
+    TravelMode? travelMode,
+  }) => null;
+
+  @override
+  String? directionsSchemeUrl({
+    required LocationCoords destination,
+    LocationCoords? origin,
+    List<LocationCoords>? waypoints,
+    TravelMode? travelMode,
+    required MapPlatform platform,
+  }) => 'acmemaps://route?to=${destination.latlng}';
+
+  @override
+  bool get supportsMarkerSearch => true;
+
+  @override
+  String markerSearchUrl(String query) =>
+      'https://maps.acme.com/search?q=$query';
+}
+
 class _MockPlatform extends Fake
     with MockPlatformInterfaceMixin
     implements MapLauncherPlatform {
@@ -223,6 +262,38 @@ void main() {
 
       expect(maps.map((m) => m.map.id), ['acmeMaps', 'navOnly']);
     });
+
+    test(
+      'discovery requires a URL for the actual operation and platform',
+      () async {
+        const partial = PartialMap();
+        mock.platformResponse = null;
+        final marker = MapLauncher.marker(coords);
+        expect(await marker.getSupportedMaps([partial]), isEmpty);
+        expect(
+          await MapLauncher.marker(
+            LocationSearch('Coffee'),
+          ).getSupportedMaps([partial]),
+          hasLength(1),
+        );
+
+        mock.platformResponse = .android;
+        expect(await marker.getSupportedMaps([partial]), isEmpty);
+        expect(
+          await MapLauncher.directions(coords).getSupportedMaps([partial]),
+          isEmpty,
+        );
+        mock.installedIds = {partial.id};
+        expect(await marker.getSupportedMaps([partial]), hasLength(1));
+        expect(
+          await MapLauncher.directions(coords).getSupportedMaps([partial]),
+          hasLength(1),
+        );
+
+        mock.platformResponse = .ios;
+        expect(await marker.getSupportedMaps([partial]), isEmpty);
+      },
+    );
   });
 
   group('custom MapApp over the method channel', () {

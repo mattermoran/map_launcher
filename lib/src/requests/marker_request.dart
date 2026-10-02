@@ -136,12 +136,13 @@ class MarkerRequest {
         LocationCoords() => map.supportsMarkerCoords,
         LocationSearch() => map.supportsMarkerSearch,
       };
-      if (!isSupported) continue;
+      if (!isSupported || getUrl(map: map) == null) continue;
 
       final isInstalled = installedIds.contains(map.id);
 
-      // Include if installed natively OR has universal link (browser fallback)
-      if (isInstalled || map.hasUniversalLink) {
+      // Universal support can differ by operation, even for the same map.
+      if (isInstalled ||
+          (map.hasUniversalLink && getUniversalUrl(map: map) != null)) {
         results.add(
           SupportedMap.launchable(
             map: map,

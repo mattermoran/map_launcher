@@ -125,15 +125,32 @@ void main() {
     });
 
     test('includes travel mode in scheme URL when provided', () {
+      mockPlatform.platformResponse = .ios;
       final req = DirectionsRequest(
-        destination: LocationCoords(48.85, 2.29),
+        destination: LocationSearch('Eiffel Tower'),
         mode: .walking,
       );
       // Google on iOS has a scheme URL for directions
       final url = req.getSchemeUrl(map: .google, platform: .ios);
-      if (url != null) {
-        expect(url, contains('walking'));
+      expect(url, isNotNull);
+      expect(url, contains('walking'));
+    });
+
+    test('iOS Google text destination and origin use saddr', () {
+      mockPlatform.platformResponse = .ios;
+      final req = DirectionsRequest(
+        destination: LocationSearch('Eiffel Tower'),
+        from: LocationSearch('Louvre Museum'),
+      );
+      for (final url in [
+        req.getUrl(map: .google),
+        req.getSchemeUrl(map: .google, platform: .ios),
+      ]) {
+        expect(url, startsWith('comgooglemaps://'));
+        expect(url, contains('saddr=Louvre'));
+        expect(url, isNot(contains('origin=Louvre')));
       }
+      expect(req.getUniversalUrl(map: .google), contains('origin=Louvre'));
     });
   });
 
@@ -326,8 +343,7 @@ void main() {
   });
 
   group('DirectionsRequest.getSupportedMaps(MapApp.all) filtering', () {
-    test('travel mode does not filter out maps', () async {
-      // Walking mode. Waze only supports driving, but should still appear
+    test('walking mode explicitly filters out Waze', () async {
       mockPlatform.installedIds = {'google', 'waze', 'apple'};
       final walkingReq = DirectionsRequest(
         destination: LocationCoords(48.85, 2.29),
@@ -336,15 +352,48 @@ void main() {
       final walkingMaps = await walkingReq.getSupportedMaps(MapApp.all);
       final walkingTypes = walkingMaps.map((m) => m.map).toSet();
 
-      final drivingReq = DirectionsRequest(
-        destination: LocationCoords(48.85, 2.29),
-        mode: .driving,
+      expect(walkingTypes, contains(MapApp.google));
+      expect(walkingTypes, isNot(contains(MapApp.waze)));
+      expect(walkingReq.getUrl(map: .waze), isNull);
+      await expectLater(
+        walkingReq.show(map: .waze),
+        throwsA(isA<UnsupportedError>()),
       );
-      final drivingMaps = await drivingReq.getSupportedMaps(MapApp.all);
-      final drivingTypes = drivingMaps.map((m) => m.map).toSet();
+    });
+  });
 
-      // Both modes should return the same set of maps
-      expect(walkingTypes, equals(drivingTypes));
+  group('DirectionsRequest unsupported request guards', () {
+    test('search destination with nonempty waypoints is unsupported', () async {
+      final req = DirectionsRequest(
+        destination: LocationSearch('Eiffel Tower'),
+        waypoints: [LocationCoords(48.86, 2.34)],
+      );
+      expect(req.getUrl(map: .google), isNull);
+      expect(req.getSchemeUrl(map: .google, platform: .ios), isNull);
+      expect(req.getUniversalUrl(map: .google), isNull);
+      await expectLater(
+        req.show(map: .google),
+        throwsA(isA<UnsupportedError>()),
+      );
+    });
+
+    test('search destination with empty waypoints is allowed', () {
+      final req = DirectionsRequest(
+        destination: LocationSearch('Eiffel Tower'),
+        waypoints: const [],
+      );
+      expect(req.getUrl(map: .google), isNotNull);
+    });
+
+    test('unsupported search origins are rejected', () async {
+      final req = DirectionsRequest(
+        destination: LocationCoords(48.85, 2.29),
+        from: LocationSearch('Hotel'),
+      );
+      expect(req.getUrl(map: .waze), isNull);
+      expect(req.getUniversalUrl(map: .waze), isNull);
+      expect(req.getSchemeUrl(map: .waze, platform: .ios), isNull);
+      await expectLater(req.show(map: .waze), throwsA(isA<UnsupportedError>()));
     });
   });
 }
