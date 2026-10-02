@@ -2,12 +2,12 @@ package dev.fluttered.map_launcher
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import androidx.core.net.toUri
 
 
 
@@ -36,7 +36,7 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
                     return
                 }
                 try {
-                    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     if (packageName != null) {
                         intent.setPackage(packageName)
