@@ -11,7 +11,7 @@ Map Launcher is a Flutter plugin to open maps on **all platforms**: iOS, Android
 
 Uses universal links (HTTPS URLs), with native app detection on mobile.
 
-Maps are tree-shakeable: **only the maps you reference are compiled into your app**. No URL schemes, package names, store ids, or icons of unused maps ever ship in your binary. See [Binary Size & App Store Compliance](#binary-size--app-store-compliance).
+Map implementations and icons are tree-shakeable in Dart release builds. Native manifest entries are separate and must be pruned explicitly if needed. See [Binary Size & App Store Compliance](#binary-size--app-store-compliance).
 
 |                                Marker                                 |                                Navigation                                 |
 | :-------------------------------------------------------------------: | :-----------------------------------------------------------------------: |
@@ -74,6 +74,8 @@ Maps are tree-shakeable: **only the maps you reference are compiled into your ap
 - [Contributing](#contributing)
 
 ## Quick Start
+
+Requires Flutter **3.41+** and Dart **3.11+**. Android supports AGP 8 and AGP 9.
 
 ```yaml
 dependencies:
@@ -163,6 +165,11 @@ you use, remove entries in your app's `AndroidManifest.xml`:
 
 ### Web / Desktop: No setup needed
 
+Desktop launches HTTP(S) links in the default browser using `open` on macOS,
+`xdg-open` on Linux, and Windows PowerShell on Windows. These system launchers
+and a browser handler must be available. Browser popup blocking can prevent web
+launches; launch from a user gesture and handle `MapLaunchException`.
+
 ## API
 
 ### Markers
@@ -191,6 +198,11 @@ try {
 ```
 
 ### Directions
+
+Discovery excludes maps that declare the requested travel mode unsupported.
+Explicitly launching an unsupported request throws `UnsupportedError`;
+URL inspection returns `null`. Text origins require search support. Waypoints
+currently require a coordinate destination and a waypoint-capable map.
 
 ```dart
 // Basic
@@ -221,7 +233,7 @@ await MapLauncher.directions(
 await MapLauncher.marker(.coords(59.33, 18.07)).show(map: .google);
 
 // If map is omitted, the best available map is used automatically:
-// • iOS/macOS → Apple Maps
+// • iOS → Apple Maps
 // • Other platforms → Google Maps
 // • Falls back to web if native app unavailable
 ```
@@ -396,13 +408,13 @@ showModalBottomSheet(
 ## Binary Size & App Store Compliance
 
 Each map is a const object, and **only the maps your code references are
-compiled into your app**: their URL strings, package names, store ids, and
-icons. Everything else is removed by Dart's tree shaking in release builds.
+retained by Dart's tree shaking**: their Dart URL strings, store ids, and icons.
+Bare `show()` also references Apple and Google Maps as its default choices.
 
-This matters beyond binary size: App Store review scans binaries for
-references to embargoed services, and there is precedent for apps being
-rejected over identifiers they never actually used. With 6.0, if you don't
-reference a map, nothing about it exists in your build.
+This does not remove Android manifest entries or your app's iOS query schemes.
+The plugin ships Android `<queries>` entries for all supported packages.
+Inspect your final merged manifest and release artifact when identifier
+presence matters; Dart tree shaking alone is not a compliance guarantee.
 
 Things to know:
 

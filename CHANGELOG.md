@@ -1,11 +1,35 @@
+## Unreleased
+
+- Fix Android builds on Flutter 3.41 / AGP 8 while retaining AGP 9 support (#227).
+- Fix Yandex Maps routes from the current location, including waypoints (#228).
+- Retry Android browser fallbacks without a package target, even for the same URL.
+- Launch Windows URLs as encoded PowerShell data instead of interpolating them
+  into `cmd`, preserving query separators and preventing shell expansion.
+- Exclude custom maps whose universal links do not support the requested operation.
+- Snapshot request extras and waypoints; exposed collections are now unmodifiable.
+  Request constructors are no longer `const` (locations already require runtime
+  construction). Snapshot per-launch extras before asynchronous map discovery.
+- Consistently report platform launch failures as `MapLaunchException`.
+- Preserve Google Maps text origins in iOS scheme URLs.
+- Reject unsupported travel modes, text origins, and waypoint combinations rather
+  than silently dropping them. Search destinations with waypoints are unsupported;
+  use a coordinate destination instead.
+- Correct Petal's bicycling mode and avoid double-encoding map labels.
+- Report blocked browser popups and reject non-finite coordinates and blank searches.
+- Add example input validation and recoverable discovery/launch errors.
+- Bundle the iOS privacy manifest through CocoaPods and Swift Package Manager.
+- Fix cached icon fetching; support ImageMagick outside macOS and signal failures.
+- Correct Flutter's minimum to 3.41 (matching Dart 3.11), macOS default-map docs,
+  and tree-shaking claims: native manifest entries must be pruned separately.
+
 ## 6.0.0
 
 Add your own map apps, ship only the maps you use, and launch them in one line.
 
 Maps are now `MapApp` objects instead of enum values. **Subclass `MapApp`** to
 add any map app without forking the plugin. **Only the maps you reference are
-compiled into your app**, so URL schemes, package names, and icons of unused
-maps never touch your binary. And discovery results are **directly launchable**:
+retained in Dart release code**; native manifest entries are separate.
+And discovery results are **directly launchable**:
 `maps.first.show()`.
 
 See [MIGRATION.md](https://github.com/mattermoran/map_launcher/blob/master/MIGRATION.md) for the full 5.x → 6.0 guide.
@@ -16,8 +40,8 @@ See [MIGRATION.md](https://github.com/mattermoran/map_launcher/blob/master/MIGRA
   internal) without forking the plugin. Works everywhere a built-in map does,
   including discovery and launching.
 - **Tree-shakeable maps**: referencing `MapApp.waze` compiles in only Waze's
-  code, strings, and icon. Unreferenced maps are stripped completely from
-  release binaries, verified by scanning AOT snapshots.
+  Dart code, strings, and icon. Unreferenced maps are stripped from Dart AOT
+  snapshots, not from native manifests. Bare `show()` also retains its defaults.
 - **Launchable discovery results**: `final maps = await request.getSupportedMaps([...])`
   then `maps.first.show()`. No more request/mapType plumbing in pickers.
 - **Misconfiguration warning (iOS)**: debug builds print a warning when a map
@@ -27,7 +51,7 @@ See [MIGRATION.md](https://github.com/mattermoran/map_launcher/blob/master/MIGRA
   Store APIs, embedded as `Uint8List`. No `flutter_svg` dependency needed.
   Run `dart run tool/fetch_icons.dart` to refresh.
 - **Generic native layer**: iOS/Android detection is driven entirely from
-  Dart. The native code has zero map-specific knowledge.
+  Dart. The Android manifest still declares map-specific package queries.
 
 **Breaking Changes:**
 

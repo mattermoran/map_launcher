@@ -5,13 +5,12 @@
 
 6.0 replaces the `MapType` enum and the internal map registry with plain
 `MapApp` objects. The payoff: **only the maps your code references are
-compiled into your app**. If you never reference Neshan, nothing about it
-(URL scheme, package name, store id, icon) exists in your release binary.
+retained in Dart release code**, including their URL schemes, store ids, and icons.
+Bare `show()` retains Apple and Google as defaults. Native manifest entries
+are not tree-shaken: prune Android `<queries>` and iOS query schemes separately.
 
-Why this matters: App Store review scans binaries for references to embargoed
-services, and apps using 5.x were rejected for containing identifiers of map
-apps they never used. In 5.x every map shipped in every app; in 6.0 that's
-opt-in per map.
+This reduces unused Dart code, but does not guarantee identifier-free binaries
+or App Store approval. Inspect the final release artifact if that is required.
 
 The request API (`MapLauncher.marker(...)`, `.directions(...)`, `.show(...)`)
 is unchanged. Most call sites compile as-is.
@@ -24,7 +23,7 @@ Dot-shorthands re-resolve from the enum to the new objects automatically:
 // Identical in 5.x and 6.0:
 await MapLauncher.marker(.coords(59.33, 18.07)).show();
 await MapLauncher.marker(.coords(59.33, 18.07)).show(map: .google);
-await MapLauncher.directions(.coords(59.33, 18.07), mode: .walking).show(
+await MapLauncher.directions(.coords(59.33, 18.07), mode: .driving).show(
   map: .waze,
   extra: WazeExtra(navigate: true),
 );

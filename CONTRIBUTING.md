@@ -42,6 +42,9 @@ Icons are 256×256 PNGs stored in `assets/icons/`. The filename must match the `
 
 To fetch icons automatically from the App Store / Play Store:
 
+Add the map's store identifiers to `tool/fetch_icons.dart` first. Resizing uses
+`sips` on macOS or ImageMagick's `magick` command on Linux/Windows.
+
 ```bash
 dart run tool/fetch_icons.dart --only myMap
 ```
@@ -56,17 +59,12 @@ This creates `lib/src/maps/icons/my_map_icon.dart` with a `Uint8List` constant t
 
 ### 5. Add native detection
 
-**Android** (`android/src/main/kotlin/.../MapLauncherPlugin.kt`):
-
-- Add your package name to the `mapPackages` map.
+Native detection is driven by your `MapApp` metadata; no native registry edit
+is needed. Override `playStoreId` for Android and `iosScheme` for iOS.
 
 **Android** (`android/src/main/AndroidManifest.xml`):
 
 - Add a `<package>` entry under `<queries>`.
-
-**iOS** (`ios/map_launcher/Sources/map_launcher/MapLauncherPlugin.swift`):
-
-- Add your URL scheme to the `mapSchemes` dictionary.
 
 **iOS** (`example/ios/Runner/Info.plist`):
 
@@ -84,6 +82,9 @@ Add a test file at `test/maps/my_map_test.dart` covering the URLs your map gener
 
 ## Development Setup
 
+Use the Flutter version pinned in `.fvmrc` for the example. The plugin itself
+supports Flutter 3.41+ / Dart 3.11+.
+
 ```bash
 # Get dependencies
 flutter pub get
@@ -91,10 +92,17 @@ cd example && flutter pub get && cd ..
 
 # Run tests
 flutter test
+flutter test --platform chrome test/platform/web_test.dart
+cd example && flutter test && cd ..
 
 # Run analysis
 dart analyze
 ```
+
+Windows CI also runs the desktop launcher's PowerShell argument tests. These
+run automatically on Windows; elsewhere, set `POWERSHELL_EXECUTABLE` to a
+PowerShell Core executable to run them. They verify script parsing and failure
+propagation, not an installed browser's URL handling.
 
 ## Running the Example App
 
