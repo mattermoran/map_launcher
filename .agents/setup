@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run from the repository root. Toolchains live outside the package archive.
+version=$(jq -r .flutter .fvmrc)
+toolchains="$HOME/.cache/map-launcher-toolchains"
+flutter_sdk="$toolchains/flutter-$version"
+android_sdk="$toolchains/android-sdk"
+mkdir -p "$toolchains"
+
+if ! command -v java >/dev/null; then
+  sudo apt-get update -qq
+  sudo apt-get install -y -qq openjdk-17-jdk-headless
+fi
+
+if [[ ! -d "$flutter_sdk/.git" ]]; then
+  git clone --quiet --depth 1 --branch "$version" \
+    https://github.com/flutter/flutter.git "$flutter_sdk"
+fi
+sudo ln -sfn "$flutter_sdk/bin/flutter" /usr/local/bin/flutter
+sudo ln -sfn "$flutter_sdk/bin/dart" /usr/local/bin/dart
+flutter --version
+
+if [[ ! -x "$android_sdk/cmdline-tools/latest/bin/sdkmanager" ]]; then
+  archive=$(mktemp)
+  trap 'rm -f "$archive"' EXIT
+  curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip \
+    -o "$archive"
+  mkdir -p "$android_sdk/cmdline-tools"
+  unzip -q "$archive" -d "$android_sdk/cmdline-tools"
+  mv "$android_sdk/cmdline-tools/cmdline-tools" "$android_sdk/cmdline-tools/latest"
+fi
+sdkmanager="$android_sdk/cmdline-tools/latest/bin/sdkmanager"
+# Avoid treating yes's expected SIGPIPE as a setup failure.
+"$sdkmanager" --sdk_root="$android_sdk" --licenses < <(yes) >/dev/null
+"$sdkmanager" --sdk_root="$android_sdk" \
+  'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
+flutter config --android-sdk "$android_sdk"
+flutter precache --android --web
+flutter pub get
+(cd example && flutter pub get)

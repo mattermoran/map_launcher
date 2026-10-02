@@ -37,3 +37,7 @@ build/
 
 # Icon fetch cache (raw downloads before resize)
 .cache/
+
+# Orb-generated portals and review artifacts
+.amp/portals/
+.amp/in/

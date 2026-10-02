@@ -7,3 +7,9 @@ tool/
 doc/
 .fvmrc
 .claude/
+.agents/
+.amp/
+.cache/
+.fvm/
+.dart_tool/
+.flutter-plugins-dependencies
