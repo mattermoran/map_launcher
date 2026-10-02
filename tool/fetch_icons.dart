@@ -201,7 +201,7 @@ Future<List<int>?> _fetchFromItunes(
     // Force 512px by replacing size in URL
     artworkUrl = artworkUrl.replaceAll(RegExp(r'\d+x\d+'), '512x512');
 
-    return _downloadBytes(artworkUrl);
+    return await _downloadBytes(artworkUrl);
   } finally {
     client.close();
   }
@@ -246,13 +246,13 @@ Future<List<int>?> _fetchFromPlayStore(String packageName) async {
       var url = alt.group(1)!;
       // Strip sizing params to get full res
       url = url.replaceAll(RegExp(r'=w\d+-h\d+[^"]*'), '=s512');
-      return _downloadBytes(url);
+      return await _downloadBytes(url);
     }
 
     var url = match.group(1)!;
     // Strip sizing params to get full res
     url = url.replaceAll(RegExp(r'=w\d+-h\d+[^"]*'), '=s512');
-    return _downloadBytes(url);
+    return await _downloadBytes(url);
   } finally {
     client.close();
   }
