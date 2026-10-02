@@ -43,6 +43,17 @@ void main() {
       expect(() => LocationCoords(0, -181), throwsArgumentError);
     });
 
+    test('rejects non-finite coordinates', () {
+      for (final value in [
+        double.nan,
+        double.infinity,
+        double.negativeInfinity,
+      ]) {
+        expect(() => LocationCoords(value, 0), throwsArgumentError);
+        expect(() => LocationCoords(0, value), throwsArgumentError);
+      }
+    });
+
     test('equality works', () {
       final a = LocationCoords(37.759, -122.510, title: 'Beach');
       final b = LocationCoords(37.759, -122.510, title: 'Beach');
@@ -101,6 +112,11 @@ void main() {
 
     test('throws on empty query', () {
       expect(() => LocationSearch(''), throwsArgumentError);
+    });
+
+    test('rejects whitespace-only queries but preserves meaningful text', () {
+      expect(() => LocationSearch(' \t\n '), throwsArgumentError);
+      expect(LocationSearch(' Södermalm ').query, ' Södermalm ');
     });
 
     test('toString includes query', () {

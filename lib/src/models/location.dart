@@ -1,6 +1,6 @@
 /// Represents a location that can be either coordinates or a text search query.
 ///
-/// Use with Dart 3.6+ shorthand syntax for ergonomic construction:
+/// Use with Dart 3.10+ shorthand syntax for ergonomic construction:
 /// ```dart
 /// MapLauncher.marker(.coords(48.85, 2.29, title: 'Eiffel Tower'))
 /// MapLauncher.marker(.search('Coffee shops near me'))
@@ -22,10 +22,10 @@ final class LocationCoords extends Location {
   /// Throws [ArgumentError] if [lat] is not in range `[-90, 90]`
   /// or [lng] is not in range `[-180, 180]`.
   LocationCoords(this.lat, this.lng, {this.title}) {
-    if (lat < -90 || lat > 90) {
+    if (!lat.isFinite || lat < -90 || lat > 90) {
       throw ArgumentError.value(lat, 'lat', 'Must be between -90 and 90');
     }
-    if (lng < -180 || lng > 180) {
+    if (!lng.isFinite || lng < -180 || lng > 180) {
       throw ArgumentError.value(lng, 'lng', 'Must be between -180 and 180');
     }
   }
@@ -65,9 +65,9 @@ final class LocationCoords extends Location {
 final class LocationSearch extends Location {
   /// Creates a [LocationSearch] with the given [query].
   ///
-  /// Throws [ArgumentError] if [query] is empty.
+  /// Throws [ArgumentError] if [query] is empty or whitespace only.
   LocationSearch(this.query) {
-    if (query.isEmpty) {
+    if (query.trim().isEmpty) {
       throw ArgumentError.value(query, 'query', 'Must not be empty');
     }
   }
