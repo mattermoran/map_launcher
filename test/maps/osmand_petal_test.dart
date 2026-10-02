@@ -118,5 +118,26 @@ void main() {
       );
       expect(url, contains('type=walk'));
     });
+
+    test('directionsSchemeUrl uses the documented bicycle type', () {
+      final url = petal.directionsSchemeUrl(
+        destination: coords,
+        travelMode: .bicycling,
+        platform: .android,
+      );
+      expect(Uri.parse(url!).queryParameters['type'], 'bicycle');
+    });
+
+    test('direction labels round-trip through query encoding once', () {
+      const label = 'Café & Tea/入口? #1';
+      final url = petal.directionsSchemeUrl(
+        destination: LocationCoords(52.52, 13.405, title: label),
+        origin: LocationCoords(52.5, 13.4, title: label),
+        platform: .android,
+      );
+      final query = Uri.parse(url!).queryParameters;
+      expect(query['daddr'], '52.52,13.405($label)');
+      expect(query['saddr'], '52.5,13.4($label)');
+    });
   });
 }

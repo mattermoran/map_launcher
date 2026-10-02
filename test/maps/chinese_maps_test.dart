@@ -72,6 +72,18 @@ void main() {
       );
       expect(url, contains('origin='));
     });
+
+    test('direction labels round-trip while preserving structure', () {
+      const label = 'Café & Tea/入口? #1';
+      final url = baidu.directionsSchemeUrl(
+        destination: LocationCoords(39.908, 116.397, title: label),
+        origin: LocationCoords(39.9, 116.4, title: label),
+        platform: .android,
+      );
+      final query = Uri.parse(url!).queryParameters;
+      expect(query['destination'], 'latlng:39.908,116.397|name:$label');
+      expect(query['origin'], 'latlng:39.9,116.4|name:$label');
+    });
   });
 
   group('Amap', () {

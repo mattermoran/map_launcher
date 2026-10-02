@@ -54,5 +54,13 @@ void main() {
       expect(url, contains('mappls.com/navigation'));
       expect(url, contains('mode=walking'));
     });
+
+    test('destination label round-trips while preserving places format', () {
+      const label = 'Café & Tea/入口? #1';
+      final url = mappls.directionsUrl(
+        destination: LocationCoords(28.613, 77.209, title: label),
+      );
+      expect(Uri.parse(url).queryParameters['places'], '28.613,77.209,$label');
+    });
   });
 }

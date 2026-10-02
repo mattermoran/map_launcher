@@ -42,9 +42,7 @@ class Mappls extends MapApp {
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
   }) {
-    final label = destination.title != null
-        ? ',${Uri.encodeComponent(destination.title!)}'
-        : '';
+    final label = destination.title != null ? ',${destination.title!}' : '';
     return buildUrl(
       url: 'https://mappls.com/navigation',
       queryParams: {

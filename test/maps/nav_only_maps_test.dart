@@ -75,6 +75,15 @@ void main() {
       expect(url, contains('tomtomgo://'));
     });
 
+    test('Android marker label round-trips through query encoding once', () {
+      const label = 'Café & Tea/入口? #1';
+      final url = tt.markerSchemeUrl(
+        LocationCoords(51.507, -0.128, title: label),
+        platform: .android,
+      );
+      expect(Uri.parse(url!).queryParameters['q'], '51.507,-0.128($label)');
+    });
+
     test('directionsSchemeUrl iOS uses tomtomgo://', () {
       final url = tt.directionsSchemeUrl(destination: coords, platform: .ios);
       expect(url, contains('tomtomgo://'));

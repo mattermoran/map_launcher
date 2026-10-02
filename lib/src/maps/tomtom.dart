@@ -55,9 +55,7 @@ class TomTomGo extends MapApp {
       );
     }
     // Android: geo: intent with optional title
-    final titleFormatted = coords.title != null
-        ? '(${Uri.encodeComponent(coords.title!)})'
-        : '';
+    final titleFormatted = coords.title != null ? '(${coords.title!})' : '';
     return buildUrl(
       url: 'geo:${coords.latlng}',
       queryParams: {'q': '${coords.latlng}$titleFormatted'},

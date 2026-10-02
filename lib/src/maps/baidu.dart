@@ -68,10 +68,9 @@ class BaiduMaps extends MapApp {
     url: 'baidumap://map/direction',
     queryParams: {
       'destination':
-          'latlng:${destination.latlng}|name:${Uri.encodeComponent(destination.title ?? '')}',
+          'latlng:${destination.latlng}|name:${destination.title ?? ''}',
       if (origin != null)
-        'origin':
-            'latlng:${origin.latlng}|name:${Uri.encodeComponent(origin.title ?? '')}',
+        'origin': 'latlng:${origin.latlng}|name:${origin.title ?? ''}',
       'coord_type': 'gcj02',
       'src': 'com.map_launcher',
       'mode': switch (travelMode) {

@@ -63,12 +63,12 @@ class PetalMaps extends MapApp {
         .driving => 'drive',
         .walking => 'walk',
         .transit => 'bus',
-        .bicycling => 'bike',
+        .bicycling => 'bicycle',
         null => 'drive',
       },
     },
   );
 
   static String _label(LocationCoords c) =>
-      c.title != null ? '(${Uri.encodeComponent(c.title!)})' : '';
+      c.title != null ? '(${c.title!})' : '';
 }
