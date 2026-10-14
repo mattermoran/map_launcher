@@ -76,6 +76,8 @@ and limits retries to confirmed failed handoffs. See the
   Current-location routing with waypoints still needs native-app verification.
 - Send latitude and longitude fields for CoPilot markers, use coordinates for
   blank Naver marker names, and correct Petal's bicycling mode and label encoding.
+- Preserve caller-supplied Baidu marker descriptions and named origins. Apply
+  iOS defaults only for absent options and validate origins after extras merge.
 - Correct Air Navigation Pro and Magic Earth App Store links and icon lookup IDs.
 - Restore Android build compatibility with Flutter 3.41 / AGP 8 while retaining
   AGP 9 support ([#227](https://github.com/mattermoran/map_launcher/issues/227)).
@@ -85,7 +87,8 @@ and limits retries to confirmed failed handoffs. See the
   `MapLaunchException`.
 - Bundle the iOS privacy manifest through CocoaPods and Swift Package Manager.
 - Validate example inputs, discard stale discovery results after parameter
-  changes, and make discovery and launch failures recoverable.
+  changes, and make discovery and launch failures recoverable. Allow an omitted
+  origin and provider-default travel mode so origin-/mode-limited maps are usable.
 
 ### Deprecated
 

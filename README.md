@@ -528,6 +528,9 @@ class AcmeMaps extends MapApp {
   String get name => 'Acme Maps';
 
   @override
+  bool get hasUniversalLink => true;
+
+  @override
   String? get playStoreId => 'com.acme.maps';
 
   @override

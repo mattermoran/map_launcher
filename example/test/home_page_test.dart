@@ -22,6 +22,8 @@ class _FakePlatform extends MapLauncherPlatform {
       MapApp.naver.id,
       MapApp.baidu.id,
       MapApp.tencent.id,
+      MapApp.waze.id,
+      MapApp.moovit.id,
     };
   }
 
@@ -135,7 +137,7 @@ void main() {
     expect(find.text('Waze'), findsOneWidget);
     await tester.tap(find.byTooltip('Edit parameters'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(DropdownButtonFormField<TravelMode>));
+    await tester.tap(find.byType(DropdownButtonFormField<String>));
     await tester.pumpAndSettle();
     await tester.tap(find.text('walking').last);
     await tester.pumpAndSettle();
@@ -151,6 +153,43 @@ void main() {
     expect(find.textContaining('walking'), findsOneWidget);
     expect(find.text('Google Maps'), findsOneWidget);
   });
+
+  testWidgets(
+    'provider defaults allow Waze and Moovit, explicit requirements filter them',
+    (tester) async {
+      tester.view.physicalSize = const Size(1000, 1600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final platform = MapLauncherPlatform.instance as _FakePlatform;
+      await pumpHome(tester);
+      await tester.tap(find.text('Directions'));
+      await tester.pumpAndSettle();
+      for (final name in ['Waze', 'Moovit']) {
+        await tester.tap(find.text(name));
+        await tester.pumpAndSettle();
+      }
+      expect(platform.launchedUrls, hasLength(2));
+      expect(platform.launchedUrls[0], startsWith('waze://'));
+      expect(platform.launchedUrls[1], startsWith('moovit://'));
+      await tester.tap(find.byTooltip('Edit parameters'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Specify origin'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('driving').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Apply'));
+      await tester.pumpAndSettle();
+      for (final name in ['Waze', 'Moovit']) {
+        await tester.tap(find.text(name));
+        await tester.pumpAndSettle();
+      }
+      expect(platform.launchedUrls, hasLength(2));
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('blank search remains visible and is not applied', (
     tester,

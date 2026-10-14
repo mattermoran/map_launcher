@@ -24,7 +24,8 @@ class _HomePageState extends State<HomePage> {
   double _originLat = DemoData.origin.lat;
   double _originLng = DemoData.origin.lng;
   String _originTitle = DemoData.origin.title ?? '';
-  TravelMode _travelMode = TravelMode.driving;
+  bool _useOrigin = false;
+  TravelMode? _travelMode;
   String _searchQuery = 'Eiffel Tower';
 
   List<AvailableMap>? _allMaps;
@@ -60,7 +61,7 @@ class _HomePageState extends State<HomePage> {
           .getSupportedMaps(DemoData.maps);
       final directions = await MapLauncher.directions(
         _dest,
-        from: _origin,
+        from: _useOrigin ? _origin : null,
         mode: _travelMode,
       ).getSupportedMaps(DemoData.maps);
       final search = await MapLauncher.marker(LocationSearch(_searchQuery))
@@ -106,7 +107,7 @@ class _HomePageState extends State<HomePage> {
   String get _markerSubtitle =>
       '$_destTitle (${_destLat.toStringAsFixed(4)}, ${_destLng.toStringAsFixed(4)})';
   String get _directionsSubtitle =>
-      '$_originTitle → $_destTitle · ${_travelMode.name}';
+      '${_useOrigin ? _originTitle : 'Current location'} → $_destTitle · ${_travelMode?.name ?? 'Provider default'}';
   String get _searchSubtitle => '"$_searchQuery"';
 
   List<_MapEntry> _entriesFor(List<SupportedMap>? supported) {
@@ -247,6 +248,7 @@ class _HomePageState extends State<HomePage> {
           originLat: _originLat,
           originLng: _originLng,
           originTitle: _originTitle,
+          useOrigin: _useOrigin,
           travelMode: _travelMode,
           searchQuery: _searchQuery,
           onApply:
@@ -257,7 +259,8 @@ class _HomePageState extends State<HomePage> {
                 required double originLat,
                 required double originLng,
                 required String originTitle,
-                required TravelMode travelMode,
+                required bool useOrigin,
+                required TravelMode? travelMode,
                 required String searchQuery,
               }) {
                 setState(() {
@@ -267,6 +270,7 @@ class _HomePageState extends State<HomePage> {
                   _originLat = originLat;
                   _originLng = originLng;
                   _originTitle = originTitle;
+                  _useOrigin = useOrigin;
                   _travelMode = travelMode;
                   _searchQuery = searchQuery;
                 });
@@ -306,7 +310,7 @@ class _HomePageState extends State<HomePage> {
             entry,
             () => MapLauncher.directions(
               _dest,
-              from: _origin,
+              from: _useOrigin ? _origin : null,
               mode: _travelMode,
             ).show(map: entry.map),
           ),
@@ -562,6 +566,7 @@ class _EditForm extends StatefulWidget {
     required this.originLat,
     required this.originLng,
     required this.originTitle,
+    required this.useOrigin,
     required this.travelMode,
     required this.searchQuery,
     required this.onApply,
@@ -572,7 +577,8 @@ class _EditForm extends StatefulWidget {
   final String destTitle;
   final double originLat, originLng;
   final String originTitle;
-  final TravelMode travelMode;
+  final bool useOrigin;
+  final TravelMode? travelMode;
   final String searchQuery;
   final void Function({
     required double destLat,
@@ -581,7 +587,8 @@ class _EditForm extends StatefulWidget {
     required double originLat,
     required double originLng,
     required String originTitle,
-    required TravelMode travelMode,
+    required bool useOrigin,
+    required TravelMode? travelMode,
     required String searchQuery,
   })
   onApply;
@@ -599,7 +606,8 @@ class _EditFormState extends State<_EditForm> {
   late final TextEditingController _originLngC;
   late final TextEditingController _originTitleC;
   late final TextEditingController _searchC;
-  late TravelMode _mode;
+  late TravelMode? _mode;
+  late bool _useOrigin;
 
   @override
   void initState() {
@@ -612,6 +620,7 @@ class _EditFormState extends State<_EditForm> {
     _originTitleC = TextEditingController(text: widget.originTitle);
     _searchC = TextEditingController(text: widget.searchQuery);
     _mode = widget.travelMode;
+    _useOrigin = widget.useOrigin;
   }
 
   @override
@@ -633,9 +642,10 @@ class _EditFormState extends State<_EditForm> {
       destLat: double.parse(_destLatC.text),
       destLng: double.parse(_destLngC.text),
       destTitle: _destTitleC.text,
-      originLat: double.parse(_originLatC.text),
-      originLng: double.parse(_originLngC.text),
+      originLat: _useOrigin ? double.parse(_originLatC.text) : widget.originLat,
+      originLng: _useOrigin ? double.parse(_originLngC.text) : widget.originLng,
       originTitle: _originTitleC.text,
+      useOrigin: _useOrigin,
       travelMode: _mode,
       searchQuery: _searchC.text.trim(),
     );
@@ -727,69 +737,90 @@ class _EditFormState extends State<_EditForm> {
 
               if (tab == 1) ...[
                 const SizedBox(height: 20),
-                Text('Origin', style: Theme.of(context).textTheme.labelLarge),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _originLatC,
-                        validator: (value) =>
-                            _coordinateError(value, latitude: true),
-                        decoration: const InputDecoration(
-                          labelText: 'Latitude',
-                          border: OutlineInputBorder(),
-                          isDense: true,
-                        ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                          signed: true,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _originLngC,
-                        validator: (value) =>
-                            _coordinateError(value, latitude: false),
-                        decoration: const InputDecoration(
-                          labelText: 'Longitude',
-                          border: OutlineInputBorder(),
-                          isDense: true,
-                        ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                          signed: true,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _originTitleC,
-                  decoration: const InputDecoration(
-                    labelText: 'Title',
-                    border: OutlineInputBorder(),
-                    isDense: true,
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Specify origin'),
+                  subtitle: const Text(
+                    'Otherwise let the map use your location',
                   ),
+                  value: _useOrigin,
+                  onChanged: (value) => setState(() => _useOrigin = value),
                 ),
+                if (_useOrigin) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _originLatC,
+                          validator: (value) =>
+                              _coordinateError(value, latitude: true),
+                          decoration: const InputDecoration(
+                            labelText: 'Latitude',
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                            signed: true,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _originLngC,
+                          validator: (value) =>
+                              _coordinateError(value, latitude: false),
+                          decoration: const InputDecoration(
+                            labelText: 'Longitude',
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                            signed: true,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _originTitleC,
+                    decoration: const InputDecoration(
+                      labelText: 'Title',
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 12),
-                DropdownButtonFormField<TravelMode>(
-                  initialValue: _mode,
+                DropdownButtonFormField<String>(
+                  initialValue: _mode?.name ?? 'default',
                   decoration: const InputDecoration(
                     labelText: 'Travel Mode',
                     border: OutlineInputBorder(),
                     isDense: true,
                   ),
-                  items: TravelMode.values
-                      .map(
-                        (m) => DropdownMenuItem(value: m, child: Text(m.name)),
-                      )
-                      .toList(),
+                  items: [
+                    const DropdownMenuItem(
+                      value: 'default',
+                      child: Text('Provider default'),
+                    ),
+                    ...TravelMode.values.map(
+                      (m) =>
+                          DropdownMenuItem(value: m.name, child: Text(m.name)),
+                    ),
+                  ],
                   onChanged: (v) {
-                    if (v != null) setState(() => _mode = v);
+                    if (v != null) {
+                      setState(
+                        () => _mode = v == 'default'
+                            ? null
+                            : TravelMode.values.byName(v),
+                      );
+                    }
                   },
                 ),
               ],
