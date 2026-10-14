@@ -1,5 +1,54 @@
-## Unreleased
+## 7.0.0
 
+This release changes launch validation, discovery types and option scoping.
+See the [6 → 7 migration guide](MIGRATION.md#6x--70).
+
+- Add `NaverExtra(appName: ...)` and `BaiduExtra(src: ...)` for typed caller
+  options with shorthand providers, alongside the existing `TencentExtra`.
+- Preserve spaces and literal plus signs in MAPS.ME route and marker labels
+  for its percent-only URL decoder.
+- Keep Naver, Baidu and Tencent discovery and handoff available without caller
+  options. The example supplies its own Naver/Baidu attribution and does not
+  block Tencent behind a key-entry dialog.
+- Remove `MapApp.all` without a core/safe replacement; consumers provide
+  explicit discovery lists. Bare `show()` retains Apple/Google defaults.
+- Remove bundled Android provider `<queries>` from the library manifest.
+  Apps declare selected package names for Android 11+ installed-app discovery;
+  selected iOS `LSApplicationQueriesSchemes` remain app-owned and unchanged.
+  The example keeps its full showcase in `DemoData.maps` and its own native
+  declarations. Dart tree shaking does not prune native declarations, and
+  release/archive checks cannot guarantee store approval.
+- Keep `show({map, extra})`, but make automatic launch try Apple then Google on
+  iOS, Google then Apple elsewhere, without awaiting installation detection.
+  Retry transports/providers only after confirmed non-handoff; blocked popups
+  and unknown outcomes stop immediately. Explicit maps and picker entries never
+  switch providers.
+- Add provider-scoped `providerExtras` to requests and factories, copied into
+  immutable snapshots and matched by provider ID. Nonempty raw `extra` requires
+  explicit `show(map: ...)`; automatic launch and discovery reject it.
+- Separate metadata-only `AvailableMap` from request-bound `SupportedMap`.
+  Picker entries capture validated options and expose parameterless `show()`.
+  Discovery excludes expected configuration rejections, not just unsupported
+  capabilities; it cannot certify credentials or predict the OS handler.
+- Add typed `MapLaunchException.reason`, ordered `issues` and nullable `url`.
+  Provider validation hooks use `MapConfigurationError` for expected rejections.
+- Reject legacy Apple cycling and enforce Google's 2,048-character HTTPS URL
+  cap and transport-specific waypoint limits: nine for Android package-targeted
+  and desktop launches, three for mobile unpinned HTTPS. Never truncate routes.
+
+- Correct provider route/marker serialization (Amap, HERE, Kakao, MAPS.ME,
+  Mapy, Mappls, OsmAnd and Neshan), and gate unsupported origins, modes and
+  marker actions instead of silently dropping request semantics. MAPS.ME
+  requires origin; Baidu Android routes without origin return null; TomTom iOS
+  markers and Fleet iOS directions return null; Air Navigation Pro has no pin.
+- Support caller configuration for Naver (`appName`/`appname`), Baidu
+  (`source`/complete `src`) and Tencent (`referer`), without inventing credentials.
+  These fields are documented by providers, not enforced as launch gates.
+  Naver blank marker names use coordinate text.
+- Reject conflicting extras during preparation, retain identical built-ins
+  once and preserve existing URL bytes/opaque navigation syntax. Google
+  universal-only extras select HTTPS and validate companion fields at show;
+  universal markers omit unsupported `z`. Getters remain raw base URLs.
 - Add dated protocol research and documentation links for every existing map
   integration and the remaining requested apps from issue #111.
 - Correct Air Navigation Pro and Magic Earth App Store links and icon lookup IDs.
@@ -20,7 +69,7 @@
 - Exclude custom maps whose universal links do not support the requested operation.
 - Snapshot request extras and waypoints; exposed collections are now unmodifiable.
   Request constructors are no longer `const` (locations already require runtime
-  construction). Snapshot per-launch extras before asynchronous map discovery.
+  construction). Snapshot per-launch extras before launch.
 - Consistently report platform launch failures as `MapLaunchException`.
 - Preserve Google Maps text origins in iOS scheme URLs.
 - Reject unsupported travel modes, text origins, and waypoint combinations rather

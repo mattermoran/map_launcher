@@ -26,7 +26,9 @@ In [`lib/src/maps/map_app.dart`](lib/src/maps/map_app.dart):
 
 - Import your new class
 - Add a `static const` field (e.g. `static const myMap = MyMap()`)
-- Add it to the `MapApp.all` list
+
+There is no library-wide discovery list. Add the provider to the explicit
+test provider list and the example's `DemoData.maps` showcase list.
 
 ### 3. Export from the barrel file
 
@@ -62,9 +64,11 @@ This creates `lib/src/maps/icons/my_map_icon.dart` with a `Uint8List` constant t
 Native detection is driven by your `MapApp` metadata; no native registry edit
 is needed. Override `playStoreId` for Android and `iosScheme` for iOS.
 
-**Android** (`android/src/main/AndroidManifest.xml`):
+**Android** (`example/android/app/src/main/AndroidManifest.xml`):
 
-- Add a `<package>` entry under `<queries>`.
+- Add a `<package>` entry under `<queries>` for the example's discovery.
+  Do not add provider queries to the library manifest. Consuming apps declare
+  their selected packages for installed-app discovery on Android 11+.
 
 **iOS** (`example/ios/Runner/Info.plist`):
 
@@ -79,9 +83,10 @@ Add a test file at `test/maps/my_map_test.dart` covering the URLs your map gener
 ### 7. Update docs
 
 - Add your map to the supported maps list and capability tables in [`README.md`](README.md).
-- Add or update its [protocol research record](docs/maps/README.md), including
-  provider documentation links, check date, parameter formats, platform limits,
-  and the distinction between documented features and implemented capabilities.
+- Add or update its [map reference](docs/maps/README.md). Keep provider documentation
+  links, parameter formats, platform limits, and the source-check date. Describe
+  current plugin support separately from other features in the provider's API;
+  put change history in the changelog, not the reference page.
 
 ## Development Setup
 
@@ -136,7 +141,7 @@ lib/
     ├── map_launcher.dart          # MapLauncher entry point
     ├── models/                    # Data types (Location, TravelMode, etc.)
     ├── maps/                      # MapApp subclasses (one per map app)
-    │   ├── map_app.dart           # Base class + static const instances + all list
+    │   ├── map_app.dart           # Base class + static const instances
     │   ├── google_maps.dart       # Example: GoogleMaps extends MapApp
     │   └── icons/                 # Generated Dart icon constants (Uint8List)
     ├── requests/                  # MarkerRequest, DirectionsRequest

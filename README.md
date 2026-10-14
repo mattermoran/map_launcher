@@ -11,7 +11,7 @@ Map Launcher is a Flutter plugin to open maps on **all platforms**: iOS, Android
 
 Uses universal links (HTTPS URLs), with native app detection on mobile.
 
-Map implementations and icons are tree-shakeable in Dart release builds. Native manifest entries are separate and must be pruned explicitly if needed. See [Binary Size & App Store Compliance](#binary-size--app-store-compliance).
+Map implementations and icons are tree-shakeable in Dart release builds. Native discovery declarations are separate and belong to your app. See [Binary Size & Native Declarations](#binary-size--native-declarations).
 
 |                                Marker                                 |                                Navigation                                 |
 | :-------------------------------------------------------------------: | :-----------------------------------------------------------------------: |
@@ -19,43 +19,53 @@ Map implementations and icons are tree-shakeable in Dart release builds. Native 
 
 ### Supported Maps
 
-See the [map protocol research](docs/maps/README.md) for per-map documentation
+See the [map references](docs/maps/README.md) for per-map documentation
 links, detailed parameter references, platform differences, and known gaps.
 
 | Map                                                                                                                                 | Marker | Search | Directions | Origin | Travel Mode | Waypoints | Platform |
 | ----------------------------------------------------------------------------------------------------------------------------------- | :----: | :----: | :--------: | :----: | :---------: | :-------: | -------- |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/google.png" width="20"> Google Maps                   |   ✓    |   ✓    |     ✓      |   ✓    |      ✓      |     ✓     | All      |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/apple.png" width="20"> Apple Maps                     |   ✓    |   ✓    |     ✓      |   ✓    |      ✓      |     —     | All      |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/waze.png" width="20"> Waze                            |   —    |   —    |     ✓      |   —    |      —      |     —     | All      |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/apple.png" width="20"> Apple Maps                     |   ✓    |   ✓    |     ✓      |   ✓    | No cycling  |     —     | All      |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/waze.png" width="20"> Waze                            |   —    |   —    |     ✓      |   —    | Driving     |     —     | All      |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexMaps.png" width="20"> Yandex Maps               |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     ✓     | All      |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/doubleGis.png" width="20"> 2GIS                       |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     —     | All      |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/here.png" width="20"> HERE WeGo                       |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     —     | All      |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapyCz.png" width="20"> Mapy.cz                       |   ✓    |   —    |     ✓      |   —    |      —      |     —     | All      |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mappls.png" width="20"> Mappls                        |   ✓    |   —    |     ✓      |   —    |      ✓      |     —     | All      |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapyCz.png" width="20"> Mapy.cz                       |   ✓    |   —    |     ✓      |   ✓    | No transit  |     —     | All      |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mappls.png" width="20"> Mappls                        |   ✓    |   —    |     ✓      |   —    | No transit  |     —     | All      |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/baidu.png" width="20"> Baidu Maps                     |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     —     | Mobile   |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/amap.png" width="20"> Amap                            |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     —     | Mobile   |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tencent.png" width="20"> Tencent (QQ)                 |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     —     | Mobile   |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexNavi.png" width="20"> Yandex Navi               |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     ✓     | Mobile   |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/yandexNavi.png" width="20"> Yandex Navi               |   ✓    |   —    |     ✓      |   ✓    | Driving     |     ✓     | Mobile   |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/googleGo.png" width="20"> Google Maps Go                |   ✓    |   —    |     ✓      |   —    |      ✓      |     —     | Android  |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/naver.png" width="20"> Naver Map                      |   ✓    |   —    |     ✓      |   ✓    |      —      |     —     | Mobile   |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/kakao.png" width="20"> Kakao Maps                     |   ✓    |   —    |     ✓      |   ✓    |      —      |     —     | Mobile   |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/naver.png" width="20"> Naver Map                      |   ✓    |   —    |     ✓      |   ✓    | Driving     |     —     | Mobile   |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/kakao.png" width="20"> Kakao Maps                     |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     —     | Mobile   |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tmap.png" width="20"> TMap                            |   ✓    |   —    |     ✓      |   ✓    |      —      |     —     | Mobile   |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.png" width="20"> OsmAnd                        |   ✓    |   —    |     ✓      |   —    |      —      |     —     | Mobile   |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmandplus.png" width="20"> OsmAnd+                   |   ✓    |   —    |     ✓      |   —    |      —      |     —     | Android  |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmand.png" width="20"> OsmAnd                        |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     ✓     | Mobile   |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmandplus.png" width="20"> OsmAnd+                   |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     ✓     | Android  |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/petal.png" width="20"> Petal Maps                     |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     —     | Android  |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapswithme.png" width="20"> MAPS.ME                   |   ✓    |   —    |     —      |   —    |      —      |     —     | Mobile   |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/neshan.png" width="20"> Neshan                        |   ✓    |   —    |     ✓      |   ✓    |      —      |     —     | Mobile   |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapswithme.png" width="20"> MAPS.ME                   |   ✓    |   —    |     ✓      | Required |    ✓      |     —     | Mobile   |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/neshan.png" width="20"> Neshan                        |   ✓    |   —    |     ✓      |   ✓    | iOS all; Android driving | — | Mobile |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/copilot.png" width="20"> CoPilot                      |   ✓    |   —    |     ✓      |   —    |      —      |     —     | Mobile   |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/moovit.png" width="20"> Moovit                        |   —    |   —    |     ✓      |   ✓    |      —      |     —     | Mobile   |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/citymapper.png" width="20"> Citymapper                |   —    |   —    |     ✓      |   ✓    |      ✓      |     —     | Mobile   |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tomtomgo.png" width="20"> TomTom Go                   |   —    |   —    |     ✓      |   —    |      —      |     —     | Mobile   |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tomtomgofleet.png" width="20"> TomTom Go Fleet        |   —    |   —    |     ✓      |   —    |      —      |     —     | Android  |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/sygicTruck.png" width="20"> Sygic Truck               |   —    |   —    |     ✓      |   —    |      —      |     —     | Mobile   |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/citymapper.png" width="20"> Citymapper                |   —    |   —    |     ✓      |   ✓    |      —      |     —     | Mobile   |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tomtomgo.png" width="20"> TomTom Go                   | Android |   —    |     ✓      |   —    |      —      |     —     | Mobile   |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/tomtomgofleet.png" width="20"> TomTom Go Fleet        |   ✓    |   —    |     ✓      |   —    |      —      |     —     | Android  |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/sygicTruck.png" width="20"> Sygic Truck               |   —    |   —    |     ✓      |   —    | Driving     |     —     | Mobile   |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/flitsmeister.png" width="20"> Flitsmeister            |   —    |   —    |     ✓      |   —    |      —      |     —     | Android  |
-| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/airnavPro.png" width="20"> Air Nav Pro                |   ✓    |   —    |     —      |   —    |      —      |     —     | Mobile   |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/airnavPro.png" width="20"> Air Nav Pro                |   —    |   —    |     —      |   —    |      —      |     —     | Mobile   |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/magicEarth.png" width="20"> Magic Earth               |   ✓    |   —    |     ✓      |   —    |      ✓      |     —     | Mobile   |
 
 **Platform:** **All** = universal links (iOS, Android, web, desktop) • **Mobile** = native app (iOS + Android) • **Android** = Android only
+
+The table describes implemented request support, not verified native behavior.
+Travel Mode **✓** means all four enum modes are serialized; **—** means no
+explicit mode selection (mode-free directions may still work). Origin means an
+explicit coordinate origin. Baidu Android requires one; iOS uses its documented
+current-location token when omitted. Naver, Baidu and Tencent document caller
+options (see [Extras](#extras)); missing options do not block discovery or launch
+in this plugin, but provider acceptance is not guaranteed. Go grammar/transit/companion
+behavior, Mappls bicycle meaning, Flitsmeister geo navigation, Yandex omitted
+origin with stops/native cycling and 2GIS legacy bicycle remain unverified.
 
 ## Table of Contents
 
@@ -70,7 +80,7 @@ links, detailed parameter references, platform differences, and known gaps.
   - [Map Info & Store Links](#map-info--store-links)
   - [Extras](#extras)
 - [Example: Bottom Sheet Picker](#example--bottom-sheet-picker)
-- [Binary Size & App Store Compliance](#binary-size--app-store-compliance)
+- [Binary Size & Native Declarations](#binary-size--native-declarations)
 - [Custom Maps](#custom-maps)
 - [Migrating from 5.x](#migrating-from-5x)
 - [Known Issues](#known-issues)
@@ -82,7 +92,7 @@ Requires Flutter **3.41+** and Dart **3.11+**. Android supports AGP 8 and AGP 9.
 
 ```yaml
 dependencies:
-  map_launcher: ^6.0.0
+  map_launcher: ^7.0.0
 ```
 
 ```dart
@@ -153,18 +163,24 @@ If you pass a map to discovery but forget its plist entry, debug builds print
 a warning naming the exact scheme to add. Without the entry the map can
 never be detected, which is otherwise indistinguishable from "not installed".
 
-### Android: No setup needed
+### Android: Declare selected packages for discovery
 
-The plugin ships a `<queries>` manifest block so installed map apps are
-visible to detection. If you want your merged manifest to list only the maps
-you use, remove entries in your app's `AndroidManifest.xml`:
+On Android 11+, installed-app discovery requires package visibility. Version 7
+does not bundle provider `<queries>` in the library manifest. Add the packages
+you want to discover under `<manifest>` in your app's `AndroidManifest.xml`:
 
 ```xml
 <queries>
-  <package android:name="org.rajman.neshan.traffic.tehran.navigator"
-           tools:node="remove" />
+  <package android:name="com.google.android.apps.maps" />
+  <package android:name="com.waze" />
 </queries>
 ```
+
+Apple Maps has no Android package. Other package names are available as
+`MapApp.<name>.playStoreId`. The [example manifest](example/android/app/src/main/AndroidManifest.xml)
+declares the full showcase; copy only your selected entries. Missing visibility
+can make an installed app appear absent. These declarations are for discovery,
+not a requirement to call bare `show()`, which launches without detection.
 
 ### Web / Desktop: No setup needed
 
@@ -190,7 +206,10 @@ await MapLauncher.marker(.search('Vasa Museum Stockholm')).show();
 
 ### Error Handling
 
-`show()` throws `MapLaunchException` if the map cannot be opened:
+`show()` throws `MapLaunchException` if no provider can fulfill the request or
+handoff fails. `reason` is a `MapLaunchFailure`: `noEligibleMap`, `exhausted`,
+`blocked` or `unknown`. Ordered `issues` describe preparation/transport failures;
+`url` is nullable. Avoid logging URLs containing private data.
 
 ```dart
 try {
@@ -203,9 +222,11 @@ try {
 ### Directions
 
 Discovery excludes maps that declare the requested travel mode unsupported.
-Explicitly launching an unsupported request throws `UnsupportedError`;
+Explicitly launching an unsupported request throws `MapLaunchException`;
 URL inspection returns `null`. Text origins require search support. Waypoints
 currently require a coordinate destination and a waypoint-capable map.
+Explicit coordinate origins also require `supportsDirectionsOrigin`; they are
+not silently dropped. Marker getters likewise honor marker capability flags.
 
 ```dart
 // Basic
@@ -235,11 +256,14 @@ await MapLauncher.directions(
 // Specific map
 await MapLauncher.marker(.coords(59.33, 18.07)).show(map: .google);
 
-// If map is omitted, the best available map is used automatically:
-// • iOS → Apple Maps
-// • Other platforms → Google Maps
-// • Falls back to web if native app unavailable
+// Without map: iOS tries Apple then Google; elsewhere Google then Apple.
+// No installation-detection await before launch.
 ```
+
+Automatic launch skips unsupported or misconfigured candidates and retries only
+after confirmed non-handoff. Blocked popups and unknown outcomes are terminal.
+Explicit maps and picker entries never switch provider, though they may retry
+that provider's transports. Launch from a user gesture on web.
 
 ### Discovering Maps
 
@@ -248,7 +272,7 @@ reference are compiled into your binary. Declare the list once as a
 constant and reuse it:
 
 ```dart
-const myMaps = <MapApp>[.apple, .google, .waze, .citymapper];
+const myMaps = <MapApp>[.apple, .google, .waze];
 
 // Maps that support a specific marker request
 final marker = MapLauncher.marker(.coords(59.33, 18.07));
@@ -256,21 +280,32 @@ final maps = await marker.getSupportedMaps(myMaps);
 for (final map in maps) {
   print('${map.name} (installed: ${map.isInstalled})');
 }
-await maps.first.show(); // launches the marker request with that map
+if (maps.isNotEmpty) await maps.first.show(); // captured request and options
 
 // Maps that support a specific directions request
 final directions = MapLauncher.directions(.coords(59.33, 18.07), mode: .walking);
 final navMaps = await directions.getSupportedMaps(myMaps);
 
-// All maps available on this platform (installed + universal link)
+// Metadata only: List<AvailableMap>, no show() method
 final allAvailable = await MapLauncher.getAvailableMaps(myMaps);
-
-// Every supported map (opts out of tree shaking, see
-// "Binary Size & App Store Compliance" below)
-final everything = await MapLauncher.getAvailableMaps(MapApp.all);
 ```
 
+Discovery always takes your explicit list. `MapApp.all` was removed in v7;
+there is no core/safe replacement list. The example keeps a full showcase in
+its own `DemoData.maps`, with matching native declarations, not a consumer default.
+
+Request discovery returns `SupportedMap` entries with validated, captured
+options and parameterless `show()`. Configure provider extras before discovery;
+rebuild results when the request changes. Expected configuration rejections are
+excluded. Availability does not certify credentials or predict the OS handler.
+
 ### URL Inspection
+
+Getters return raw base URLs: they do not append extras or validate required
+caller configuration. Discovery and `show()` validate prepared options, not
+credential validity. Expected provider rejections use `MapConfigurationError`
+and become filtered discovery entries or `MapLaunchException` launch issues.
+Google universal-only extras may change the URL family at preparation.
 
 ```dart
 final marker = MapLauncher.marker(.coords(59.33, 18.07, title: 'Gamla Stan'));
@@ -308,6 +343,36 @@ MapApp.waze.hasUniversalLink // true
 
 Typed helper classes for map-specific parameters:
 
+Use `providerExtras: Map<MapApp, Map<String, String>>` on request constructors
+or factories for automatic launch and discovery. Options are copied into nested
+unmodifiable snapshots and matched by provider ID (duplicate IDs are rejected).
+They are conditional preferences, not portable requirements: an Apple fallback
+does not inherit Google Place IDs or navigation options. Keep essential origin,
+mode and stops in the portable request fields.
+
+```dart
+final request = MapLauncher.directions(
+  .coords(59.33, 18.07),
+  mode: .walking,
+  providerExtras: {.google: GoogleExtra(navigate: true)},
+);
+await request.show();
+final maps = await request.getSupportedMaps([.apple, .google]);
+if (maps.isNotEmpty) await maps.first.show();
+```
+
+Nonempty raw `extra` remains supported only with explicit `show(map: ...)`;
+automatic launch and discovery reject it with `ArgumentError`. On explicit
+launch, raw extras override provider options and show extras override request
+extras. Request extras and waypoints are also immutable snapshots.
+
+Extras retain an identical built-in parameter once. A conflicting value excludes
+the provider from discovery or produces `MapLaunchException` on explicit launch,
+with `MapConfigurationError` in its issues. Other URL bytes, fragments and opaque navigation
+syntax are preserved. Google place-ID/navigation extras select universal URLs
+at launch and require their companion fields (query/destination/origin/waypoints);
+`dir_action` requires directions. Universal Google marker zoom is not emitted.
+
 ```dart
 // Google: Place IDs, navigation mode
 await MapLauncher.marker(.coords(59.33, 18.07)).show(
@@ -342,6 +407,25 @@ await MapLauncher.marker(.coords(39.9, 116.4)).show(
   map: .tencent,
   extra: TencentExtra(referer: 'your-app-key'),
 );
+
+// Naver: use the caller identity appropriate to the target platform
+await MapLauncher.marker(.coords(37.5665, 126.9780)).show(
+  map: .naver,
+  extra: NaverExtra(appName: 'com.example.myapp'),
+);
+
+// Baidu: complete attribution, including the platform prefix
+await MapLauncher.marker(.coords(39.9, 116.4)).show(
+  map: .baidu,
+  extra: BaiduExtra(src: 'andr.example.myapp'),
+);
+// Use ios.example.myapp on iOS. No default attribution is invented.
+// All these helpers also work in providerExtras before discovery:
+final request = MapLauncher.marker(
+  .coords(37.5665, 126.9780),
+  providerExtras: {.naver: NaverExtra(appName: 'com.example.myapp')},
+);
+final maps = await request.getSupportedMaps([.naver, .google]);
 
 // Yandex Navigator: auth
 await MapLauncher.directions(.coords(55.75, 37.62)).show(
@@ -408,25 +492,26 @@ showModalBottomSheet(
 );
 ```
 
-## Binary Size & App Store Compliance
+## Binary Size & Native Declarations
 
 Each map is a const object, and **only the maps your code references are
 retained by Dart's tree shaking**: their Dart URL strings, store ids, and icons.
 Bare `show()` also references Apple and Google Maps as its default choices.
 
-This does not remove Android manifest entries or your app's iOS query schemes.
-The plugin ships Android `<queries>` entries for all supported packages.
-Inspect your final merged manifest and release artifact when identifier
-presence matters; Dart tree shaking alone is not a compliance guarantee.
+This does not remove your app's Android manifest entries or iOS query schemes.
+The library no longer ships provider package queries. Inspect the final merged
+manifest, iOS plist and release archive when identifier presence matters.
+Archive/release checks can reveal unwanted declarations or retained code, but
+cannot guarantee store approval.
 
 Things to know:
 
-- `MapApp.all` references every map, so using it opts out of tree shaking.
-  All 30 maps' identifiers will ship in your binary. Prefer an explicit list.
+- An explicit discovery list retains the maps it references. Keep it limited
+  to the providers your app offers; bare `show()` still retains Apple and Google.
 - Your `LSApplicationQueriesSchemes` is part of your app, not the plugin.
   Declare only the schemes you use and prune stale ones (see [Setup](#setup)).
-- The plugin's Android `<queries>` entries can be removed per map with
-  `tools:node="remove"` if you want a minimal manifest (see [Setup](#setup)).
+- Declare selected Android packages in your app for Android 11+ installed-app
+  discovery (see [Setup](#setup)); Dart tree shaking does not prune them.
 
 ## Custom Maps
 
@@ -473,8 +558,13 @@ Override the scheme-URL methods and capability flags (`supportsWaypoints`,
 `supportsMarkerSearch`, ...) as needed. See any map in
 [`lib/src/maps/`](lib/src/maps/) for a template.
 
+Use `validateLaunchUrl` and `validateLaunchTransport` to reject expected invalid
+configuration with `MapConfigurationError`. Discovery/automatic selection can
+skip those rejections; unexpected programming errors propagate.
+
 For a custom map to be **detected** as installed, add its identifiers to your
-own app config. The plugin's bundled entries only cover built-in maps:
+own app config. This applies to every selected provider, built-in or custom;
+the plugin does not bundle provider discovery declarations:
 
 - **iOS**: add its scheme to `LSApplicationQueriesSchemes` (debug builds warn
   if you forget).
@@ -492,6 +582,12 @@ own app config. The plugin's bundled entries only cover built-in maps:
   only detection needs these entries.
 
 ## Migrating from 5.x
+
+For **6.x → 7.0**, see [MIGRATION.md](MIGRATION.md): scope extras before discovery,
+use metadata-only `AvailableMap` for general availability, and handle typed
+launch failures. Apple legacy cycling is rejected. Google enforces 2,048-character
+HTTPS URLs and at most nine intermediate stops on Android package-targeted or
+desktop transports, three on mobile unpinned HTTPS; routes are never truncated.
 
 Call sites like `show(map: .google)` compile unchanged. The full guide is in
 [MIGRATION.md](MIGRATION.md). The short version:
