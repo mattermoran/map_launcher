@@ -1,5 +1,5 @@
 group = "dev.fluttered.map_launcher"
-version = "1.0-SNAPSHOT"
+version = "7.0.0"
 
 buildscript {
     val kotlinVersion = "2.4.0"

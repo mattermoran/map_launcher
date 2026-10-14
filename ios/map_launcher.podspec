@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'map_launcher'
-  s.version          = '0.0.1'
+  s.version          = '7.0.0'
   s.summary          = 'A Flutter plugin for finding and launching installed map applications.'
   s.description      = <<-DESC
 Find installed map applications and launch them with markers, directions, or searches.
