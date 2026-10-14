@@ -10,6 +10,9 @@ import 'package:map_launcher/map_launcher_platform_interface.dart';
 /// Works uniformly for all URL types (HTTP, custom schemes, geo:, etc.).
 /// Correctly handles URLs with fragments (#) by inserting params before them.
 /// Returns [url] unchanged if [extraParams] is null or empty.
+/// Identical existing parameters are kept once. Conflicting extras throw
+/// [ArgumentError] instead of creating an ambiguous duplicate key.
+/// Existing bytes are never re-encoded (important for signed URLs).
 String appendQueryParams(String url, Map<String, String>? extraParams) {
   if (extraParams == null || extraParams.isEmpty) return url;
 
@@ -18,9 +21,33 @@ String appendQueryParams(String url, Map<String, String>? extraParams) {
   final baseUrl = fragmentIndex >= 0 ? url.substring(0, fragmentIndex) : url;
   final fragment = fragmentIndex >= 0 ? url.substring(fragmentIndex) : '';
 
+  // Google's navigation intent puts its parameters directly after the colon.
+  final opaqueNavigation =
+      baseUrl.startsWith('google.navigation:') && !baseUrl.contains('?');
+  final queryIndex = opaqueNavigation
+      ? baseUrl.indexOf(':')
+      : baseUrl.indexOf('?');
+  final additions = Map<String, String>.of(extraParams);
+  if (queryIndex >= 0) {
+    final query = baseUrl.substring(queryIndex + 1);
+    final existing = Uri(query: query).queryParametersAll;
+    for (final entry in extraParams.entries) {
+      final values = existing[entry.key];
+      if (values != null) {
+        if (values.length != 1 || values.single != entry.value) {
+          throw ArgumentError(
+            'Extra parameter "${entry.key}" conflicts with a URL parameter.',
+          );
+        }
+        additions.remove(entry.key);
+      }
+    }
+  }
+  if (additions.isEmpty) return url;
+
   // Use Uri to get properly encoded query string.
-  final queryString = Uri(queryParameters: extraParams).query;
-  final separator = baseUrl.contains('?') ? '&' : '?';
+  final queryString = Uri(queryParameters: additions).query;
+  final separator = queryIndex >= 0 ? '&' : '?';
   return '$baseUrl$separator$queryString$fragment';
 }
 
@@ -34,13 +61,25 @@ Future<void> launchMapUrl({
 }) async {
   final platform = MapLauncherPlatform.instance;
   final packageName = platform.platform == .android ? map.playStoreId : null;
-  final primaryUrl = appendQueryParams(url, extra);
+  final useUniversal = map.requiresUniversalUrl(extra ?? const {});
+  if (useUniversal && universalUrl == null) {
+    throw UnsupportedError(
+      '${map.name} requires a universal URL for these extras.',
+    );
+  }
+  final primaryUrl = appendQueryParams(
+    useUniversal ? universalUrl! : url,
+    extra,
+  );
+  map.validateLaunchUrl(primaryUrl);
+  // Validate fallback configuration before any external side effect.
+  final fallbackUrl = universalUrl == null
+      ? null
+      : appendQueryParams(universalUrl, extra);
+  if (fallbackUrl != null) map.validateLaunchUrl(fallbackUrl);
   try {
     await platform.launch(primaryUrl, androidPackageName: packageName);
   } on Exception catch (error) {
-    final fallbackUrl = universalUrl == null
-        ? null
-        : appendQueryParams(universalUrl, extra);
     if (fallbackUrl != null &&
         (fallbackUrl != primaryUrl || packageName != null)) {
       try {

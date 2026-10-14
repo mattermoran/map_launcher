@@ -45,14 +45,41 @@ class GoogleMaps extends MapApp {
 
   @override
   bool get supportsWaypoints => true;
+
+  @override
+  bool requiresUniversalUrl(Map<String, String> extra) => const {
+    'query_place_id',
+    'dir_action',
+    'destination_place_id',
+    'origin_place_id',
+    'waypoint_place_ids',
+  }.any(extra.containsKey);
+
+  @override
+  void validateLaunchUrl(String url) {
+    final uri = Uri.parse(url);
+    final params = uri.queryParameters;
+    for (final entry in const {
+      'query_place_id': 'query',
+      'destination_place_id': 'destination',
+      'origin_place_id': 'origin',
+      'waypoint_place_ids': 'waypoints',
+    }.entries) {
+      if (params.containsKey(entry.key) &&
+          params[entry.value]?.trim().isNotEmpty != true) {
+        throw ArgumentError('${entry.key} requires ${entry.value}.');
+      }
+    }
+    if (params.containsKey('dir_action') &&
+        !uri.path.startsWith('/maps/dir/')) {
+      throw ArgumentError('dir_action requires a directions request.');
+    }
+  }
+
   @override
   String markerUrl(LocationCoords coords, {int? zoom}) => buildUrl(
     url: 'https://www.google.com/maps/search/',
-    queryParams: {
-      'api': '1',
-      'query': coords.latlng,
-      if (zoom != null) 'z': zoom.toString(),
-    },
+    queryParams: {'api': '1', 'query': coords.latlng},
   );
 
   @override

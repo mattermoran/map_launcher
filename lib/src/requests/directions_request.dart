@@ -88,10 +88,12 @@ class DirectionsRequest {
     );
   }
 
-  /// Returns the URL that would be opened for [map], without opening.
+  /// Returns the base URL for [map], without opening or appending extras.
   ///
   /// On mobile, prefers the native scheme URL. On web/desktop, always
   /// returns the universal HTTPS URL. Returns `null` if unsupported.
+  /// [show] validates caller configuration and may select a universal URL
+  /// when the extras require it.
   String? getUrl({required MapApp map}) {
     if (!_supportsRequest(map)) return null;
     final coordsOrigin = from is LocationCoords ? from as LocationCoords : null;
@@ -201,6 +203,7 @@ class DirectionsRequest {
     };
     if (!supportsDestination) return false;
     if (mode != null && !map.supportsTravelMode(mode!)) return false;
+    if (from is LocationCoords && !map.supportsDirectionsOrigin) return false;
     if (from is LocationSearch && !map.supportsDirectionsSearch) return false;
     // Search builders do not accept waypoints. Never silently drop stops.
     if (waypoints != null && waypoints!.isNotEmpty) {

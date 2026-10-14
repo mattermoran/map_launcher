@@ -335,11 +335,23 @@ abstract class MapApp {
   /// Whether this map supports directions via text search query.
   bool get supportsDirectionsSearch => false;
 
+  /// Whether directions can honor an explicitly supplied coordinate origin.
+  bool get supportsDirectionsOrigin => true;
+
   /// Whether this map supports waypoints in directions.
   bool get supportsWaypoints => false;
 
   /// Whether this map supports the given [mode] for directions.
   bool supportsTravelMode(TravelMode mode) => true;
+
+  /// Whether [extra] requires the universal URL instead of a native scheme.
+  bool requiresUniversalUrl(Map<String, String> extra) => false;
+
+  /// Validates provider-required inputs after extras have been appended.
+  ///
+  /// Called before launching; throw [ArgumentError] for missing configuration.
+  /// Raw URL builders do not validate caller-supplied extras.
+  void validateLaunchUrl(String url) {}
 
   // ---------------------------------------------------------------------------
   // Best-URL helpers (scheme preferred on mobile, universal fallback)

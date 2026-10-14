@@ -38,6 +38,47 @@ class FakePlatform extends MapLauncherPlatform {
 
 void main() {
   group('appendQueryParams', () {
+    test('preserves signed bytes and rejects conflicting encoded keys', () {
+      const url =
+          'yandexnavi://build_route_on_map?lat_to=55.75&lon_to=37.62&client=demo%20client#part';
+      expect(
+        appendQueryParams(url, {'signature': 'a+b/='}),
+        'yandexnavi://build_route_on_map?lat_to=55.75&lon_to=37.62&client=demo%20client&signature=a%2Bb%2F%3D#part',
+      );
+      expect(appendQueryParams(url, {'client': 'demo client'}), url);
+      expect(
+        () => appendQueryParams('https://example.test/?%71=a&q=b', {'q': 'b'}),
+        throwsArgumentError,
+      );
+      expect(
+        () => appendQueryParams('https://example.test/?%71=a', {'q': 'b'}),
+        throwsArgumentError,
+      );
+    });
+
+    test(
+      'opaque navigation extras use ampersand, without inserting a question mark',
+      () {
+        expect(
+          appendQueryParams('google.navigation:q=51.5%2C-0.12', {'avoid': 't'}),
+          'google.navigation:q=51.5%2C-0.12&avoid=t',
+        );
+        expect(
+          () => appendQueryParams('google.navigation:q=51.5%2C-0.12', {
+            'q': '1,2',
+          }),
+          throwsArgumentError,
+        );
+      },
+    );
+
+    test('redundant Waze navigation extras occur only once', () {
+      expect(
+        appendQueryParams('waze://?ll=1,2&navigate=yes', {'navigate': 'yes'}),
+        'waze://?ll=1,2&navigate=yes',
+      );
+    });
+
     test('returns url unchanged when extraParams is null', () {
       expect(
         appendQueryParams('https://maps.google.com/path', null),
@@ -173,6 +214,21 @@ void main() {
   });
 
   group('launchMapUrl', () {
+    test('fallback conflicts fail before launching the native URL', () async {
+      final fake = FakePlatform(platformOverride: .ios);
+      MapLauncherPlatform.instance = fake;
+      await expectLater(
+        launchMapUrl(
+          map: .google,
+          url: 'comgooglemaps://?q=first',
+          universalUrl: 'https://www.google.com/maps/search/?api=1&query=first',
+          extra: {'query': 'second'},
+        ),
+        throwsArgumentError,
+      );
+      expect(fake.attempts, isEmpty);
+    });
+
     test(
       'Android package failure retries the identical URL untargeted',
       () async {

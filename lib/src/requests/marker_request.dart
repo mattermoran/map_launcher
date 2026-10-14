@@ -72,11 +72,14 @@ class MarkerRequest {
     );
   }
 
-  /// Returns the URL that would be opened for [map], without opening.
+  /// Returns the base URL for [map], without opening or appending extras.
   ///
   /// On mobile, prefers the native scheme URL. On web/desktop, always
   /// returns the universal HTTPS URL. Returns `null` if unsupported.
+  /// [show] validates caller configuration and may select a universal URL
+  /// when the extras require it.
   String? getUrl({required MapApp map}) {
+    if (!_supportsRequest(map)) return null;
     return map.bestMarkerUrl(
       location,
       zoom: zoom,
@@ -89,6 +92,7 @@ class MarkerRequest {
   /// Unlike [getUrl], this always returns the web-openable URL, never
   /// a custom scheme.
   String? getUniversalUrl({required MapApp map}) {
+    if (!_supportsRequest(map)) return null;
     return switch (location) {
       LocationCoords coords => map.markerUrl(coords, zoom: zoom),
       LocationSearch search => map.markerSearchUrl(search.query),
@@ -104,6 +108,7 @@ class MarkerRequest {
   /// URLs for other platforms). Returns `null` on web/desktop if no
   /// [platform] is specified.
   String? getSchemeUrl({required MapApp map, MapPlatform? platform}) {
+    if (!_supportsRequest(map)) return null;
     final resolved = platform ?? MapLauncherPlatform.instance.platform;
     if (resolved == null) return null;
 
@@ -133,12 +138,7 @@ class MarkerRequest {
     final results = <SupportedMap>[];
 
     for (final map in maps) {
-      // Check if this map supports the location type
-      final isSupported = switch (location) {
-        LocationCoords() => map.supportsMarkerCoords,
-        LocationSearch() => map.supportsMarkerSearch,
-      };
-      if (!isSupported || getUrl(map: map) == null) continue;
+      if (getUrl(map: map) == null) continue;
 
       final isInstalled = installedIds.contains(map.id);
 
@@ -158,4 +158,9 @@ class MarkerRequest {
 
     return results;
   }
+
+  bool _supportsRequest(MapApp map) => switch (location) {
+    LocationCoords() => map.supportsMarkerCoords,
+    LocationSearch() => map.supportsMarkerSearch,
+  };
 }

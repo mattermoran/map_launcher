@@ -214,10 +214,10 @@ void main() {
         final req = MarkerRequest(location: LocationCoords(48.85, 2.29));
 
         await expectLater(
-          req.show(map: .citymapper),
+          req.show(map: .copilot),
           throwsA(
             isA<MapLaunchException>()
-                .having((e) => e.url, 'url', startsWith('citymapper://'))
+                .having((e) => e.url, 'url', startsWith('copilot://'))
                 .having((e) => e.cause, 'cause', cause),
           ),
         );
