@@ -23,10 +23,8 @@ void main() {
             uri.queryParameters['title'],
             title?.trim().isNotEmpty == true ? title : point.latlng,
           );
-          expect(
-            uri.queryParameters['content'],
-            platform == MapPlatform.ios ? point.latlng : null,
-          );
+          // Caller content and launch defaults are applied during preparation.
+          expect(uri.queryParameters['content'], isNull);
           expect(
             uri.queryParameters['traffic'],
             platform == MapPlatform.android ? 'on' : null,
@@ -39,11 +37,7 @@ void main() {
           destination: coords,
           platform: platform,
         );
-        if (platform == MapPlatform.ios) {
-          expect(Uri.parse(current!).queryParameters['origin'], '我的位置');
-        } else {
-          expect(current, isNull);
-        }
+        expect(Uri.parse(current!).queryParameters['origin'], isNull);
         final explicit = Uri.parse(
           baidu.directionsSchemeUrl(
             destination: coords,

@@ -150,6 +150,75 @@ void main() {
     },
   );
 
+  for (final os in MapPlatform.values) {
+    test(
+      'Baidu caller descriptions and named origins survive preparation on $os',
+      () async {
+        final original = MapLauncherPlatform.instance;
+        final platform = _InstalledPlatform(os);
+        MapLauncherPlatform.instance = platform;
+        addTearDown(() => MapLauncherPlatform.instance = original);
+        final point = LocationCoords(39.908, 116.397);
+        const description = 'Entrance B & floor 2 + 入口';
+        const origin = '天安门';
+        await MapLauncher.marker(
+          point,
+          extra: {'content': description},
+        ).show(map: .baidu);
+        expect(
+          Uri.parse(platform.launches.last).queryParameters['content'],
+          description,
+        );
+        await MapLauncher.marker(point).show(map: .baidu);
+        expect(
+          Uri.parse(platform.launches.last).queryParameters['content'],
+          os == MapPlatform.ios ? '39.908,116.397' : null,
+        );
+        await MapLauncher.directions(
+          point,
+          extra: {'origin': origin},
+        ).show(map: .baidu);
+        expect(
+          Uri.parse(platform.launches.last).queryParameters['origin'],
+          origin,
+        );
+        final entries = await MapLauncher.directions(
+          point,
+          providerExtras: {
+            MapApp.baidu: {'origin': origin},
+          },
+        ).getSupportedMaps([.baidu]);
+        expect(entries, hasLength(1));
+        await entries.single.show();
+        expect(
+          Uri.parse(platform.launches.last).queryParameters['origin'],
+          origin,
+        );
+        final bare = MapLauncher.directions(point);
+        if (os == MapPlatform.android) {
+          expect(await bare.getSupportedMaps([.baidu]), isEmpty);
+          await expectLater(bare.show(map: .baidu), noEligibleMap);
+        } else {
+          await bare.show(map: .baidu);
+          expect(
+            Uri.parse(platform.launches.last).queryParameters['origin'],
+            '我的位置',
+          );
+        }
+        final before = platform.launches.length;
+        await expectLater(
+          MapLauncher.directions(
+            point,
+            from: .coords(39.9, 116.4),
+            extra: {'origin': origin},
+          ).show(map: .baidu),
+          noEligibleMap,
+        );
+        expect(platform.launches, hasLength(before));
+      },
+    );
+  }
+
   test('Google universal extras select the matching action on iOS', () async {
     final original = MapLauncherPlatform.instance;
     final platform = _InstalledPlatform(.ios);

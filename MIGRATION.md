@@ -106,7 +106,8 @@ Naver and Baidu identify the caller, rather than requiring an API key.
 
 Unsupported origins, modes, marker actions and stops are rejected rather than
 silently dropped. Search destinations with waypoints remain unsupported; use
-coordinates. MAPS.ME requires origin; Baidu Android routes require origin;
+coordinates. MAPS.ME requires origin; Baidu Android routes require coordinate
+`from` or a named `origin` extra (validated after extras are merged);
 TomTom iOS markers, Fleet iOS directions and Air Navigation Pro marker launches
 are unavailable. Sygic Truck accepts driving only. OsmAnd now plans routes and
 Mapy uses its v1 route API.

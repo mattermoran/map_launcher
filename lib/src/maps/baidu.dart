@@ -2,8 +2,10 @@ import 'dart:typed_data';
 import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/maps/icons/baidu_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
+import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
+import 'package:map_launcher/src/utils/launch_helper.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
 /// Baidu Maps. Mobile only, directions with origin and travel mode.
@@ -37,6 +39,29 @@ class BaiduMaps extends MapApp {
   Uint8List get iconBytes => baiduIcon;
 
   @override
+  String applyLaunchDefaults(String url, {MapPlatform? platform}) {
+    if (platform != .ios) return url;
+    final uri = Uri.parse(url);
+    final params = uri.queryParameters;
+    if (uri.path == '/marker' && !params.containsKey('content')) {
+      return appendQueryParams(url, {'content': params['location']!});
+    }
+    if (uri.path == '/direction' && !params.containsKey('origin')) {
+      return appendQueryParams(url, {'origin': '我的位置'});
+    }
+    return url;
+  }
+
+  @override
+  void validateLaunchUrl(String url) {
+    final uri = Uri.parse(url);
+    if (uri.path == '/direction' &&
+        uri.queryParameters['origin']?.trim().isNotEmpty != true) {
+      throw MapConfigurationError('Baidu directions require an origin.');
+    }
+  }
+
+  @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 
   @override
@@ -59,8 +84,6 @@ class BaiduMaps extends MapApp {
       'title': coords.title?.trim().isNotEmpty == true
           ? coords.title!
           : coords.latlng,
-      // The request has no description; display the actual coordinates.
-      if (platform == .ios) 'content': coords.latlng,
       if (platform == .android) 'traffic': 'on',
       if (source != null) 'src': '${platform == .ios ? 'ios' : 'andr'}.$source',
       'coord_type': 'gcj02',
@@ -76,19 +99,14 @@ class BaiduMaps extends MapApp {
     TravelMode? travelMode,
     required MapPlatform platform,
   }) {
-    // Only iOS documents a current-location token. Do not invent an Android
-    // origin or silently emit a route missing its required starting point.
-    if (platform == .android && origin == null) return null;
+    // Caller extras may supply a named origin. Validate after they are merged.
     return buildUrl(
       url: 'baidumap://map/direction',
       queryParams: {
         'destination':
             'latlng:${destination.latlng}|name:${destination.title ?? ''}',
         if (origin != null)
-          'origin': 'latlng:${origin.latlng}|name:${origin.title ?? ''}'
-        else if (platform == .ios)
-          // Documented for iOS 7.1+; Android support is not established.
-          'origin': '我的位置',
+          'origin': 'latlng:${origin.latlng}|name:${origin.title ?? ''}',
         'coord_type': 'gcj02',
         if (source != null)
           'src': '${platform == .ios ? 'ios' : 'andr'}.$source',

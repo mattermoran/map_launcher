@@ -310,6 +310,11 @@ abstract class MapApp {
   /// Whether [extra] requires the universal URL instead of a native scheme.
   bool requiresUniversalUrl(Map<String, String> extra) => false;
 
+  /// Fills optional provider defaults after caller extras have been appended.
+  /// Preserve supplied values and existing URL bytes. Raw getters omit these
+  /// defaults; launch validation runs on the returned URL.
+  String applyLaunchDefaults(String url, {MapPlatform? platform}) => url;
+
   /// Validates provider-required inputs after extras have been appended.
   ///
   /// Throw MapConfigurationError for an expected configuration rejection.

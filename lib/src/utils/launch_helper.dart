@@ -122,14 +122,17 @@ PreparedMapLaunch prepareMapLaunch({
   if (url == null || (useUniversal && universalUrl == null)) {
     throw MapConfigurationError('${map.name} does not support this request.');
   }
-  final primaryUrl = appendQueryParams(
-    useUniversal ? universalUrl! : url,
-    extra,
+  final primaryUrl = map.applyLaunchDefaults(
+    appendQueryParams(useUniversal ? universalUrl! : url, extra),
+    platform: platform.platform,
   );
   map.validateLaunchUrl(primaryUrl);
   final fallbackUrl = universalUrl == null
       ? null
-      : appendQueryParams(universalUrl, extra);
+      : map.applyLaunchDefaults(
+          appendQueryParams(universalUrl, extra),
+          platform: platform.platform,
+        );
   if (fallbackUrl != null) map.validateLaunchUrl(fallbackUrl);
   final candidates = {
     (url: primaryUrl, package: packageName),
