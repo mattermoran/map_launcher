@@ -1,6 +1,8 @@
 # Sygic GPS Navigation (consumer app)
 
-Checked: **2026-10-02**. Research only; no native-device tests. Baseline fetched and verified: [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), equal to `origin/master`. [Issue 111](https://github.com/mattermoran/map_launcher/issues/111) marks “Sygic” complete, but the baseline's `SygicTruck` entry targets Android `com.sygic.truck`; this document covers the **distinct consumer product**.
+**Not included in map_launcher.** [Issue 111](https://github.com/mattermoran/map_launcher/issues/111) marks “Sygic” complete, but `SygicTruck` targets the distinct Truck product (`com.sygic.truck`). Consumer support must use its own identity and contract.
+
+Source check: **2026-10-02**. Current consumer-app behavior remains unverified.
 
 ## Product identity and evidence status
 
@@ -8,7 +10,7 @@ The official [Sygic GPS Navigation product page](https://www.sygic.com/gps-navig
 
 **Strongest consumer launch contract:** the “Supported universal URL schemes for Consumers” section of the official [iOS Custom URL page](https://www.sygic.com/developers/professional-navigation-sdk/ios/custom-url). It explicitly states these `https://go.sygic.com/...` schemes are valid only for consumer Sygic GPS Navigation. The preceding `com.sygic.aura://...` section says **Truck or Professional navigation**. Same-looking branding/scheme text is not a guarantee of interchangeability.
 
-Access limitation: live fetches of that page, its `enterprise.sygic.com` counterpart, and the Android Custom URL page returned **HTTP 403** on the checked date (also confirmed with direct HTTP headers). A cached full rendering of the official iOS page was readable; no reliable source update date/version is displayed. This is **cached primary documentation, not live-verified current behavior**. The [Windows Professional page](https://www.sygic.com/developers/professional-navigation-sdk/windows/api-examples/custom-url) was also readable through the page reader. Do not conceal this access limitation or replace it with claims from a third-party URL library.
+Source availability: the iOS page, its `enterprise.sygic.com` counterpart and the Android Custom URL page returned **HTTP 403**. The iOS inventory below comes from cached primary documentation with no reliable update date/version, not live-verified behavior. The [Windows Professional page](https://www.sygic.com/developers/professional-navigation-sdk/windows/api-examples/custom-url) was readable and supplies the separately identified Professional details below.
 
 ## Consumer universal links and complete documented parameters
 
@@ -47,7 +49,7 @@ The directions action is explicitly a **route planner**, not necessarily immedia
 
 ## Legacy Truck/Professional custom actions — separate product contract
 
-This section catalogs the public custom URL surface so that consumer research does not mistakenly inherit it. It is **not verified consumer support**. Sources: [iOS Truck/Professional Custom URL](https://www.sygic.com/developers/professional-navigation-sdk/ios/custom-url), [Windows Professional Custom URL](https://www.sygic.com/developers/professional-navigation-sdk/windows/api-examples/custom-url). Android page was inaccessible, so Windows' “Android Geo URI” subsection is evidence of published claims, not independently confirmed Android consumer support.
+This surface belongs to Truck/Professional, **not verified consumer support**. Sources: [iOS Truck/Professional Custom URL](https://www.sygic.com/developers/professional-navigation-sdk/ios/custom-url), [Windows Professional Custom URL](https://www.sygic.com/developers/professional-navigation-sdk/windows/api-examples/custom-url). The inaccessible Android page prevents independent confirmation of Windows' “Android Geo URI” claims for consumer Android.
 
 All commands below follow `com.sygic.aura://COMMAND` with **positional pipe-separated arguments**, not query parameters. Arguments are shown in required documented order; the tables do not define omitted/empty-slot defaults unless mentioned. String lengths and numeric bounds are unspecified. Do not interpret this scheme's spelling as unique installed-product detection.
 
@@ -105,19 +107,10 @@ The official page's **License terms** restrict “Custom URL scheme” integrati
 
 [Sygic Maps SDK](https://developers.sygic.com/maps-sdk/) embeds maps/navigation in the caller's app; Professional native APIs and REST activation/routing are separate products/contracts. Their routing profiles, API credentials, method arguments, and itinerary schemas must not be copied into consumer URLs. Legacy download/login/purchase/configuration commands have side effects beyond opening a map and are inappropriate defaults.
 
-## Integration decision and proposed discriminating tests
+## Integration constraints
 
 **Prefer consumer `go.sygic.com/directions` and `/place` candidates over copying `SygicTruck`.** Block a production support claim on commercial-terms clarification, current consumer-app verification, and reliable identity/discovery behavior. Preserve endpoint/waypoint capability only where observed; do not advertise arbitrary marker titles or immediate navigation from the route-planner action.
 
 Privacy: URLs expose exact travel plans; web fallback can add network/history exposure. Do not add sensitive names to a search query, send login credentials via legacy URLs, fetch arbitrary untrusted itinerary URLs, purchase store items, or change app settings as part of a map-open operation.
 
-Proposed tests, **not executed**:
-
-1. Install consumer alone, Truck alone, and both; confirm which app receives each universal/custom link. A successful `com.sygic.aura` probe must not count both products as independently installed.
-2. Compare consumer latitude-first `59.3293,18.0686` with deliberately reversed pair; compare with legacy longitude-first only on the documented Professional product.
-3. Compare destination-only and explicit remote origin with location allowed/denied. Verify actual start, endpoint, planner versus active guidance.
-4. Use two asymmetric repeated `via[]` entries; assert stop order and retention. Test no waypoint versus one versus practical limit only after vendor documents it.
-5. Exercise `car`, `walk`, `van`, omitted mode, and invalid mode separately; do not infer motorbike/EV URL support from product marketing.
-6. `/place?q=...` versus `coordinates=...`, both together, and a point with no POI; distinguish arbitrary pin support from nearest/first POI result.
-7. Reserved characters/Unicode and repeated-key encoding; custom legacy raw pipe versus `%7C` only in an authorized test environment.
-8. Tapped links on iOS/Android, cold/warm app, installed/uninstalled, offline/missing maps, and browser fallback. No account changes, purchases, downloads, or license activation without separate consent.
+Unresolved details include omitted-origin/mode behavior, waypoint limits and retention, POI versus arbitrary-pin semantics, coexistence with Truck/Professional and destination-preserving browser fallback. A successful `com.sygic.aura` probe cannot count both products as independently installed.

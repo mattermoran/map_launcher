@@ -1,6 +1,40 @@
-# OsmAnd external launch contract
+# OsmAnd
 
-Checked **2026-10-02** against map_launcher baseline [`8aa7a6e1152a80c4482003bdfaad8f850bdb6131`](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), verified after fetching `origin/master`. **No installed-app behavior was tested.**
+Checked: **2026-10-13**. Native-device behavior has not been verified.
+
+## Plugin behavior
+
+Directions use `https://osmand.net/map/navigate` on Android
+and iOS, with required `end=lat,lon`, optional `start=lat,lon`, ordered
+`via=lat,lon;lat,lon`, and optional `profile`. Driving, walking, transit and
+bicycling map to `car`, `pedestrian`, `public_transport` and `bicycle`.
+Omitted mode leaves the app's default; omitted origin remains absent, not a
+fabricated coordinate. Ordered waypoints are supported. Marker formats are
+listed below. Route labels have no established field in this contract and are not
+serialized. Public web fallback methods remain null.
+
+The route contract is present in official **5.3 release branches**. Releases were announced for
+[Android on April 21, 2026](https://osmand.net/blog/osmand-android-5-3-released)
+and [iOS on April 24, 2026](https://osmand.net/blog/osmand-ios-5-3-released).
+The pinned Android `r5.3`
+[IntentHelper](https://github.com/osmandapp/OsmAnd/blob/3b2db4c2c2b68ffc920ca023e5ae84d379fb17e6/OsmAnd/src/net/osmand/plus/helpers/IntentHelper.java#L159-L205)
+reads `end`, `start`, `profile`, `via` and calls `buildRoute`; its
+[manifest](https://github.com/osmandapp/OsmAnd/blob/3b2db4c2c2b68ffc920ca023e5ae84d379fb17e6/OsmAnd/AndroidManifest.xml)
+registers HTTP(S) `/map`. The pinned iOS `r5.3`
+[DeepLinkParser](https://github.com/osmandapp/OsmAnd-iOS/blob/e8150af1bc890f887ea02e57f02fd0d86f83a37a/Sources/Helpers/DeepLinkManager/DeepLinkParser.swift#L390-L442)
+reads the same fields and calls `buildRoute`; its intermediate parser accepts
+comma/semicolon separators. This establishes a released-version source contract,
+not byte-for-byte certification of store binaries or support on older versions.
+Neither route planner unconditionally starts guidance like the old iOS custom
+`navigate` handler. Native association, permissions, offline data and actual
+route calculation remain device-test limitations.
+
+The live [Apple association file](https://osmand.net/.well-known/apple-app-site-association)
+listed `LM67P5MQ23.net.osmand.maps` with `/map*`, covering this route path.
+This verifies the server declaration, not a device's cached association or the
+entitlements of its installed binary. Android's manifest has a `/map` prefix
+filter but no `autoVerify` on that filter; package-targeted intent eligibility
+is not the same as guaranteed browser-to-app association.
 
 ## Evidence and platform differences
 
@@ -11,7 +45,7 @@ Checked **2026-10-02** against map_launcher baseline [`8aa7a6e1152a80c4482003bdf
 | Platform/product | Identity and launch surfaces | Source |
 | --- | --- | --- |
 | Android free | `net.osmand`; HTTP(S) `osmand.net/go`, `/map`, `/add-tile-source`, `/open-gpx`; native `osmand.api:`, navigation and file intents | [Flavors][flavors], [manifest][manifest] |
-| Android OsmAnd+ | `net.osmand.plus`; same source handlers, distinct target package | [Flavors][flavors]; see [separate audit](osmand-plus.md) |
+| Android OsmAnd+ | `net.osmand.plus`; same source handlers, distinct target package | [Flavors][flavors]; see [OsmAnd+ reference](osmand-plus.md) |
 | iOS | Apple ID `934850257`, scheme `osmandmaps`; also `geo-navigation` and associated domain `osmand.net` | [README](https://github.com/osmandapp/OsmAnd-iOS/blob/f97f6488d37700958924d01ac35bbb1de3f98d99/README.md), [plist][ios-plist], [entitlements](https://github.com/osmandapp/OsmAnd-iOS/blob/f97f6488d37700958924d01ac35bbb1de3f98d99/OsmAnd%20Maps.entitlements) |
 | Web | `https://osmand.net/map` is a web resource and native launch target | Web route state is not identical to native parser state. HTTPS does not guarantee an installed app opens; OS associations/user settings determine dispatch. |
 
@@ -44,7 +78,7 @@ These tables are **source inference** from [Android IntentHelper][intent], [GeoP
 | `start` | Origin `lat,lon`, optional; absent leaves current/unspecified start, invalid treated as absent | Same sources |
 | `via` | Ordered `lat,lon;lat,lon;...`; Android splits on comma or semicolon | No hard count limit identified. [Android lines 569–588][intent], [iOS route parser][ios] |
 | `profile` | Available profile key; Android built-ins: `car`, `bicycle`, `pedestrian`, `truck`, `motorcycle`, `moped`, `public_transport`, `train`, `boat`, `aircraft`, `ski`, `horse`; custom routable profiles may exist | Unknown map-link profile falls through normal/default handling, unlike strict `osmand.api` profile check. iOS logs unknown and passes nil. [ApplicationMode](https://github.com/osmandapp/OsmAnd/blob/344beca32335ab3c24c104667ba808e7ab64abc1/OsmAnd/src/net/osmand/plus/settings/backend/ApplicationMode.java#L55-L103) |
-| `params` | Android comma-separated entries `key`, `key:value`, `key=value`; bare key means true; generated form begins with profile key | Routing-profile-specific keys, not a fixed portable enum. iOS application is TODO/disabled at audited revision. [Android lines 1073–1140][intent], [iOS route parser][ios] |
+| `params` | Android comma-separated entries `key`, `key:value`, `key=value`; bare key means true; generated form begins with profile key | Routing-profile-specific keys, not a fixed portable enum. iOS application is TODO/disabled in the pinned source. [Android lines 1073–1140][intent], [iOS route parser][ios] |
 
 Do not translate app travel mode `walking` literally to `profile=walking`: ordinary routing profile is `pedestrian`; the distinct iOS `/app` UI links below use `walking`.
 
@@ -93,7 +127,7 @@ Exact source: [ExternalApiHelper lines 149–183, 431–466, 647–706][external
 | Entry point | Fields and behavior | Source/limitations |
 | --- | --- | --- |
 | `/add-tile-source` (Android/iOS) | Query passed into map-source editor; `name`, `url_template`, `min_zoom`, `max_zoom` identified | Not a route or tile REST API. Full renderer/template attribute grammar is not an app-launch field guarantee; editor validates. [Android lines 683–707][intent], [iOS lines 562–570][ios] |
-| `/open-gpx` (Android) | Required `url`, optional `name`; sanitized basename, `.gpx` appended if needed | Downloads into GPX import directory; not immediate route navigation. No iOS handler at audited source revision. [Android lines 712–742][intent] |
+| `/open-gpx` (Android) | Required `url`, optional `name`; sanitized basename, `.gpx` appended if needed | Downloads into GPX import directory; not immediate route navigation. No iOS handler in the pinned source. [Android lines 712–742][intent] |
 | `/premium?token=...` (Android), `/premium/device-registration?token=...` (iOS) | Cloud/device authorization token | Auth workflow, not map launch; sensitive token must not be logged. [Android lines 263–293][intent], [iOS lines 572–598][ios] |
 | Android `geo:LAT,LON[?z=ZOOM]`, `geo:0,0?q=QUERY` | Geographic location or text/address/business query | [Official documented examples](https://osmand.net/docs/technical/algorithms/osmand-intents/); generic parser supports labels and many provider URLs. |
 | Android `google.navigation:q=LAT,LON`, `osmand.navigation:q=LAT,LON` | Numeric destination after `q=` or `ll=` in scheme-specific part; regex permits trailing text | Sets destination and enters route planning; this handler does not parse an address, mode or origin from trailing text. Not the `osmand.api` vocabulary. [Manifest][manifest], [IntentHelper parseNavigationIntent lines 911–935][intent] |
@@ -114,31 +148,21 @@ Official source [DeepLinkParser enum and dispatcher][ios] supports `https://osma
 
 Profile-suffixed paths: `settings/profile-settings/trip-recording/{profile}`, `settings/profile-settings/configure-screen/distance-by-tap/{profile}`, `navigation-screen/{profile}`. UI-profile keys: `browse`, `car`, `bicycle`, `walking`; `navigation-screen` excludes `browse`. These open screens, not portable route APIs. No assumption is made that iOS-only paths also work on Android.
 
-## Comparison with map_launcher
+## Plugin markers and integration limits
 
-Sources: [`osmand.dart`](../../lib/src/maps/osmand.dart), [`map_app.dart`](../../lib/src/maps/map_app.dart), [`url_builder.dart`](../../lib/src/utils/url_builder.dart), [Android queries](../../android/src/main/AndroidManifest.xml), [iOS example plist](../../example/ios/Runner/Info.plist).
+Sources: [`osmand.dart`](../../lib/src/maps/osmand.dart), [`map_app.dart`](../../lib/src/maps/map_app.dart), [`url_builder.dart`](../../lib/src/utils/url_builder.dart), [example Android queries](../../example/android/app/src/main/AndroidManifest.xml), [iOS example plist](../../example/ios/Runner/Info.plist).
 
-| Existing behavior | Classification and evidence |
+| Plugin surface | Behavior |
 | --- | --- |
 | Android marker `/go?lat=...&lon=...[&z=...]` | Matches location parser. Android title is omitted; current simple parser does not consume a title anyway. |
-| Android directions uses exactly `/go?lat=...&lon=...` | **Concrete semantic mismatch:** one point opens location context; it does not construct route. Both Free and Plus inherit this. |
 | iOS marker `osmandmaps://?lat=...&lon=...&z=...&title=...` | Matches custom display handler; omitted zoom falls to source's 0, not the `/go` current-zoom fallback. |
-| iOS directions `osmandmaps://navigate?...` | Valid source contract, but starts guidance, not merely planning. Origin, waypoints and requested mode are ignored. |
-| All travel modes reported supported | Overstates ability to honor requested mode: neither branch serializes it. Current iOS custom handler has no such field; alternate map route link does. |
-| `supportsWaypoints=false`, search flags false | Honest wrapper limitation, omitted app capabilities (map `via`, geo/search API). |
-| `hasUniversalLink=false`, URL methods null | Omitted web/native HTTP(S) surface, not lack of app-link support. Choosing a web fallback still needs browser verification. |
+| Directions, both platforms | `/map/navigate` with `end`, optional `start`, ordered `via`, optional `profile`; route labels are not serialized. |
+| Travel modes | Driving → `car`, walking → `pedestrian`, transit → `public_transport`, bicycling → `bicycle`; absent mode leaves profile absent. |
+| Waypoints / search | Ordered waypoints supported; text search builders absent despite provider search interfaces. |
+| `hasUniversalLink=false`, public web methods null | HTTPS route transport is used by the mobile builder; standalone web fallback is not exposed. |
 | Android `net.osmand`, iOS `934850257`, detection `osmandmaps://` | Match current official source. |
 
-## Proposed tests and remaining uncertainty
-
-1. Android: distinguish `/go?lat=59.3293&lon=18.0686` from `/map/navigate?start=58.4108,15.6214&end=59.3293,18.0686&via=59.2,17.5&profile=pedestrian`. Assert location context versus route planning, not just successful Intent dispatch.
-2. iOS: compare `osmandmaps://navigate` with `/map/navigate`; verify immediate navigation versus route planning and current-location permission behavior.
-3. Exercise `car`, `pedestrian`, `bicycle`, `public_transport`, unknown/default profile, no origin, two asymmetric waypoints, and offline routing data missing.
-4. Query title/search `A&B + café/港`; literal plus must survive decoding; nested GPX URL must not leak `&` into outer query. Missing coordinate, malformed numeric, 0,0, −33.8688/151.2093 and geographic boundaries expose defaults/order mistakes.
-5. Test free/Plus installed separately and together with explicit package targeting; Android verified/unverified links and iOS canOpenURL are not proof of routing behavior.
-6. API result tests: plugin disabled (1003), nonexistent GPX (1004), bad profile (1005), empty query (1006), missing search location (1007), out-of-range quick action (1008). Verify returned fields, not just app opening.
-
-Source-only conclusions are pinned to the revisions above. Documentation is incomplete and partially inconsistent with source; store-release parity, Android chooser/browser behavior, geographic normalization downstream, and paid feature gates remain unverified. No code changes or native test execution were part of this audit.
+Documentation is incomplete and partially inconsistent with source. Store-binary parity, older versions, Android chooser/browser behavior, geographic normalization downstream, paid feature gates and actual route calculation remain unverified. Server association and source parsers are confirmed, not device dispatch.
 
 [flavors]: https://github.com/osmandapp/OsmAnd/blob/344beca32335ab3c24c104667ba808e7ab64abc1/OsmAnd/build.gradle#L117-L149
 [manifest]: https://github.com/osmandapp/OsmAnd/blob/344beca32335ab3c24c104667ba808e7ab64abc1/OsmAnd/AndroidManifest.xml

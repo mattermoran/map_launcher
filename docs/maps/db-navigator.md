@@ -1,6 +1,8 @@
-# DB Navigator external launch research
+# DB Navigator
 
-Checked **2026-10-02**. Requested in [issue #111](https://github.com/mattermoran/map_launcher/issues/111), not implemented at the inspected baseline. Fetched `origin/master`; it and `HEAD` resolve to [8aa7a6e1152a80c4482003bdfaad8f850bdb6131](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131). All app behavior is **runtime-unverified**.
+**Not included in map_launcher.** Requested in [issue #111](https://github.com/mattermoran/map_launcher/issues/111). The available primary sources establish journey sharing and app associations, not a public coordinate-to-journey builder.
+
+Source check: **2026-10-02**. Native acceptance remains unverified.
 
 **Do not implement the old `dbnavigator://query` recipe as if it were a current, cross-platform contract.** Current first-party evidence establishes consumer sharing and HTTPS app associations, but not a public coordinate-to-journey construction API. DB Navigator is a rail/transit journey planner and ticketing app, not a generic marker/driving-navigation target.
 
@@ -17,7 +19,7 @@ Checked **2026-10-02**. Requested in [issue #111](https://github.com/mattermoran
 | [Karte legacy implementation](https://github.com/kiliankoe/Karte/blob/1a3912449774a065eb4017198cdadd4336a51e5a/Sources/App.swift#L162-L173) | **Secondary-only**, iOS implementation added [2018-07-26](https://github.com/kiliankoe/Karte/commit/1a3912449774a065eb4017198cdadd4336a51e5a). Issue #111 links Karte, not DB documentation. |
 | [generate-db-journey-url source](https://github.com/WahrscheinlichAnkommen/generate-db-journey-url/blob/a1efba8451962f0e45d825a0053afbc8464c1748/src/utils/generate-db-journey-url.js) | **Secondary-only**, pinned repository revision dated **2024-05-20**. Shows newer HTTPS sharing with a server-issued `vbid`, not legacy coordinate launching. Neither supported API status nor current operation is established. |
 
-Attempts at `/service/ueber-uns/verlinkung` and `/service/informationen-buchung/anreise` on www.bahn.de returned HTTP 404. Searches did not locate a current first-party field-level Navigator linking guide. A GitHub page read failed, but the pinned source above was retrieved through raw GitHub/API access. Missing documentation is an integration blocker, not evidence that all deep links are impossible.
+The former www.bahn.de paths `/service/ueber-uns/verlinkung` and `/service/informationen-buchung/anreise` returned HTTP 404. No current first-party field-level Navigator linking guide was available; this blocks a supported builder, not all possible deep links.
 
 ## Current consumer actions and platform associations
 
@@ -42,7 +44,7 @@ The [Android assetlinks file](https://www.bahn.de/.well-known/assetlinks.json) d
 
 ## Newer HTTPS share format: secondary evidence, not a public API
 
-Source for every field below: [pinned 2024 generate-db-journey-url implementation](https://github.com/WahrscheinlichAnkommen/generate-db-journey-url/blob/a1efba8451962f0e45d825a0053afbc8464c1748/src/utils/generate-db-journey-url.js). No requests to the sharing POST endpoint were made during research.
+Source for every field below: [pinned 2024 generate-db-journey-url implementation](https://github.com/WahrscheinlichAnkommen/generate-db-journey-url/blob/a1efba8451962f0e45d825a0053afbc8464c1748/src/utils/generate-db-journey-url.js). Backend operation is unverified.
 
 | Surface / field | Observed construction / limits |
 | --- | --- |
@@ -88,17 +90,8 @@ The [DB developer portal](https://developer-docs.deutschebahn.com/doku) concerns
 
 No public x-callback-url, caller-specified return URL, automatic purchase, arbitrary map-marker or driving-navigation action was established. Association entries for login and jump-back endpoints do not change that conclusion.
 
-## Integration readiness and concrete tests
+## Integration constraints
 
-No DB Navigator class, registry/export, icon, package visibility entry, iOS query declaration or app tests exist in the baseline. Generic `LocationCoords`/directions APIs are not sufficient evidence of a viable implementation.
+A coordinate-based provider requires a current supported construction contract. Forwarding a vendor-generated HTTPS journey link as an opaque URL is a narrower operation and does not implement `directions(destination: coordinates)`. Legacy custom-scheme support, `/link_umgebung` fields, link lifetime, dates/timezones, platform versions and partner requirements remain unknown. Do not construct speculative ticket/login fields or automatically invoke the sharing backend.
 
-**Recommendation:** keep integration blocked until a current supported construction contract or carefully validated narrow fallback is agreed. Forwarding a real vendor-generated HTTPS journey link could be feasible as opaque URL launching, but it does not implement `directions(destination: coordinates)`. Keep legacy experiments separate from current support claims. Do not add speculative fields or automatically call the sharing backend.
-
-1. Obtain first-party guidance for current URL forms, stop/coordinate input, absent origin, dates/timezones, mode filters, required IDs, callbacks and platform versions. Determine whether usage requires a partner agreement. Record unknowns instead of assigning defaults.
-2. On current Android/iOS versions, generate a journey link from the **app's own share UI** and open it on another device, with Navigator installed and absent. Verify exact origin/destination, date, train and browser fallback. Test locale changes, link age and an invalid identifier; use non-sensitive journey data, not booked-ticket links.
-3. Test HTTPS association from a separate app and from browsers. AASA/assetlinks fetch success alone does not verify app dispatch. Android app-link preference and iOS same-domain browsing can affect handoff.
-4. If evaluating legacy `dbnavigator://query`, record exact app/OS version, then test destination only and explicit origin with asymmetric coordinates, negative longitude, microdegree fractional truncation and Unicode/`&` names. A successful application launch with an empty search screen is a **failure**, not protocol support.
-5. Confirm whether `/link_umgebung` has a supported public parameter schema before treating it as nearby or marker support. Do not probe ticket/login paths with invented credentials or tokens.
-6. If vendor-approved integration emerges, choose transit-journey semantics, not all travel modes. Test out-of-network coordinates, ambiguous stations, date/timezone/DST boundaries and no-results behavior. Do not silently turn a requested driving route into rail ticket search.
-
-No native device tests were run, no sharing POST was submitted, and no integration was implemented. Current primary documentation is adequate for consumer actions and app associations, but insufficient for a complete supported route-builder contract; the old scheme and newer share construction details remain explicitly secondary evidence.
+Association files establish eligibility for dispatch, not actual dispatch or journey retention; Android link preferences and iOS same-domain browsing can affect handoff. DB journey semantics are transit-specific and must not silently stand in for driving navigation.

@@ -1,6 +1,8 @@
 # Lazarillo Accessible GPS
 
-Checked: **2026-10-02**. Research only; no native-device tests or sign-in. Baseline fetched and verified: [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), equal to `origin/master`. Requested as “Lazarillo Maps” in [issue 111](https://github.com/mattermoran/map_launcher/issues/111); absent from the baseline map registry.
+**Not included in map_launcher.** Requested as “Lazarillo Maps” in [issue 111](https://github.com/mattermoran/map_launcher/issues/111). No verified consumer-app inbound marker or route contract is available.
+
+Source check: **2026-10-02**.
 
 ## Available product; inbound routing contract not established
 
@@ -18,7 +20,7 @@ The [business product page](https://lazarillo.app/business) and [home page](http
 
 ## Public external action/parameter inventory
 
-Evidence scope: official [app description](https://lazarillo.app/theapp), [iOS and Android manuals/FAQ](https://lazarillo.app/usersupport), official store listings above, and searches for Lazarillo developer/deep-link/URL-scheme documentation. No authoritative public app-source repository or incoming URL parameter specification was established. This is **not a claim that the app cannot have private or undocumented links**.
+Contract sources: official [app description](https://lazarillo.app/theapp), [iOS and Android manuals/FAQ](https://lazarillo.app/usersupport), and store listings above. They supply no incoming URL parameter specification or authoritative public app-source repository; private or undocumented links remain possible.
 
 | External operation | Evidence and parameters |
 | --- | --- |
@@ -28,7 +30,7 @@ Evidence scope: official [app description](https://lazarillo.app/theapp), [iOS a
 | Import place, favourites or route | No public incoming file/intent contract found in the inspected manuals. In-app “Add with Address”/“Add with This GPS Location” are UI operations, not external API endpoints. |
 | Indoor venue/business map | Commercial integration is offered, but the consumer-app inbound URL contract and arbitrary-venue permissions are not publicly specified in these sources. |
 
-Consequently, requiredness, field types, allowed values/defaults, coordinate order/system, encoding, ranges/precision/limits, pickup/origin/destination, waypoints, transport modes, callbacks, app auth and partner restrictions are **unknown for external launch**, rather than unsupported values inferred from the UI. No launchable parameter table can responsibly be filled from the available evidence.
+Requiredness, field types, values/defaults, coordinate order/system, encoding, ranges/limits, endpoints, waypoints, modes, callbacks, authentication and partner restrictions are **unknown for external launch**, not unsupported values inferred from the UI.
 
 The manuals establish account registration for the consumer experience and user-granted location access. They do not establish a caller API key, OAuth scope, no-auth launch guarantee, or callback registration process. They also do not establish browser fallbacks that retain route information or parity between native iOS and Android.
 
@@ -42,11 +44,4 @@ REST APIs, embedded indoor-navigation SDKs, and business-map integration must re
 
 **Accessibility/privacy:** a false “route launched” result is particularly harmful for people relying on spoken guidance. Verify focus, announcements, and route endpoint—not only the foreground app. The official manual describes account-backed favourites and background/location-related permissions; do not collect the caller's GPS or create accounts merely to discover a map. Avoid logging disability-related destinations or personally identifying labels. Do not assume a car/Uber choice has the same safety implications as walking guidance.
 
-## Proposed discriminating tests (not executed)
-
-1. After obtaining a vendor-supported URL, test exact destination `59.3293,18.0686` versus reversed coordinates, and a destination remote from the user's location. Verify audible endpoint announcement and on-screen endpoint.
-2. Test fresh signed-out install, signed-in install, denied location, no GPS fix, cold/warm start, and unavailable indoor venue; distinguish onboarding from successful route setup.
-3. Test walking versus public transport versus car only if each receives a documented external value. Never infer mode flags from visible buttons.
-4. Check Unicode and reserved-character labels (`Å & + #`), optional origin, and multiple stops only when the vendor defines them; establish ranges and limits from documentation and boundary tests.
-5. Verify screen-reader focus/announcements with TalkBack and VoiceOver on real devices. Browser emulation is not native accessibility verification.
-6. Verify download links separately from app launch, and app launch separately from endpoint transfer. Do not mark a test successful because a store or the Lazarillo home screen opened.
+Download, app launch and accessible endpoint transfer are separate outcomes. A store page or home-screen launch is not route delivery; any future contract must preserve the intended destination and accessible focus/announcements, rather than infer success from the foreground app.

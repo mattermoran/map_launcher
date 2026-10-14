@@ -1,8 +1,12 @@
-# TMAP external app launch reference
+# TMAP
 
-Checked **2026-10-02**. Primary sources are the Korean **TMAP Invoke** pages in the [official developer guide](https://tmapapi.tmapmobility.com/main.html), not the REST routing API. The page router serves HTML fragments; direct fragment links below avoid loading only the navigation shell. Some automated readers misdecode UTF-8 as Latin-1; the original HTML was retrieved and read as UTF-8 for this research. No last-update date is published in these pages; individual app-version notes are recorded below. No native testing was performed.
+Checked: **2026-10-13**. Native-device behavior has not been verified.
 
-Baseline: [`8aa7a6e`](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), verified as fetched `origin/master`; [builder](../../lib/src/maps/tmap.dart), [capabilities](../../lib/src/maps/map_app.dart).
+## Plugin behavior
+
+The [builder](../../lib/src/maps/tmap.dart) uses `tmap://viewmap?x=LONGITUDE&y=LATITUDE` with optional `name`, and `tmap://route?goalx=LONGITUDE&goaly=LATITUDE&carType=1` with optional `goalname` and origin `startx/starty/startname`. Zoom and web fallback are not implemented. All explicit travel modes, including driving, and nonempty waypoints return null; [capabilities](../../lib/src/maps/map_app.dart) do not advertise a mode selector. `carType=1` is retained but is not established as a travel-mode selector. Raw-scheme acceptance and omitted-origin behavior remain unverified.
+
+Primary sources are the Korean **TMAP Invoke** pages in the [official developer guide](https://tmapapi.tmapmobility.com/main.html), not the REST routing API. Direct fragment links below expose the reference rather than its navigation shell. The pages publish no last-update date; their app-version notes are retained below.
 
 ## Three interfaces must not be conflated
 
@@ -90,25 +94,6 @@ Additional external-app helpers, documented in the same [Android](https://tmapap
 
 The helper pages include authentication setup APIs; their credentials are SDK configuration, not proof of an `appKey` query requirement on `tmap://`. Raw query spellings for saved-home/work, search, nearby, immediate navigation, and auto-close were not established from these helper signatures. Authentication success/failure delegates are not navigation-completion callbacks.
 
-## Implementation comparison and gaps
+## Integration limits
 
-| Field / capability | Current implementation | Assessment |
-| --- | --- | --- |
-| Marker action / coordinates | `tmap://viewmap?x={lng}&y={lat}`, optional `name` | Longitude/latitude orientation agrees with provider convention. Raw action/keys not independently verified by recovered current primary contract; HTTPS equivalent uses `map`, `lon`, `lat`. |
-| Marker title / zoom | Optional `name`, ignores `zoom` | HTTPS name optional; no launch zoom found. Raw optionality still unverified. |
-| Destination | `goalx`, `goaly`, optional `goalname` on `tmap://route` | Names resemble HTTPS contract, where `goalname` is mandatory, but applying HTTPS requiredness to raw links is **not proven**. iOS helper uses `rGo*`; compatibility deserves targeted testing. |
-| Origin | Optional `startx`, `starty`, `startname` | Matches HTTPS vocabulary, not proof of raw-scheme acceptance or current-location fallback. |
-| `carType` | Always string `1` | **Not present in recovered launch contract.** Do not import vehicle-class meanings from REST/embedded SDK tables. Unsupported versus ignored on device remains unknown. |
-| Travel mode | Ignores all modes; inherited capability returns true for driving/walking/transit/bicycling | **Demonstrable capability/implementation mismatch**, irrespective of raw URL acceptance. |
-| Waypoints | Ignored; advertises false | Omitted external invocation feature, honestly restricted. HTTPS has 2 slots; Android helper 5. |
-| Entrance/POI/address/heading/policy/history/referrer | Not emitted | Omitted features of official launch interfaces; raw equivalents must be established before adding. |
-| Immediate navigation / callbacks / search / saved places | Not implemented | Invocation features omitted; no URL callback contract found. |
-| Web | Universal methods null, flag false | Does not expose keyed mobile HTTPS launch service; that service is not established as a desktop map fallback. |
-
-## Concrete follow-up tests
-
-1. Golden query test with origin `(37.553017,126.972646)` and destination `(37.497942,127.027621)` must assert `x=longitude`, `y=latitude` and preserve `서울 & 출구?#` as one decoded value.
-2. Assert capabilities cannot promise four selectable modes while URLs remain identical for all modes. Do not invent walking/transit query names to satisfy a test.
-3. Test HTTPS service separately with required key and destination name, two ordered waypoint slots, and policy 0 versus 6. Never put real keys in fixtures/logs or assume route-API key handling applies to native links.
-4. If helper-backed integration is introduced, test Android 5/6 waypoint and iOS 2/3 waypoint boundaries, `rSOpt=7` version fallback, entrance versus center coordinates, and auto-close false/true.
-5. Required device investigation: raw `goal*` versus `rGo*` on Android/iOS, omitted title/origin, `carType=1`, app absent, route preview versus immediate guidance, and return behavior. The source review does not establish any of these runtime results.
+The plugin does not expose the documented HTTPS service or invocation helpers. Their required destination name, key, waypoint slots, entrance fields, policy and immediate-guidance options must not be assumed to apply to the raw scheme. Current raw `goal*` versus helper `rGo*` compatibility, `carType` interpretation, and route preview versus guidance remain unresolved.

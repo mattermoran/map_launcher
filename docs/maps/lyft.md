@@ -1,6 +1,8 @@
 # Lyft rider app
 
-Checked: **2026-10-02**. Research only; no device tests, authentication, bookings, or coupon application. Baseline fetched and verified: [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), equal to `origin/master`. Lyft is requested in [issue 111](https://github.com/mattermoran/map_launcher/issues/111) and absent from the map registry.
+**Not included in map_launcher.** Requested in [issue 111](https://github.com/mattermoran/map_launcher/issues/111). The available contract evidence supports a candidate rider-UI handoff, not map markers or turn-by-turn navigation.
+
+Source check: **2026-10-02**. Current native support remains unverified.
 
 ## Availability and evidence quality
 
@@ -10,7 +12,7 @@ The [old developer deep-link page](https://developer.lyft.com/docs/deeplinking) 
 
 - iOS [`LyftDeepLink.swift`](https://github.com/lyft/Lyft-iOS-sdk/blob/b0c5e3324cb3ac1aa585003c952d5b2d2f756359/Sources/LyftUI/LyftDeepLink.swift), head dated 2019-06-24.
 - Android [`DeepLink.java`](https://github.com/lyft/lyft-android-sdk/blob/4ba28e33346da908ff15dea84ab7c7c42231beec/deeplink/src/main/java/com/lyft/deeplink/DeepLink.java) and [`DeepLinkParams.java`](https://github.com/lyft/lyft-android-sdk/blob/4ba28e33346da908ff15dea84ab7c7c42231beec/deeplink/src/main/java/com/lyft/deeplink/DeepLinkParams.java), head dated 2021-09-20, SDK release 2.0.2.
-- GitHub metadata checked directly: both repositories have `archived: false`. Describe them as dormant, **not archived**. SDK source demonstrates generated links; it does not prove present-day binary support.
+- Both repositories have `archived: false`; they are dormant, not archived. SDK source demonstrates generated links, not present-day binary support.
 
 **Candidate integration:** explicitly labelled ride-request handoff. It is not a map marker API or turn-by-turn navigation API, and launch success is not a booking result. Reconfirm supported parameters with Lyft and test current app versions before claiming full support.
 
@@ -69,12 +71,6 @@ Basic URI generation requires no bearer token in the inspected code; the rider s
 
 **Privacy:** a ride action sends destination/pickup to Lyft and may associate them with an account. Web fallback additionally exposes those values to browser history and network services. Avoid sensitive labels, redact URL logs, and ask before collecting the caller's location. Do not apply coupons or initiate paid requests as incidental testing. Label the action “Open Lyft”/“Request a ride”, not “Show marker”.
 
-## Proposed discriminating tests (not executed)
+## Remaining compatibility questions
 
-1. Assert `destination[...]`, not `dropoff[...]`, with asymmetric coordinates `37.7216,-122.4475` to `37.6213,-122.3790`. Test missing one coordinate versus complete pairs.
-2. Omitted pickup versus explicit remote pickup, with location allowed/denied; verify the selected point rather than only foregrounding Lyft.
-3. Test address-only, coordinates-only, and conflicting address/coordinates separately on Android and iOS. Do not assume Android source implies iOS parity.
-4. Encode `Å + A&B #2` in each address and a coupon test string; check that unescaped `&` cannot become another parameter.
-5. Compare default `lyft` with unavailable historical type and unknown string; ensure graceful UI selection rather than a promised ride category.
-6. Native installed/uninstalled and `/u` web signed in/out, including unsupported service area; no booking submission. Check store fallback separately from route retention.
-7. Test no `partner` versus a legitimately assigned partner ID; verify attribution with Lyft, not a URL-open return value.
+Current parameter acceptance, omitted-pickup behavior, address/coordinate precedence, iOS address parity, historical ride-type availability and `/u` fallback need confirmation. Store acquisition is separate from destination retention; attribution requires a legitimately assigned partner ID and cannot be established from an OS launch result.

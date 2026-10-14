@@ -1,10 +1,16 @@
-# Tencent / QQ Maps (腾讯地图): external launch protocol audit
+# Tencent / QQ Maps (腾讯地图)
 
-Checked **2026-10-02**. Repository baseline [`8aa7a6e`](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131) matched fetched `origin/master`. All behavior is **runtime-unverified**: no Android/iOS Tencent Maps installation was exercised.
+Checked: **2026-10-13**. Native-device behavior has not been verified.
+
+## Plugin behavior and configuration
+
+Android/iOS markers use `qqmap://map/marker` with `marker=coord:lat,lng[;title:NAME]`. Routes use `qqmap://map/routeplan`, optional endpoint names, required destination coordinates and `fromcoord=CurrentLocation` when origin is absent. Driving/walking/transit/bicycling map to `drive/walk/bus/bike`, default driving. Zoom, search, waypoints and web fallback are not implemented.
+
+Tencent documents a registered developer key through `TencentExtra(referer: ...)`. The plugin permits discovery and keyless launch attempts for compatibility; omission is outside the documented contract and provider acceptance has not been device-verified. Bind options with `providerExtras: {.tencent: TencentExtra(...)}` before discovery when supplying a key. The plugin does not certify key validity.
 
 Sources are the current Chinese Tencent **URI API（地图调起）** pages. Individual parameter pages expose no update date; the [official changelog](https://lbs.qq.com/webApi/uriV1/uriLog) lists **v2.1, 2025-06-18** (HarmonyOS launch/routes), **v2.0, 2018-05-30** (iOS scheme / Android Intent, searches/markers/routes/street view), v1.5 2015-11-05, v1.0 2014-04-21. This is source-version context, not proof every current parameter existed in 2018.
 
-“Documented” means explicitly in a provider launch page; “legacy” means a still-accessible older documentation surface; “inferred” means not expressly guaranteed. No secondary-only blog assertion is used as a URI contract. REST directions, coordinate conversion, SDK routing/waypoints and embedded H5 components are separate interfaces.
+REST directions, coordinate conversion, SDK routing/waypoints and embedded H5 components have separate contracts.
 
 ## Platform and attribution contract
 
@@ -34,18 +40,18 @@ Endpoint **`qqmap://map/routeplan`**, Android/iOS/Harmony. Source: [current nati
 | `to` | No | Destination display name. |
 | `tocoord` | Yes | `lat,lng` destination. Unlike web table, text name is not an alternative to coordinates. |
 | `touid` | No | Destination POI ID string; nearby entrance guidance for large parks/complexes. If too far from `tocoord`, ignored; distance threshold unspecified. |
-| `passes` | No | **Up to 15** intermediate stops. Each `name:NAME;coord:lat,lng`; provider says each stop must end with **`&;`**. See exact example below. No mode restrictions or minimum client version specified. |
+| `passes` | No | **Up to 15** intermediate stops. Each `name:NAME;coord:lat,lng`, separated by **pipe (`\|`)**. See exact example below. No mode restrictions or minimum client version specified. |
 | `referer` | Yes | Registered developer key. |
 
 Provider's decoded `passes` example has an extra semicolon after the first coordinate:
 
 ```text
-name:新业路(地铁站);coord:30.248015,120.207788;&;name:华联·全景天地;coord:30.245793,120.218048&;
+name:新业路(地铁站);coord:30.248015,120.207788;|name:华联·全景天地;coord:30.245793,120.218048|
 ```
 
-Treat the terminator and optional-looking semicolon as a **testable grammar ambiguity**, not a reason to discard waypoint support. Encode the complete value once: raw `&` in a URL splits query parameters. The key is **`passes`**, not REST `waypoints`, and its delimiter is not simply pipe.
+The example contains an extra semicolon before the first pipe and a trailing pipe; their requiredness is unresolved. Encode the complete value once. The key is **`passes`**, not REST `waypoints`.
 
-Native route page does **not** list `coord_type`, `policy`, `avoid`, `navigation`, `callback`, or a route-result-return parameter. Do not port web `coord_type=1` or `policy` into a native contract. Native coordinates are expected to align with the Tencent map datum (commonly GCJ-02 in mainland China), but **the audited native parameter table does not explicitly name a datum or a conversion flag**. Use that as an unresolved input-contract issue, not proof that raw GPS will be converted.
+The native route table does not list `coord_type`, `policy`, `avoid`, `navigation`, `callback` or route-result return. Web conversion and policy fields do not establish native support. Native coordinates are expected to align with Tencent's map datum (commonly GCJ-02 in mainland China), but the native table does not explicitly name a datum or conversion flag. Raw GPS conversion remains unresolved.
 
 ## Native marker, geocoder, search and nearby
 
@@ -88,33 +94,10 @@ Base `https://apis.map.qq.com/uri/v1/`. `referer` R as described above. Explicit
 
 Web `policy` default **0**: bus `0` faster, `1` fewer transfers, `2` less walking, `3` no subway; driving `0` faster, `1` no highways, `2` distance. Do not describe `2` as a toll policy. The current web route table contains a malformed “GPS” cell but the same `coord_type=1/2` definition is unambiguous in web marker/search pages.
 
-Old guessed paths `guide-mobile-route.html`, `guide-search.html`, `guide-streetview.html` returned **404** during this audit; current `/webApi/uriV1/uriGuide/…` paths above were read successfully. This is documentation migration, not evidence the underlying feature was removed. Some old URLs still serve useful legacy pages; current native table's 15-stop support should not be replaced with old summaries that omit it.
-
-## Implementation and capability audit
+## Encoding and integration limits
 
 Sources: [`TencentMaps`](../../lib/src/maps/tencent.dart), [`TencentExtra`](../../lib/src/extras/tencent_extra.dart), inherited [`MapApp`](../../lib/src/maps/map_app.dart), [`launch helper`](../../lib/src/utils/launch_helper.dart), [`Chinese map tests`](../../test/maps/chinese_maps_test.dart).
 
-| Generated key / flag | Audit result |
-| --- | --- |
-| `qqmap://map/marker?marker=coord:lat,lng[;title:…]` | Documented endpoint/order/attribute syntax. No `addr`; unknown title is omitted. Native table does not separately require title/address, but explicitly recommends geocoder for coordinate-only points. |
-| `qqmap://map/routeplan`, `type` | Correct route endpoint; package `drive/walk/bus/bike` mappings match native Android/iOS. Package defaults to drive; provider has no specified default. |
-| `from`, `fromcoord`, `to`, `tocoord` | Names only if caller supplies titles; that is valid. **`fromcoord` absent when origin absent**, despite required native key with documented `CurrentLocation` token. Web's omission default is not native evidence. |
-| `referer` | Not generated by either builder. Optional `TencentExtra(referer: 'registered-key')` adds it on request launch; field is required inside that extra's constructor, but using the extra is not enforced. Default launch therefore lacks a documented required parameter. |
-| `supportsMarkerCoords=true`, `supportsDirectionsCoords=true`, all modes true | Provider capability exists; missing native requirements still need attention. |
-| Search flags false | Matches package builders but omits documented native keyword searches. Native route names alone are **not** sufficient to claim text-only directions. Web supports text routes. |
-| `supportsWaypoints=false` | Direct builder ignores waypoints; request API rejects nonempty lists. Current provider **does support `passes` up to 15**. Implementation gap. |
-| `hasUniversalLink=false`, HTTPS builders null | No browser fallback; web URLs are available but must use their own required fields/mode constraints. |
-| `zoom` | Ignored. No native marker zoom parameter established, so do not manufacture one. |
-| Generic extras | Can add missing key, `passes`, `touid`; cannot change endpoint. Extras append to existing URL, so duplicate `type`/`marker`/origin keys do not constitute a reliable override. `TencentExtra` contains only `referer`. |
+The native geocoder is recommended by the provider for coordinate-only points but has no plugin builder. Native route names are labels, not text-only destinations. `passes` is documented but nonempty waypoint requests are rejected and direct builders omit them. Generic extras can add absent fields such as `touid` or `passes`; conflicting generated values are rejected. `TencentExtra` contains only `referer`.
 
 `LocationCoords` validates finite degree ranges but does no datum conversion. `buildUrl` encodes a query value once, with Dart form-style space handling, and filters wholly blank values. It does not escape nested marker grammar separately: a title containing semicolon, colon or pipe can become structural after provider decoding. URL encoding is necessary, but not sufficient proof that arbitrary labels survive the provider grammar. No provider-supported nested escaping rule was found.
-
-## Proposed discriminating tests
-
-1. Assert required `referer` and `fromcoord` on actual launched URL, not just raw builder output. Device-test missing key versus a registered key; missing origin versus `CurrentLocation` and a distant explicit origin.
-2. For `passes`, test 1, 2, 15 and 16 points, preserve non-collinear stop order, and ensure the ampersand separator remains inside one decoded query value. Compare the provider example's optional-looking semicolon variants on Android/iOS.
-3. Use `touid` near and far from the coordinate to distinguish entrance guidance from ignored IDs. Record the selected entrance, not merely the displayed place name.
-4. Test coordinate-only marker versus geocoder, plus names containing `;`, `:`, pipe, `&`, `+`, `#`, `%` and Chinese. Assert intended label and coordinate on device.
-5. Verify GCJ-02 versus WGS84 for a known mainland landmark. Test web `coord_type=1/2` separately; do not accept native conversion merely because web converts.
-6. Compare all four native route modes with web modes and local route policy; check actual preview/guidance state. Keep `bike` unavailable on any future Harmony adapter until provider changes its contract.
-7. Check app absent, browser-map fallback, and WeChat restrictions separately. Legacy street view needs a current-app smoke test before being advertised as current functionality.

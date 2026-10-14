@@ -1,19 +1,21 @@
-# Amap / Gaode (高德地图): external launch protocol audit
+# Amap / Gaode (高德地图)
 
-Checked **2026-10-02** against current Chinese provider documentation. Repository baseline: [`8aa7a6e`](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), verified after fetching `origin/master` (same commit). This is a documentation audit, **not a successful device-launch report**.
+Checked: **2026-10-13**. Native-device behavior has not been verified.
 
-Evidence terminology: **documented** means a provider launch-protocol page states it; **legacy** means an old contract or explicitly retired field; **inferred** means an interpretation rather than a stated guarantee; **runtime-unverified** applies to all app behavior below. SDK methods, REST routing/conversion APIs and third-party examples are not evidence that a URI accepts the same keys.
+## Plugin behavior
+
+The plugin supports Android/iOS coordinate markers and routes with optional origin and all four travel modes. Markers use `{android,ios}amap://viewMap`; routes use `amapuri://route/plan/` on Android and `iosamap://path` on iOS. Both send `sourceApplication=map_launcher` and `dev=0`, so callers must supply GCJ-02 coordinates: the plugin does not convert them. Missing or blank marker titles use coordinate text as `poiname`. Route modes map to `t=0/1/2/3`, defaulting to driving. Zoom, search, waypoints and web fallback are not implemented.
 
 ## Platforms and URI families
 
 | Surface | Contract and source |
 | --- | --- |
 | Android | `androidamap://` actions; route planning specifically uses `amapuri://route/plan/`; walking/cycling navigation uses `amapuri://openFeature`. `ACTION_VIEW`, category `DEFAULT`, package `com.autonavi.minimap`. [Getting started](https://lbs.amap.com/api/amap-mobile/gettingstarted) (2024-09-06). |
-| iOS | `iosamap://` actions; route planning is **`iosamap://path`**. Walking/cycling navigation examples instead use `amapuri://openFeature`. Declare `iosamap` in `LSApplicationQueriesSchemes` for discovery. [iOS calling guide](https://lbs.amap.com/api/amap-mobile/guide/ios/ios-uri-information). Its observed date changed between indexed and live content (2026-10-01 / 2026-10-03); do not use that timestamp as evidence of a protocol change. |
+| iOS | `iosamap://` actions; route planning is **`iosamap://path`**. Walking/cycling navigation examples instead use `amapuri://openFeature`. Declare `iosamap` in `LSApplicationQueriesSchemes` for discovery. [iOS calling guide](https://lbs.amap.com/api/amap-mobile/guide/ios/ios-uri-information). |
 | Web / HTTPS | `https://uri.amap.com/…`, serving PC/H5 maps; selected actions accept `callnative=1` to attempt app opening. This is **not proof of OS-verified Universal Links/App Links**, nor a guarantee of app opening inside WeChat/QQ. [Overview](https://lbs.amap.com/api/uri-api) (2025-02-17), [route](https://lbs.amap.com/api/uri-api/guide/travel/route) (2025-03-03). |
 | HarmonyOS NEXT | Separate `Want`/`startAbility` launch example using `amapuri://route/plan`; detection example uses `amapuri://com.amap.hmapp/open`. [Getting started](https://lbs.amap.com/api/amap-mobile/gettingstarted). Not a platform implemented by this package; do not infer Android/iOS endpoint equivalence from it. |
 
-All table names denoting actions (`viewMap`, `path`, `route`, `openFeature`) are URI components, **not extra query parameters**. Preserve spelling and case from the provider examples. No URI callback/return-URL parameter is specified in the audited actions; the iOS `openURL` completion handler only reports the OS launch attempt, not navigation completion.
+Action names (`viewMap`, `path`, `route`, `openFeature`) are URI components, not query parameters. Spelling and case matter. No callback/return-URL parameter is specified in these actions; iOS `openURL` completion reports the OS launch attempt, not navigation completion.
 
 ## Coordinate markers
 
@@ -62,7 +64,7 @@ Unless noted otherwise below, `sourceApplication` is required; `lat`/`lon` mean 
 | --- | --- | --- |
 | `androidamap://navi`, `iosamap://navi` | Current location → destination; R `lat`, `lon`, `dev`; O `poiname`, `poiid`. Legacy R `style=0..8`, same driving meanings as `m`; ignored from Android 8.2.6 / iOS 7.7.4. Android 4.1.3+, iOS 5.0.0+. | [Android](https://lbs.amap.com/api/amap-mobile/guide/android/navigation) (2025-04-09), [iOS](https://lbs.amap.com/api/amap-mobile/guide/ios/navi) (2024-08-08) |
 | `androidamap://keywordNavi` | R `keyword` string; legacy R `style=0..8`, ignored from 7.6.5. Searches for destination, user selects result, then navigation. 5.0.0+. Not equivalent to a text-only route-preview API. | [Keyword navigation](https://lbs.amap.com/api/amap-mobile/guide/android/keyword-navi) (2024-08-08) |
-| `amapuri://openFeature`, both platforms | Walking navigation: R `featureName`, `lat`, `lon`, `dev`. Example uses `featureName=OnFootNavi`, table says `onFootNavi` (case inconsistency). Examples incorrectly use latitude 110 and omit required `dev`; do not copy literally. 8.26.0+. | [Android](https://lbs.amap.com/api/amap-mobile/guide/android/walk-navi) (observed 2026-10-03, future relative to check date), [iOS](https://lbs.amap.com/api/amap-mobile/guide/ios/walk-navi) (2024-12-11) |
+| `amapuri://openFeature`, both platforms | Walking navigation: R `featureName`, `lat`, `lon`, `dev`. Example uses `featureName=OnFootNavi`, table says `onFootNavi` (case inconsistency). Examples incorrectly use latitude 110 and omit required `dev`; do not copy literally. 8.26.0+. | [Android walking navigation](https://lbs.amap.com/api/amap-mobile/guide/android/walk-navi), [iOS walking navigation](https://lbs.amap.com/api/amap-mobile/guide/ios/walk-navi) (2024-12-11) |
 | `amapuri://openFeature`, both | Cycling navigation: R `featureName=OnRideNavi`, `lat`, `lon`, `dev`; `rideType` marked R but `bike`/empty explicitly means bicycle, `elebike` electric bicycle. 8.26.0+. | [Android](https://lbs.amap.com/api/amap-mobile/guide/android/ride-navi), [iOS](https://lbs.amap.com/api/amap-mobile/guide/ios/ride-navi) (2024-08-08) |
 | `androidamap://poi` | R `keywords`; multiple terms pipe-separated. O `lat1`,`lon1` upper-left and `lat2`,`lon2` lower-right bounding box; O `dev`. 5.1.3+. | [Search](https://lbs.amap.com/api/amap-mobile/guide/android/search) (2024-08-08) |
 | `iosamap://poi` | R `name`; O same four bounds (all or none), `dev`. 5.1.0+. Do not substitute Android `keywords`. | [Search](https://lbs.amap.com/api/amap-mobile/guide/ios/search) (2024-08-08) |
@@ -104,29 +106,12 @@ Source: [HarmonyOS NEXT route](https://lbs.amap.com/api/amap-mobile/guide/harmon
 | `sourceApplication` | Required calling application name. |
 | `m`,`dev`,`vian`,`userRelationToken` | Present in example but **not defined in this platform's table**. Do not infer their full contract, or copy example token-like strings into caller configuration. Example also omits required attribution. |
 
-## Encoding, implementation comparison and gaps
+## Encoding and integration limits
 
 Source: [`Amap`](../../lib/src/maps/amap.dart), inherited [`MapApp`](../../lib/src/maps/map_app.dart), [`buildUrl`](../../lib/src/utils/url_builder.dart), [`appendQueryParams`](../../lib/src/utils/launch_helper.dart).
 
-| Generated behavior / flag | Audit result |
-| --- | --- |
-| Marker `{ios,android}amap://viewMap` | Documented spelling. `sourceApplication=map_launcher`, `lat`, `lon`, `dev=0` valid for GCJ-02 input. `poiname` is supplied only if nonblank after builder filtering, violating Android's required-name table for unnamed coordinates. |
-| Route `{ios,android}amap://route/plan/` | **Not the documented route address on either platform.** Android docs use `amapuri://route/plan/`; iOS uses `iosamap://path`. Existing aliases may work, but are undocumented/runtime-unverified. |
-| Route keys `sourceApplication`, `dlat`,`dlon`,`dname`, optional `slat`,`slon`,`sname`, `t` | All documented names. `t=0/1/2/3` and default driving are sensible package choices; provider requires `t`, no default stated. **Missing `dev`**, required for coordinates. Blank names omitted; valid for routes. |
-| `supportsMarkerCoords=true`, `supportsDirectionsCoords=true`, all four travel modes true | Provider offers these capabilities; flags alone do not validate the actual route prefix or coordinate datum. |
-| Search flags false, builders return null | Matches current implementation, but provider supports marker search and iOS name-based routes; Android keyword navigation has different semantics. |
-| `supportsWaypoints=false`; supplied lists ignored by direct builder | Package request layer rejects nonempty waypoints. Provider now documents native waypoint lists; false is an implementation limitation, not provider absence. |
-| `hasUniversalLink=false`, HTTP builders null | Accurate for implemented surface, omits documented web alternatives. H5 `callnative` is not a verified Universal Link guarantee. |
-| `zoom` ignored | Correctly does not invent a `viewMap` zoom parameter. |
-| Extras | No Amap-specific typed extra. Generic extras append encoded query fields, **not replacements**: adding a second `dev`/source key yields duplicates with provider-specific precedence. They cannot repair a wrong endpoint. |
+Provider waypoint lists and web actions exceed the plugin's implemented surface. Nonempty waypoints are rejected by the request layer; the direct Amap builder does not serialize them. Generic extras can add absent fields, but conflicting built-in values are rejected rather than overridden.
 
 The package does no coordinate conversion and `LocationCoords` has no datum tag. `dev=0` is a GCJ-02 assumption, not a conversion. URL-encode values once (Chinese, spaces, `&`, `#`, literal `%`, `+`). `buildUrl` uses Dart query encoding (spaces can become `+`). Pipe/comma-separated internal structures still need delimiter-aware tests: outer encoding does not prove names containing pipes are unambiguous after the app decodes them. No URI length, label length or native waypoint maximum was found; do not invent one.
 
-## Proposed discriminating tests
-
-1. Assert exact full scheme/host/path separately on Android and iOS, not `contains('route/plan')`; require `dev` with coordinate routes. On devices compare current aliases with the documented endpoints and record app/OS versions.
-2. Use a known Beijing GCJ-02 point and its distinct WGS84 source; test `dev=0` versus `1` at a named entrance, checking the displayed point rather than merely app launch success. Never double-convert.
-3. Test unnamed marker on Android versus iOS; blank versus absent titles; text-only iOS route versus Android `keywordNavi` to establish route preview versus immediate-navigation semantics.
-4. Test two asymmetric waypoints in an order that changes the route, mismatched counts, and names containing `|`, `,`, `&`, `+`, `#`, `%` and Chinese. A Dart decode round-trip alone is insufficient.
-5. Compare native policy values against changing local preferences on versions above the documented retirement thresholds. Check cycling versus electric bicycle separately; do not infer e-bike support from `t=3` alone.
-6. For HTTPS fallback, check installed/uninstalled app, PC/mobile, `callnative=0/1`, and restricted embedded browsers. Verify web coordinate order and the one-via driving-only boundary independently of native waypoints.
+URL-contract coverage: [Chinese map tests](../../test/maps/chinese_maps_test.dart). Device dispatch, coordinate placement and embedded-browser behavior remain unverified.

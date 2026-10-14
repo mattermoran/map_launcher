@@ -1,23 +1,25 @@
-# Mapy.com (formerly Mapy.cz): external launch audit
+# Mapy.com (formerly Mapy.cz)
 
-Checked **2026-10-02** against repository commit [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), fetched and verified present on `origin/master`. Documentation research only; **no native device testing**.
+The plugin retains class `MapyCz`, ID `mapyCz` and display name `Mapy.cz`. Directions use v1 HTTPS routes with `end=lon,lat`, optional `start=lon,lat` and `routeType=car_fast/foot_fast/bike_road` for driving/walking/bicycling. Transit and nonempty waypoints are rejected; null mode leaves provider default `car_fast`. Markers still use legacy `/zakladni?source=coor&id=lon,lat` with optional `z`; search is not exposed. Android package is `cz.seznam.mapy`; iOS discovery uses `szn-mapy`, with HTTPS launching.
 
-## Status and sources
+Reference check: 2026-10-13. Tables include unimplemented provider features.
 
-**The application supports more than destination-only links, including immediate navigation.** The current public integration surface is `https://mapy.com/fnc/v1`, not the legacy `mapy.cz/zakladni` page parameters used by this package.
+## Sources
 
-Primary sources, read in full:
+The current URL API is `https://mapy.com/fnc/v1`; legacy marker syntax has no detailed contract in this source set.
+
+Protocol and naming references:
 
 - [Mapy URL functions](https://developer.mapy.com/further-uses-of-mapycz/mapy-cz-url/): current page body uses Mapy.com, although the title and slug retain Mapy.cz. URL API version **v1**; no publication/update date displayed. Navigation support explicitly dates from **April 2024** app releases onward.
 - [Calling the mobile application](https://developer.mapy.com/further-uses-of-mapycz/calling-the-mapy-cz-mobile-application/): Android and iOS native integration; no displayed date/version.
 - [Seznam's rename announcement](https://blog.seznam.cz/en/2025/03/the-global-journey-of-the-czech-map-application-begins-mapy-cz-becomes-mapy-com/), **2025-03-26**: Mapy.cz becomes Mapy.com. Do not rename the stable library identifier merely to update the display brand.
 - [Developer-service rename](https://developer.mapy.com/mapy-cz-is-now-mapy-com-what-does-this-mean-for-developers/), **2025-05-29**, effective June 1: distinct from the earlier consumer-product rename. It explicitly preserves both `mapy.cz/fnc/…` and `mapy.com/fnc/…`; domain migration is not mandatory to retain that URL API. This does not supply a detailed contract for legacy `/zakladni` fields.
 
-No primary source was inaccessible. No secondary source is needed for the supported parameters below. The pages do not formally name a coordinate datum or state latitude/longitude validation ranges; do not import REST API validation constraints into these launch URLs. Coordinate values are geographic longitude/latitude, not projected meter coordinates. Geo URI is the separate standard lat/lon family.
+The references do not name a datum or coordinate bounds. URL API fields are geographic longitude,latitude; Geo URI uses latitude,longitude.
 
 ## Universal URL actions and parameters
 
-Source for all rows: [official v1 URL reference](https://developer.mapy.com/further-uses-of-mapycz/mapy-cz-url/). All three actions work on the website and launch the installed mobile app, with website fallback if it is absent. **No API key** is required. The documentation supplies bare-action examples, so no query field is mandatory merely to open an action. Meaningful marker/navigation requests still need their relevant coordinates.
+The v1 URL reference documents website/app dispatch with website fallback and no API key. Bare actions are valid; coordinates are needed to specify a point or destination.
 
 | Action/field | Type and requirement | Values, default, limits and behavior |
 | --- | --- | --- |
@@ -45,7 +47,7 @@ https://mapy.com/fnc/v1/route?end=14.3681,50.0292&routeType=foot_hiking&waypoint
 
 ## Native/intent families
 
-Source: [official mobile-app calling reference](https://developer.mapy.com/further-uses-of-mapycz/calling-the-mapy-cz-mobile-application/). It documents both `geo:` and Android `google.navigation:`; the Google scheme does not imply identical Google Maps parameter support.
+The mobile calling reference documents `geo:` and Android `google.navigation:`. The Google scheme does not imply Google Maps parameter compatibility.
 
 | Family/field | Platform and requirement | Meaning and limits |
 | --- | --- | --- |
@@ -60,27 +62,19 @@ Source: [official mobile-app calling reference](https://developer.mapy.com/furth
 
 Neither native family documents callbacks, return-to-caller, navigation completion reporting, or additional route options. `szn-mapy://` is used for iOS detection by this repository but is **not a current documented action grammar in the sources above**.
 
-## Implementation comparison and gaps
+## Plugin limitations
 
-Inspected [builder](../../lib/src/maps/mapy_cz.dart), [base capabilities](../../lib/src/maps/map_app.dart), [URL encoding](../../lib/src/utils/url_builder.dart), and [extras/launch behavior](../../lib/src/utils/launch_helper.dart).
+Code: [builder](../../lib/src/maps/mapy_cz.dart), [capabilities](../../lib/src/maps/map_app.dart), [encoding](../../lib/src/utils/url_builder.dart), [launch extras](../../lib/src/utils/launch_helper.dart).
 
 | Capability | Repository behavior | Assessment |
 | --- | --- | --- |
 | Brand/identity | Display name `Mapy.cz`, ID `mapyCz`, class `MapyCz`; package `cz.seznam.mapy` | Display brand is stale. Preserve stable IDs for compatibility; rename is not proof old URLs stopped working. |
 | Marker | `https://mapy.cz/zakladni?source=coor&id=lon,lat`, optional `z` | Legacy website syntax, not documented by current v1 reference. Uses the same coordinate orientation as v1; current supported equivalent is showmap with `center` and `marker=true`. |
-| Directions | Same legacy path, `source=rout&id=lon,lat` | Not the documented v1 route contract; actual old-link behavior unverified. |
-| Origin, waypoints, mode | Builder ignores all three; `supportsWaypoints=false` | Confirmed wrapper omissions relative to v1 route fields. Inherited `supportsTravelMode` returns true even though builder ignores modes. |
+| Directions | `/fnc/v1/route` with `end`, optional `start` and `routeType` | Documented v1 subset; end-only examples do not guarantee live GPS in all cases. |
+| Origin, waypoints, mode | Coordinate origin supported; nonempty waypoints/transit rejected; three typed modes | Provider's 15-point and additional route-type features are not exposed. |
 | Search | No search builders; flags false | Documented v1 search and Geo URI search are unexposed. |
 | Navigation | No `navigate` or Android navigation builder | Confirmed omission, **not an application limitation**. |
-| Extras | Generic query append only; no typed extras | Adding `navigate=true` to `/zakladni` does not convert it into `/fnc/v1/route`. Extras cannot change an action path and duplicate existing keys rather than replacing them. |
+| Extras | Query append; no typed extras | `navigate=true` can accompany v1 route launches, not turn `/zakladni` markers into routes. Identical built-in values are retained once; conflicts exclude discovery entries or cause `MapLaunchException` on explicit launch. |
 | iOS/native | `szn-mapy://` detection only; HTTPS launch inherited | Detection scheme alone does not establish native action support. |
 
 REST routing/geocoding, JS Panorama, and iframe embedding are separate surfaces. Do not copy their `apikey`, avoidances, routing options, or response fields into app links. Consumer app features advertised in the rename announcement likewise do not automatically introduce new URL fields.
-
-## Concrete proposed tests (not executed)
-
-1. Migration URL tests: `(lat=50.0292, lon=14.3681)` becomes `center=14.3681,50.0292` for showmap and `end=14.3681,50.0292` for route; assert `marker=true`, action path, and `zoom` key. Keep identity compatibility tests separate.
-2. Route tests with omitted and explicit origin, asymmetric intermediate points, and 0/1/15/16 waypoints. Decide rejection policy for 16; do not truncate silently. Assert all seven documented route types independently, plus deliberate handling of unsupported v1 transit.
-3. Round-trip `query=Café & tram + / #` through URL decoding; no query splitting or double encoding. Test generic extras collision behavior explicitly before claiming overrides.
-4. Android device matrix: coordinate navigation versus address search, absent/present mode, all documented mode letters, app absent, location permission denied. iOS: Geo URI ambiguity versus HTTPS app opening.
-5. On old and post-April-2024 mobile versions, verify `navigate=true` starts guidance rather than only previewing a route; test omitted origin with two waypoints. Record app/OS versions and GPS permission. Web cannot establish native navigation behavior.

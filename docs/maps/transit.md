@@ -1,13 +1,15 @@
 # Transit App external launch contract
 
-Checked **2026-10-02**. Requested in [issue #111](https://github.com/mattermoran/map_launcher/issues/111), not implemented in the inspected repository. Fetched `origin/master`; it and `HEAD` match [8aa7a6e1152a80c4482003bdfaad8f850bdb6131](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131). Research only, **runtime-unverified** on Android and iOS.
+**Not included in map_launcher.** Requested in [issue #111](https://github.com/mattermoran/map_launcher/issues/111). Public links document transit directions and nearby lines, not generic marker display or selectable driving/cycling modes.
 
-## Current primary documentation exists
+Source check: **2026-10-02**. Android/iOS dispatch remains unverified.
+
+## Sources by interface
 
 | Source | Date/version and scope |
 | --- | --- |
-| [Transit APIs, “Transit's URL scheme”](https://transitapp.com/apis) | Primary, retrieved in full. Page extraction reports published **2026-09-30 12:16 UTC**; this is page metadata, not a new protocol version. Explicit compatibility note: query strings supported in **Transit 2.0+**. |
-| [Former developer path](https://transitapp.com/developers) | Resolves to the same API page. The issue's historical Karte reference is not the only available evidence. |
+| [Transit APIs, “Transit's URL scheme”](https://transitapp.com/apis) | Primary. Page metadata reports **2026-09-30 12:16 UTC**, not a protocol version. Query strings require **Transit 2.0+**. |
+| [Former developer path](https://transitapp.com/developers) | Resolves to the same API page. |
 | [Link to Transit with Deeplinks and Smart Banners](https://resources.transitapp.com/article/448-deeplink-to-transit-from-other-apps) | Primary partner help, last updated **2022-09-15**; offers setup help through partner contact. Does not replace the publicly published scheme table with a partner-only API. |
 | [Smart banner instructions](https://transitapp.com/smartbanners/how) | Primary, undated; confirms Android/iPhone store destinations and app identifiers. Banner is install promotion, not a route deep link. |
 | [REST reference](https://api-doc.transitapp.com/) | Primary **v4.0.0 stable**, OpenAPI 3.1.0; legacy v3 linked separately. Authenticated data API, not URL-scheme parameters. |
@@ -65,21 +67,12 @@ Encode each query value once using UTF-8 percent encoding. The official text exa
 
 The banner's HTML `smartbanner:*` title, author, price, icon, button and enabled-platforms metadata configures a website widget, not a native launch action. No reason to add it to a map URL builder.
 
-## Historical evidence and repository readiness
+## Secondary implementation evidence
 
 [Karte's iOS implementation](https://github.com/kiliankoe/Karte/blob/1a3912449774a065eb4017198cdadd4336a51e5a/Sources/App.swift#L132-L135) uses `transit://directions`, `from=lat,lon` (optional origin) and `to=lat,lon`. Its [original implementation commit](https://github.com/kiliankoe/Karte/commit/9987eaf015d8774676a30f865e756481f5020d50) is dated **2017-04-15**. This is secondary historical iOS evidence; the current primary guide now supports the basic syntax directly. Karte's tests do not validate present app behavior or Android support.
 
-No Transit `MapApp`, registry entry, exported class, icon, Android visibility entry, example iOS query entry or app-specific tests exist at the baseline. Generic URL and location helpers exist, but support is **not implemented**.
+Candidate configuration: Android package `com.thetransitapp.droid`, iOS store ID `498151501` (from official banner links), query scheme `transit`. Coordinate and text directions have primary documentation, but detection and dispatch require confirmation. Nearby transit is a separate action, not `supportsMarkerCoords=true` by default. No universal HTTPS route URL, selectable travel modes, labels, time controls or waypoints are documented.
 
-**Assessment:** feasible candidate for a narrow transit-directions integration, contingent on mobile validation. Coordinate and text directions have primary documentation; nearby transit could be a separately described action or best-effort fallback, not `supportsMarkerCoords=true` by default. Android package is `com.thetransitapp.droid`, iOS store ID `498151501`; those are confirmed by official banner links. `transit` is the documented query scheme, but platform detection/dispatch still need verification. Do not advertise a universal HTTPS route URL, all travel modes, labels, time controls or waypoints.
+## Remaining compatibility questions
 
-## Concrete tests and remaining blockers
-
-1. Device-test `transit://directions?to=45.5391%2C-73.5997`, then a different explicit origin `45.5048,-73.5607`. Confirm endpoints are not swapped and explicit origin wins over GPS on Android and iOS.
-2. Test coordinate/text mixtures, Unicode, `Café & Tea + #1`, and empty-value omission. For an ambiguous location string, compare behavior in Montreal and outside its vicinity; distinguish successful URL parsing from correct geocoding.
-3. Separately test missing `from`, missing `to`, both absent, and missing nearby `q`, with location permission granted/denied. Only directions' omitted-endpoint behavior is documented.
-4. Verify nearby opens transit routes rather than a titled pin; no zoom/label guarantee. Verify directions does not silently claim driving mode or automatic GO.
-5. Record app/OS versions, package discovery, query-scheme visibility and scheme dispatch. Test installed, uninstalled and unsupported-city cases and an explicit store fallback. Do not infer Android parity from old iOS Karte code.
-6. Before implementation, decide how unsupported modes/waypoints are rejected or represented in capabilities, and whether nearby warrants a generic marker fallback. No new public API is justified solely by the app's unrelated REST features.
-
-The primary sources were accessible; no native device tests were performed. No speculative integration was implemented.
+Current mobile dispatch, location-permission behavior, missing nearby `q`, ambiguous text geocoding, unsupported-city handling and store fallback require confirmation. Directions' omitted-endpoint default is documented; nearby's default is not. Nearby routes should remain distinct from a titled pin, and a directions screen should not be presented as automatic GO guidance.

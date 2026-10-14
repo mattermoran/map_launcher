@@ -1,20 +1,20 @@
-# 2GIS: external launch audit
+# 2GIS
 
-Checked **2026-10-02** against [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), fetched and verified on `origin/master`. Research only; **no device testing**.
+The plugin builds native/HTTPS coordinate cards and legacy `routeSearch` routes with optional coordinate origins. Modes are `car/bus/pedestrian/bicycle`, default `car`; legacy cycling is not documented. Titles, zoom and waypoints are unused; search and immediate `/go` guidance are not exposed. Android targets `ru.dublgis.dgismobile`; iOS callers declare `dgis`. Current provider grammar below is distinct from the plugin's legacy route builder.
 
-## Status and sources
+Reference check: 2026-10-02.
 
-**The builder uses the officially labelled legacy route format.** The Russian reference documents a newer route grammar, search and object cards, Android intermediate points, and immediate guidance. The English reference is substantially narrower and differs on the transit token; it must not be treated as the exhaustive current contract.
+## Sources
 
-- [Russian developer deep-link reference](https://help.2gis.ru/question/razrabotchikam-zapusk-ideystviya-vmobilnom-prilozhenii-cherez-deeplink): primary, full page read; no displayed update date/app version. Explicitly labels `routeSearch` routing **legacy, used before 2020** and `directions/points` current.
-- [English developer launch reference](https://help.2gis.com/question/developers-launching-2gis-navigation-using-deeplink): primary, full page read; undated; describes only bare launch and older `routeSearch` routes, with `ctx` for transit.
+- [Russian developer deep-link reference](https://help.2gis.ru/question/razrabotchikam-zapusk-ideystviya-vmobilnom-prilozhenii-cherez-deeplink): current actions and `directions/points`; labels `routeSearch` legacy, used before 2020. No minimum app version stated.
+- [English developer launch reference](https://help.2gis.com/question/developers-launching-2gis-navigation-using-deeplink): narrower legacy launch/routes reference, with `ctx` for transit.
 - [API Platform](https://docs.2gis.com/en/api-platform): REST/SDK product documentation, **not** the consumer-app URL contract. No API key from this platform is required by the deep-link reference.
 
-Both help references were accessible. No secondary evidence is necessary. No date is inferred from copyright text. Explicit coordinate datum and numeric validation ranges are not supplied in these help pages: use their geographic longitude/latitude order, and do not borrow Routing API bounds/units as if specified for app links.
+The help pages do not name a coordinate datum or numeric validation ranges. Coordinates are geographic longitude,latitude.
 
 ## URL families and actions
 
-Source for this and the next tables: [current Russian primary reference](https://help.2gis.ru/question/razrabotchikam-zapusk-ideystviya-vmobilnom-prilozhenii-cherez-deeplink).
+Reference: Russian deep-link guide.
 
 `dgis://2gis.ru/{path}` and `https://2gis.ru/{path}` support the documented scenarios. The source **prefers HTTPS** because absence of the app leaves a working web scenario. Bare `dgis://` and `https://2gis.ru/` launch the app/map with no action parameters. Short links such as `http://go.2gis.com/6kjcs` are accepted; offline inability to expand them or an unsupported scenario sends the link to the browser. Short-code creation is not specified. There is no deep-link launch-count restriction.
 
@@ -35,7 +35,7 @@ Source for this and the next tables: [current Russian primary reference](https:/
 
 ## Current route fields
 
-Source: [“Построение маршрута (актуально)”](https://help.2gis.ru/question/razrabotchikam-zapusk-ideystviya-vmobilnom-prilozhenii-cherez-deeplink). These are **path segments**, not HTTP query parameters.
+Reference: Russian guide, “Построение маршрута (актуально)”. Fields are path segments, not query parameters.
 
 | Field | Type/requiredness | Values/defaults/constraints |
 | --- | --- | --- |
@@ -50,7 +50,7 @@ The source's truck example omits `tab/truck`; do not copy that omission as a mod
 
 ## Legacy route and immediate-navigation fields
 
-Sources: [Russian reference, legacy and guidance sections](https://help.2gis.ru/question/razrabotchikam-zapusk-ideystviya-vmobilnom-prilozhenii-cherez-deeplink), compared with [English route section](https://help.2gis.com/question/developers-launching-2gis-navigation-using-deeplink).
+References: Russian legacy/guidance sections and English route section.
 
 | Field/family | Contract | Evidence limits |
 | --- | --- | --- |
@@ -64,9 +64,9 @@ Sources: [Russian reference, legacy and guidance sections](https://help.2gis.ru/
 
 No callback, completion return URL, x-callback-url, language, avoidances, departure time, credentials, custom marker label, or URL-length limit is documented. Their absence from the reference is not a device-tested assertion of rejection. Ordinary route construction is distinct from `/go` guidance.
 
-## Implementation comparison and gaps
+## Plugin limitations
 
-Inspected [builder](../../lib/src/maps/double_gis.dart), [base capabilities](../../lib/src/maps/map_app.dart), and [extras/launch handling](../../lib/src/utils/launch_helper.dart).
+Code: [builder](../../lib/src/maps/double_gis.dart), [capabilities](../../lib/src/maps/map_app.dart), [launch extras](../../lib/src/utils/launch_helper.dart).
 
 | Capability | Current implementation | Assessment |
 | --- | --- | --- |
@@ -76,16 +76,7 @@ Inspected [builder](../../lib/src/maps/double_gis.dart), [base capabilities](../
 | Waypoints | Ignored; flag false | Documented Android current-format capability omitted. Do not set a global cross-platform flag without resolving iOS behavior. |
 | Search/cards/Favorites | No dedicated builders; search flags false | Documented launch actions omitted. |
 | Navigation | Does not add `/go` | Only planner launch represented; no immediate guidance API. |
-| Extras | No typed class; generic query append | Cannot inject mode/path options into `routeSearch`, change to current grammar, append waypoints, or add the path command `/go`. Existing query keys are appended, not replaced. |
+| Extras | No typed class; query append | Cannot change path modes/grammar, add waypoints or `/go`. Identical built-in values are retained once; conflicts exclude discovery entries or cause `MapLaunchException` on explicit launch. |
 | Launch selection | Native preferred on mobile; HTTPS fallback | Official guidance prefers HTTPS; this is a design difference, not proof native is invalid. Android package `ru.dublgis.dgismobile`, iOS detection `dgis://`. |
 
 The confirmed gap is **legacy grammar and missing current actions**, not a verified broken transit link. The embedded Mobile SDK, navigation REST APIs, search APIs and their keys/vehicle fields are separate contracts and must not be copied into app URLs.
-
-## Concrete proposed tests (not executed)
-
-1. Current-format builder fixtures with `(lat=55.736291, lon=37.531542)` and different destination coordinates; assert longitude-first order and exactly one leading empty-origin slot when origin absent.
-2. Android cases with 0/1/10/11 intermediate points, maintaining input order and optional object IDs; choose explicit error behavior over silent truncation for 11. Separate iOS acceptance testing before advertising support there.
-3. Test all seven current route-type tokens and explicit mode selection; device-test omitted type after a prior walking session to resolve the contradictory default prose.
-4. Compare `bus` and `ctx`, plus legacy `bicycle`, on recorded Android/iOS versions. Existing English docs are insufficient grounds for changing transit to `ctx`.
-5. `/go` device tests: car, pedestrian, bus and taxi fallback, GPS denied/unavailable, and ignored explicit origin. Assert guidance actually starts rather than treating app opening as success.
-6. Search/card path encoding with Cyrillic, spaces, slash, ampersand and `#`; HTTPS app installed/absent; short-link online/offline. No tests here have exercised an actual 2GIS app.

@@ -1,6 +1,12 @@
-# CoPilot external launch audit
+# CoPilot
 
-Checked **2026-10-02** against fetched origin/master and HEAD [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131). Implementation: `lib/src/maps/copilot.dart`, `map_app.dart` and `utils/url_builder.dart`.
+## Current support
+
+`CoPilot` provides coordinate markers (`VIEW`) and destination-only directions (`GOTO`) on Android and iOS. Directions reject explicit origins, nonempty waypoints and every explicit travel mode. No mode is serialized; a licensed vehicle profile is not a generic driving-mode selector. Search, STOPS/TASKS, universal URLs and zoom are not implemented.
+
+Configuration: Android `com.alk.copilot.mapviewer`, iOS App Store ID `378870891`, query scheme `copilot`. See [provider](../../lib/src/maps/copilot.dart), [capabilities](../../lib/src/maps/map_app.dart), and [URL builder](../../lib/src/utils/url_builder.dart). Both actions send separate decimal `lat` and `long` fields, with optional `name`; empty names are omitted.
+
+Source check: **2026-10-02**. Native acceptance remains unverified.
 
 ## Current primary documentation and product restrictions
 
@@ -11,7 +17,7 @@ Checked **2026-10-02** against fetched origin/master and HEAD [8aa7a6e](https://
 | [Standalone integration][standalone] | Live primary page, updated **2025-12-23**. Explicit app-store/MDM standalone deployment and licensed asset requirement. |
 | [Integration overview](https://developer.trimblemaps.com/copilot-navigation/) | Separates one-way standalone URL intents from SDK two-way APIs and CPIK embedded navigation. Do not infer SDK callbacks or embedded API features for this launcher. |
 
-The repository targets Android `com.alk.copilot.mapviewer`, iOS App Store `378870891`, detection `copilot://`. Presence of the consumer app/package alone is **not** proof of the required Truck entitlement. No archived source is needed here. The legacy `http://www.copilotlive.com/copilot/android?...` endpoint is still documented, but not fully compatible with Android 12+. The recommended custom scheme remains `copilot://`; clickable HTTP(S) links on Android 12+ require CoPilot **10.19.3.48+** and `https://copilotgps.com/copilotgps?…` (HTTP also documented). `copilotv9://` is a CoPilot 9 legacy alias, not a preferred current endpoint.
+Presence of the consumer app/package alone is **not** proof of the required Truck entitlement. The legacy `http://www.copilotlive.com/copilot/android?...` endpoint is documented, but not fully compatible with Android 12+. The recommended custom scheme is `copilot://`; clickable HTTP(S) links on Android 12+ require CoPilot **10.19.3.48+** and `https://copilotgps.com/copilotgps?…` (HTTP also documented). `copilotv9://` is a CoPilot 9 legacy alias, not a preferred current endpoint.
 
 ## Single-location action contract
 
@@ -60,7 +66,7 @@ These are publicly documented standalone actions, **not currently emitted by thi
 | `VehicleProfile` | `SelectByName=<profile name>`, case-insensitive matching, 10.19.4.348+. Only when no active trip; separate call, not with other configs/stops. Missing profile keeps current profile. `&` forbidden even escaped. |
 | `FLEETPORTAL` | `action=Set`; alphanumeric `DriverID`, `DeviceID`, `PartnerID`; booleans `EnableCompliance`, `EnableFleetPortal`, `showconfirmation`. No complete required-field table. `ShowCompliancePopup` default false, **deprecated 10.19.3.48**. Feature 10.9.0.1098+. |
 
-Fleet settings apply automatically with Account Manager asset activation when assets represent vehicle/driver. Device-based assets may additionally need vehicle `DeviceID`; non-Account-Manager licensing needs explicit FleetPortal connection. Configuration registry is a large separately versioned surface, not reproduced as a frozen exhaustive table here; this audit catalogs its URL transport and links the authoritative per-setting inventory rather than inventing a universal mode or truck-dimension query syntax.
+Fleet settings apply automatically with Account Manager asset activation when assets represent vehicle/driver. Device-based assets may additionally need vehicle `DeviceID`; non-Account-Manager licensing needs explicit FleetPortal connection. The separately versioned configuration registry supplies the authoritative per-setting inventory; it is not a universal mode or truck-dimension query syntax.
 
 ## Consolidated JSON tasks
 
@@ -86,15 +92,9 @@ Base `copilot://options?type=TASKS&JSON=<Base64 JSON>`; **10.26.1.345+**. Standa
 
 [CoPilot's own reference][multi] explicitly supports `geo:lat,long?q=address` (coordinates win), or `geo:0,0?q=address`. From **10.14.0.368**, `geo:0,0?q=address@lat,long` and the reverse order are accepted. From **10.19.0.1360**, address can label the stop; from **10.19.0.1715**, `geo:0,0?q=lat,long(label)` supports caller labels. One address-label example appears longitude-first while the stated grammar and other examples are latitude-first: preserve latitude-first and test rather than copy that inconsistency. This documented app fallback is stronger evidence than merely assuming all apps accept Android common intents.
 
-## Concrete errors, missing options and tests
+## Unimplemented actions and unresolved details
 
-* **Schema error fixed after this audit:** the baseline marker builder emitted `marker=lat,lon` with `action=VIEW`, omitting required `lat` and `long`. It now sends those separate fields, matching directions' coordinate representation. Regression tests cover both mobile platforms, absent labels, and reserved/Unicode label characters; they failed against the old builder.
-* **Definite capability mismatch:** all travel modes inherited true; no mode serialized or general transit/cycling/walking contract found. Truck routing profile selection is not a generic `TravelMode` parameter.
-* Search, ADDNEXTSTOP, STOPS/TASKS waypoints, vehicle profiles and management actions are documented **unimplemented options**, with license/version prerequisites. `supportsWaypoints=false`, search false, no universal URL; directions origin ignored. `buildUrl` drops empty names, which is valid because `name` is optional.
-* Tests now parse a VIEW URI for `(40.388249,-74.654724)` and assert `lat`, `long`, **absence of `marker`**, round-trip name `A & B + Café`, and no-name omission. Further cases: names of 164/165 characters independently of URL byte length, and coordinates versus conflicting address.
-* For future multi-stop support use distinct A/B/C, verify first-stop replacement/duplication, forbidden delimiters, empty positional fields, query connectivity and UK-postcode precedence. Decode TASKS Base64 and check nesting and numeric/string types. Test every mode and separately test unlicensed/Truck-licensed installations.
-
-No native CoPilot was launched. Current consumer versus Truck entitlement, legacy coordinate discrepancy, JSON nesting discrepancies, active-trip/profile interaction, GPS-state behavior, callbacks and automatic guidance remain device/vendor verification gaps. The marker correction above was applied during integration of this research; it does not establish runtime app acceptance.
+Search, ADDNEXTSTOP, STOPS/TASKS, vehicle profiles and management operations are documented but not emitted by this provider. Their version and licensing prerequisites apply independently. Truck entitlement, the legacy coordinate example, TASKS nesting/type discrepancies, active-trip/profile interaction, GPS-state behavior and automatic guidance require vendor or native-app confirmation. URL generation alone establishes none of those outcomes.
 
 [multi]: https://developer.trimblemaps.com/copilot-navigation/feature-guide/advanced-features/url-launch/
 [tasks]: https://developer.trimblemaps.com/copilot-navigation/feature-guide/advanced-features/url-launch2/

@@ -1,6 +1,23 @@
-# MAPS.ME external launch contract
+# MAPS.ME
 
-Checked **2026-10-02**. Repository baseline: [`8aa7a6e1152a80c4482003bdfaad8f850bdb6131`](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131); `git fetch origin master` confirmed that both HEAD and `origin/master` were this commit. Research only; installed-app behavior was **not tested**.
+Checked: **2026-10-13**. Native-device behavior has not been verified.
+
+## Plugin behavior
+
+Directions serialize
+`mapsme://route?sll=...&saddr=...&dll=...&daddr=...&type=...`, preserving that
+relative order and both required name keys even when empty. This follows the
+pinned official legacy
+[route parser](https://github.com/mapsme/omim/blob/1892903b63f2c85b16ed4966d21fe76aba06b9ba/map/mwm_url.cpp#L399-L440).
+Serialization uses `Uri.queryParameters` locally, not the shared helper that
+drops empty values. Driving/walking/transit/bicycling map to
+`vehicle`/`pedestrian`/`transit`/`bicycle`; an omitted mode explicitly selects
+`vehicle` (a wrapper default, not a parser default). An origin-less route returns
+null: the URL parser requires two endpoints and there is no safe current-position
+token established. No invented position or Android Intent-only fallback is used.
+Markers use `mapsme://map?v=1&ll=lat,lng[&n=TITLE]`; zoom is ignored.
+Waypoints, search, callbacks and web fallback are not implemented. The source is
+legacy evidence, **not certification of today's closed-source app**.
 
 ## Evidence and platform identity
 
@@ -92,29 +109,15 @@ Android file imports expose KML (`application/vnd.google-earth.kml+xml`) and KMZ
 
 Verified legacy Android dynamic-link hosts `dlink.maps.me` and `dlink.mapsme.devmail.ru` explicitly handle `/catalogue`, `/guides_page`, `/subscription`; other paths use an adapter to the old core scheme. This is historical mapping, not evidence that today's hosted service resolves identically. [Mapping/validation](https://github.com/mapsme/omim/blob/1892903b63f2c85b16ed4966d21fe76aba06b9ba/android/src/com/mapswithme/maps/intent/Factory.java#L371-L553).
 
-## Comparison with map_launcher
+## Integration limits
 
-Local sources: [`mapswithme.dart`](../../lib/src/maps/mapswithme.dart), [`map_app.dart`](../../lib/src/maps/map_app.dart), [`url_builder.dart`](../../lib/src/utils/url_builder.dart), [`AndroidManifest.xml`](../../android/src/main/AndroidManifest.xml), [example iOS declarations](../../example/ios/Runner/Info.plist).
+Local sources: [`mapswithme.dart`](../../lib/src/maps/mapswithme.dart), [`map_app.dart`](../../lib/src/maps/map_app.dart), [`url_builder.dart`](../../lib/src/utils/url_builder.dart), [example Android declarations](../../example/android/app/src/main/AndroidManifest.xml), [example iOS declarations](../../example/ios/Runner/Info.plist).
 
-| Finding | Classification | Consequence |
-| --- | --- | --- |
-| Marker emits `mapsme://map?v=1&ll=...&n=...` | Consistent with legacy source | Single point, correctly latitude first, encoded title. Zoom argument discarded despite available `z`. |
-| Directions emits `mapsme://route?v=1&ll=...&n=...` | **Concrete mismatch with official legacy parser** | Missing every required route field; parser rejects. This is stronger than an omitted optional feature, but current installed-app failure remains unverified. |
-| Origin and travel mode ignored; all modes reported supported | Capability overstatement | Route parser requires origin and a mode. There is no evidence for destination-only current-position routing in that parser. |
-| Search, multi-marker, styles, callbacks, extra actions absent | Omitted features | `supportsMarkerSearch=false` and `supportsWaypoints=false` accurately describe wrapper; route waypoints also absent in source contract. |
-| `hasUniversalLink=false`, public URL methods return null | Conservative limitation | Compact web links exist, but full web map/route fallback is not established. |
-| IDs and detection scheme | Match official site/legacy registration | No identity mismatch found. |
+The route builder deliberately preserves empty `saddr`/`daddr` values using `Uri.queryParameters`; the shared helper drops blank values. A dictionary cannot represent the repeated point keys required for multiple markers. Request-layer waypoint rejection does not imply the direct route builder validates its unused waypoint argument. Compact geographic links do not establish a complete web route fallback.
 
-Our helper percent-encodes query values but drops empty/whitespace-only values. A future route implementation must not silently drop structurally required empty `saddr`/`daddr`; use a valid name or change serialization deliberately. Standard URI encoding alone cannot model repeated point keys.
-
-## Discriminating test inputs (proposed, not executed against apps)
-
-1. Compare existing route output against `mapsme://route?sll=59.3293,18.0686&saddr=Stockholm&dll=58.4108,15.6214&daddr=Linkoping&type=pedestrian`. Expect legacy parser rejection of the former and acceptance of the latter.
-2. Omit each of the five keys; swap `saddr`/`dll`; test `type=PEDESTRIAN`, `type=walking`, and `type=vehicle`. Only documented enums, case-folded, should succeed.
-3. Use names `A&B + café/港`, blank names, and nested callback `caller://pin?x=1&y=2`; verify exactly one decode and preserved delimiters.
-4. Send two `ll` values and an `n` before the first; test `balloonaction=false` to distinguish presence flags from boolean values.
-5. Test coordinates `(−33.8688,151.2093)` to expose swapped order; boundaries ±90/±180 and just outside them. Test zoom 0, 1, 19, 20 and multiple markers separately.
-6. On real devices test detection vs launch for `mapswithme`/`mapsme`, cold/warm app state, both stores' current releases, and route confirmation vs actual navigation. Do not equate `canOpenURL` success with action success.
+Marker and route labels encode spaces as `%20` and literal plus signs as `%2B`:
+the [legacy receiver decoder](https://github.com/mapsme/omim/blob/1892903b63f2c85b16ed4966d21fe76aba06b9ba/coding/url.cpp#L326-L345)
+only decodes percent escapes and leaves `+` unchanged.
 
 ## Limitations
 

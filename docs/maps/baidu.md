@@ -1,10 +1,20 @@
-# Baidu Maps (百度地图): external launch protocol audit
+# Baidu Maps (百度地图)
 
-Checked **2026-10-02**. Baseline [`8aa7a6e`](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131) was verified after fetching `origin/master`, which resolved to that commit. **All app behavior is runtime-unverified**; this document compares generated URLs against provider contracts, not installed-device results.
+Checked: **2026-10-13**. Native-device behavior has not been verified.
+
+## Plugin behavior and configuration
+
+Android/iOS markers use `baidumap://map/marker`, with a supplied nonblank title or coordinate-text fallback. iOS also sends coordinate text as required `content`; only Android sends `traffic=on`. Optional zoom is forwarded. Routes use `baidumap://map/direction`, coordinate/name composites, and modes `driving`, `walking`, `transit`, `riding` (default driving). Android requires an explicit origin and returns null without one; iOS uses `origin=我的位置` when absent. Both actions send `coord_type=gcj02` without converting coordinates. Search, waypoints and web fallback are not implemented.
+
+Configure `BaiduMaps(source: 'company.application')` to add `andr.` or `ios.`, or supply a complete `src` extra. No default attribution is provided. This is caller attribution, not an API key. The plugin does not reject absent attribution or enforce its documented format; provider acceptance has not been device-verified. Identical built-in extras are retained once. Conflicting built-in options still exclude the provider from discovery and cause explicit launch to report `MapLaunchException`.
 
 Primary sources are the current Chinese **地图调起 API / URI API v2.0** pages: [Android](https://lbs.baidu.com/docs/webapi?title=mapadjustment/uri/andriod), [iOS](https://lbsyun.baidu.com/docs/webapi?title=mapadjustment/uri/ios), [web](https://lbs.baidu.com/docs/webapi?title=mapadjustment/uri/web), each updated **2026-03-20 16:08**; [HarmonyOS](https://lbs.baidu.com/docs/webapi?title=mapadjustment/uri/harmony), updated **2026-03-23 14:27**. The misspelled `andriod` in the official URL is intentional. The older [URI overview](https://api.map.baidu.com/lbsapi/uri.htm) remains accessible but is **legacy**, not preferred over the current tables.
 
-“Documented” below means these launch pages explicitly describe it. “Inferred” and “contradictory” identify gaps; no secondary-only claim is promoted to documented support. REST place search/geocoding/navigation and SDK callbacks are separate APIs even where their names resemble launch actions.
+REST place search/geocoding/navigation and SDK callbacks are separate APIs from these launch actions.
+
+With shorthand `.baidu`, use `BaiduExtra(src: 'andr.example.myapp')` in `extra`
+or `providerExtras`. Supply the complete prefix (`ios.` on iOS); unlike the
+`BaiduMaps(source: ...)` constructor, this helper does not add it automatically.
 
 ## Platforms, attribution and coordinates
 
@@ -21,7 +31,7 @@ No return-URL/callback query key is documented in the Android/iOS/web inventory.
 
 ## Markers and map display
 
-Source: [Android §§2.2](https://lbs.baidu.com/docs/webapi?title=mapadjustment/uri/andriod), [iOS §§2.1](https://lbsyun.baidu.com/docs/webapi?title=mapadjustment/uri/ios). R = required; O = optional. All actions inherit required `src`.
+Sources: Android §2.2 and iOS §2.1 in the URI API v2.0 guides linked above. R = required; O = optional. All actions inherit required `src`.
 
 | Action / key | Requiredness and syntax |
 | --- | --- |
@@ -39,7 +49,7 @@ Source: [Android §§2.2](https://lbs.baidu.com/docs/webapi?title=mapadjustment/
 
 ## Route planning
 
-Endpoint on both platforms: `baidumap://map/direction`. Sources: [Android §2.3.2](https://lbs.baidu.com/docs/webapi?title=mapadjustment/uri/andriod), [iOS §2.2.3](https://lbsyun.baidu.com/docs/webapi?title=mapadjustment/uri/ios).
+Endpoint on both platforms: `baidumap://map/direction`. Sources: Android §2.3.2 and iOS §2.2.3 in the URI API v2.0 guides.
 
 | Key | Required | Values / syntax / differences |
 | --- | --- | --- |
@@ -67,7 +77,7 @@ Waypoint value **before outer query encoding**:
 
 ## Navigation is not the directions screen
 
-Sources: [Android §2.4](https://lbs.baidu.com/docs/webapi?title=mapadjustment/uri/andriod), [iOS §2.3](https://lbsyun.baidu.com/docs/webapi?title=mapadjustment/uri/ios). Include `src` and correct `coord_type`.
+Sources: Android §2.4 and iOS §2.3 in the URI API v2.0 guides. Include `src` and correct `coord_type`.
 
 | Action | Parameters / distinctions |
 | --- | --- |
@@ -80,7 +90,7 @@ Sources: [Android §2.4](https://lbs.baidu.com/docs/webapi?title=mapadjustment/u
 
 ## Search, details and additional documented app actions
 
-Sources: [Android §§2.3–2.6](https://lbs.baidu.com/docs/webapi?title=mapadjustment/uri/andriod), [iOS §§2.2,2.4](https://lbsyun.baidu.com/docs/webapi?title=mapadjustment/uri/ios). Required `src` remains applicable even where the provider says “no parameters”. Unless named, no default/range/limit is published.
+Sources: Android §§2.3–2.6 and iOS §§2.2, 2.4 in the URI API v2.0 guides. Required `src` remains applicable even where the provider says “no parameters”. Unless named, no default/range/limit is published.
 
 | Action | Parameters and platform scope |
 | --- | --- |
@@ -152,33 +162,10 @@ Harmony truck navigation parameters ([same source](https://lbs.baidu.com/docs/we
 | `is_trailer`,`displacement` | O trailer `1/0`; fuel consumption L/100km `(0,150]`. |
 | `power_type`,`emission_limit` | R power `1` petrol, `2` diesel, `3` electric, `4` hybrid; R emissions `0..6` none / China I–VI. |
 
-## Repository audit
+## Encoding and integration limits
 
 Sources: [`BaiduMaps`](../../lib/src/maps/baidu.dart), [`MapApp`](../../lib/src/maps/map_app.dart), [`buildUrl`](../../lib/src/utils/url_builder.dart), [`launch helper`](../../lib/src/utils/launch_helper.dart), [`Chinese map tests`](../../test/maps/chinese_maps_test.dart).
 
-| Generated key / capability | Comparison |
-| --- | --- |
-| `/marker`, `location=lat,lng`, `title`, `zoom` | Correct documented names/order. Null/blank title is stripped, despite required title on both platforms. **No `content`**, required in iOS table. Zoom is passed without a provider-derived range; none was found. |
-| `traffic=on` | Documented Android marker option; not listed for iOS marker. Changing caller traffic state is an implementation choice, not a required marker behavior. |
-| `coord_type=gcj02` on both operations | Explicitly supported URI value, but assumes inputs already GCJ-02. No conversion or datum tag in `LocationCoords`; WGS84 inputs will not become correct merely by labeling them GCJ-02. |
-| `src=com.map_launcher` | Present but **does not follow platform-specific attribution convention**. Generic extras cannot cleanly override it: they append a duplicate query key. |
-| `/direction`, `destination`, optional `origin` | Combined `latlng:…` + pipe + `name:…` matches examples. When title null, still emits `name:` inside nonempty composite value. **Omitted origin conflicts with required-origin table**; current-location behavior needs a device test or explicit documented token. |
-| `mode` | All four mappings `driving/walking/transit/riding` documented for native Android/iOS; default driving matches prose. `truck/neweng` not representable by current `TravelMode`. |
-| Coordinate flags true, all four modes true | Provider supports them, subject to omitted required fields above. |
-| Search flags false | Implementation limitation; provider supports text geocoding/search and name-based routes. |
-| `supportsWaypoints=false` | Matches request-layer rejection and direct builder's ignored argument, not current provider capability (`viaPoints` documented). |
-| `hasUniversalLink=false`, HTTP builders null | No fallback implemented despite browser-map URLs. A browser URL alone does not establish OS Universal Link support. |
-| Extras | No typed Baidu extra. Generic maps append encoded fields; constructor/show extras merge with each other, **not with generated keys**. Can add absent `content`/policy fields, but cannot fix path selection or reliably replace `src`, `mode`, datum without duplicate precedence ambiguity. |
+`LocationCoords` has no datum tag. Labeling GPS/WGS84 coordinates `gcj02` does not convert them. Truck/new-energy modes are not representable by `TravelMode`. Provider `viaPoints` support is broader than the plugin: requests reject nonempty waypoints and direct builders omit them. Generic extras add absent fields but cannot override conflicting generated fields or change the endpoint.
 
 Encode each query value once; preserve ASCII structural commas/colon/pipe inside the decoded combined value. A label containing a pipe or `name:`/`latlng:` sequence may become ambiguous to Baidu after outer decoding. JSON waypoints avoid delimiter splitting but still need correct query encoding. Existing tests prove Dart string assembly/round-trip, not provider acceptance, current-position semantics or navigation behavior.
-
-## Proposed discriminating tests
-
-1. Compare named/unnamed markers with and without `content` separately on iOS/Android; verify visible title, description and traffic state, not just successful launch.
-2. Route with no origin, empty origin, `我的位置`, and a distant explicit origin; inspect the actual chosen origin. iOS tests should include the documented 7.1+ token.
-3. Test known BD-09, GCJ-02 and WGS84 coordinates for the same landmark with matching `coord_type`; include an intentionally mismatched datum as a negative control.
-4. Test `sy=3` and `sy=4` on both platforms using routes where walking/transfers differ; they must not share an assumed policy enum. Distinguish `FEE` highway behavior from toll avoidance.
-5. Verify ordered JSON waypoints with two non-collinear stops and Unicode/quotes/backslashes; do not impose Harmony's 15-stop limit on Android/iOS without evidence.
-6. Exercise cycling navigation paths `/bikenavi` Android versus `/ridenavi` iOS and origin differences; distinguish route preview from active guidance.
-7. Test labels containing pipes, colons, ampersands, `%`, `+`, `#`; record decoded display and actual destination. Verify duplicate extra keys are not relied on as overrides.
-8. Browser fallback tests must separately cover HTML output, no app installed, protocol/HTTPS reachability, unavailable modes and panorama documentation contradictions.

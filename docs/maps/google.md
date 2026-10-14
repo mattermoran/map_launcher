@@ -1,24 +1,26 @@
-# Google Maps external-launch audit
+# Google Maps
 
-**Checked:** 2026-10-02. **Status:** current primary URL/intent documentation audited; no real-app validation. Baseline: fetched `origin/master`, verified it contains [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), and confirmed checkout matched it.
+The plugin supports coordinate/text search and directions, coordinate/text origins, four travel modes and coordinate waypoints. Android uses HTTPS; iOS uses `comgooglemaps` for markers and text directions but HTTPS for coordinate directions. At preparation, Place-ID extras or `dir_action` select HTTPS. IDs require nonblank companion fields; `dir_action` requires directions. Invalid combinations use `MapConfigurationError`: discovery excludes them and explicit launch reports `MapLaunchException`. Universal markers ignore title/zoom; native iOS markers retain both. iOS callers declare `comgooglemaps` for installation queries.
 
-## Sources and evidence status
+Reference check: 2026-10-13; universal guide updated 2026-10-08 UTC. Tables include provider actions not exposed by the plugin.
+
+## Sources
 
 | Source | Version/update and scope |
 | --- | --- |
-| [Maps URLs guide](https://developers.google.com/maps/documentation/urls/guide) | Updated **2026-09-28 UTC**, URL API version **1**; current universal links. |
-| [iOS URL scheme](https://developers.google.com/maps/documentation/urls/ios-urlscheme) | Updated **2026-09-28 UTC**; current `comgooglemaps` and `comgooglemapsurl` documentation. |
-| [Android intents](https://developer.android.com/guide/components/google-maps-intents) ([Google documentation entry](https://developers.google.com/maps/documentation/urls/android-intents)) | Updated **2026-02-26 UTC**; standard Android Google Maps, not Maps Go. |
+| [Maps URLs guide](https://developers.google.com/maps/documentation/urls/guide) | URL API version **1**; universal actions and fields. |
+| [iOS URL scheme](https://developers.google.com/maps/documentation/urls/ios-urlscheme) | Native `comgooglemaps` and desktop-URL import `comgooglemapsurl`. |
+| [Android intents](https://developer.android.com/guide/components/google-maps-intents) ([Google documentation entry](https://developers.google.com/maps/documentation/urls/android-intents)) | Standard Android Google Maps, not Maps Go. |
 | [Android Automotive intents](https://developer.android.com/training/cars/platforms/automotive-os/android-intents-automotive) | Updated **2026-03-05 UTC**; separate in-car product, including EV trips and action intents. |
 | [x-callback-url specification](https://x-callback-url.com/specification/) | 1.0 draft R3; protocol authority, **not Google implementation evidence**. |
 
-All four main provider pages were read fresh in full. “Documented” means those external-launch contracts, not REST Directions/Routes, Places or embedded SDK APIs. Source-inferred implementation behavior is called out below. Callback details have weaker evidence, explicitly separated. Google Maps Go has its own [audit](google-go.md).
+These are external-launch contracts, separate from REST and embedded SDK APIs. [Google Maps Go](google-go.md) is a separate product.
 
-Coordinates in these launch interfaces are decimal **latitude,longitude** pairs, not longitude-first or projected coordinates. The audited URL pages do not explicitly specify the datum; no datum conversion is justified by this audit. Our `LocationCoords` validates finite latitude −90…90 and longitude −180…180. Encode values once: commas `%2C`, pipes `%7C`, spaces `%20` or `+`; literal plus `%2B`, ampersand `%26`, hash `%23`. No API key needed for universal/iOS links. IDs are opaque strings, not coordinates or labels.
+Coordinates are decimal **latitude,longitude**; the URL references do not name the datum. `LocationCoords` validates finite latitude −90…90 and longitude −180…180. Encode values once: commas `%2C`, pipes `%7C`, spaces `%20` or `+`; literal plus `%2B`, ampersand `%26`, hash `%23`. Universal/iOS links require no API key. IDs are opaque strings.
 
 ## Universal HTTPS URLs
 
-Source: [Maps URLs guide](https://developers.google.com/maps/documentation/urls/guide). Android/iOS open installed active Google Maps, otherwise browser; other devices use browser. Google's recommendation is to prefer this cross-platform interface. URL limit: **2,048 characters**. All actions require **`api=1`**; without it, parameters are ignored and default Maps opens. `api` has no other documented value.
+The Maps URLs guide recommends this interface: Android/iOS open installed active Maps, otherwise browser; other devices use browser. URLs are limited to **2,048 characters**. Every action requires **`api=1`**; without it, parameters are ignored and default Maps opens. No other `api` value is documented.
 
 ### Search and directions
 
@@ -41,7 +43,7 @@ Source: [Maps URLs guide](https://developers.google.com/maps/documentation/urls/
 
 ### Map display and Street View
 
-Source: [map and panorama action tables](https://developers.google.com/maps/documentation/urls/guide).
+Reference: Maps URLs guide, map/panorama tables. Neither action has a plugin builder.
 
 | Endpoint / field | Requirement, values and defaults |
 | --- | --- |
@@ -59,7 +61,7 @@ Source: [map and panorama action tables](https://developers.google.com/maps/docu
 
 ## Native iOS links
 
-Source: [iOS URL scheme](https://developers.google.com/maps/documentation/urls/ios-urlscheme). Base `comgooglemaps://?…`; requires installed app and scheme availability checks. iOS 9+ callers declare query schemes; bundle identifier is automatically sent. Universal links are supported on iOS 9+. No API key. Source does not publish native URL length, zoom range/default, or full required-field matrix.
+The iOS scheme reference uses `comgooglemaps://?…`; installed app and scheme queries are required. iOS 9+ callers declare query schemes; bundle identifier is automatically sent. Universal links are supported on iOS 9+. No API key, native length limit, zoom range/default or full requiredness matrix is specified.
 
 | Action / parameter | Contract |
 | --- | --- |
@@ -75,17 +77,17 @@ Source: [iOS URL scheme](https://developers.google.com/maps/documentation/urls/i
 | Directions + map parameters | Examples combine `center` and `zoom` with directions. No documented native waypoints, Place-ID fields, `avoid`, or `dir_action`. |
 | `comgooglemapsurl://…` | Replace `http://` or `https://` on an existing Maps desktop URL. Supported hosts: `maps.google.{TLD}`, `(www.)google.{TLD}/maps/`, `goo.gl/maps/`. Distinct scheme, not `comgooglemaps://?url=…`. Check scheme availability. |
 
-Directions provide access to navigation; the page does not promise automatic turn-by-turn start for every native directions request. Short-link host examples are documentation, not a fresh guarantee of a specific old short URL's continued resolution.
+Directions do not guarantee automatic guidance. Listed short-link hosts do not establish continued resolution of every old short URL.
 
 ### Callback evidence is incomplete
 
 The current iOS page's **page summary** mentions `comgooglemaps-x-callback://`, but the body does not supply a callback parameter contract. A fetch of [the candidate callback documentation URL](https://developers.google.com/maps/documentation/urls/ios-x-callback-url-scheme) failed with a network error; no claim is made that it is a valid current page or that the feature was removed.
 
-**Legacy primary evidence:** Google's [Open Google Maps from your iOS app](https://developers.googleblog.com/open-google-maps-from-your-ios-app/), published **2015-03-30**, was retrieved fresh. It confirms x-callback support and a button pointing back to the calling app in Google's historical link-building utility. It does not enumerate the fields or promise automatic return on arrival. This corroborates historical capability, not a complete current contract.
+Google's [iOS launch announcement](https://developers.googleblog.com/open-google-maps-from-your-ios-app/) (2015-03-30) confirms historical x-callback support and a return-to-caller button, but does not enumerate fields or promise return on arrival.
 
 | Candidate field | Evidence / safe interpretation |
 | --- | --- |
-| `x-source` | General [x-callback specification](https://x-callback-url.com/specification/) defines friendly calling-app name, URL-encoded string. **Not confirmed as current Google Maps support by this audit.** |
+| `x-source` | Generic x-callback specification: URL-encoded friendly caller name; current Google acceptance unconfirmed. |
 | `x-success` | General protocol defines return URL after success; must encode nested URL once as a value. Historical Google usage needs a recoverable provider source/device verification before promising return-button behavior or requiredness. |
 | `x-error`, `x-cancel` | General protocol defines error/cancel return URLs. **Do not infer Google supports them** from generic x-callback conformance or page-summary wording. |
 
@@ -93,7 +95,7 @@ These are protocol-only/legacy-candidate findings, not a supported-current Googl
 
 ## Native Android phone intents
 
-Source: [Android Maps intents](https://developer.android.com/guide/components/google-maps-intents). `ACTION_VIEW` plus URL-encoded URI; package **`com.google.android.apps.maps`** explicitly selects full Google Maps. Check a matching receiving activity, not merely package installation. Without package, OS may show a chooser. These contracts do not establish Maps Go support.
+The Android intent reference uses `ACTION_VIEW` and encoded URIs targeting **`com.google.android.apps.maps`**. A receiving activity must exist; without package targeting a chooser may appear. These are full Maps contracts, not Go contracts. The plugin uses HTTPS rather than these phone intent builders.
 
 | URI / parameter | Requirement, grammar, defaults and constraints |
 | --- | --- |
@@ -111,7 +113,7 @@ The Android page's extracted west-bearing sentence is malformed, but its clockwi
 
 ## Android Automotive is a distinct documented product
 
-Source: [Automotive intents](https://developer.android.com/training/cars/platforms/automotive-os/android-intents-automotive). Same package and `ACTION_VIEW`, but these additional actions are **omitted by our API**, not phone/Go guarantees.
+The Automotive reference uses the same package and `ACTION_VIEW`. These additional actions are not implemented by the plugin and do not establish phone/Go support.
 
 | Action / field | Contract and limitations |
 | --- | --- |
@@ -136,32 +138,34 @@ Complete documented `act` inventory:
 - Routing changes while navigating, potentially rerouting: `avoid_tolls`, `allow_tolls`, `avoid_ferries`, `allow_ferries`, `avoid_highways`, `allow_highways`.
 - `exit_navigation`; `select_search_result&id=0` starts navigation to displayed result at index 0 (other nonnegative indexes select other displayed results).
 
-No phone support is implied by this inventory. No Automotive runtime was used.
+This inventory applies only to Automotive.
 
-## Exact implementation comparison and priorities
+## Plugin limitations
 
 Sources: [`google_maps.dart`](../../lib/src/maps/google_maps.dart), [`google_extra.dart`](../../lib/src/extras/google_extra.dart), [`map_app.dart`](../../lib/src/maps/map_app.dart), [`directions_request.dart`](../../lib/src/requests/directions_request.dart), [`launch_helper.dart`](../../lib/src/utils/launch_helper.dart), [`url_builder.dart`](../../lib/src/utils/url_builder.dart).
 
-| Current behavior | Finding / action |
+| Plugin behavior | Limit |
 | --- | --- |
-| HTTPS marker `/search/?api=1&query=lat,lng&z=zoom`; title ignored | **Contract mismatch:** `z` is not a documented search parameter. Renaming to `zoom` would not fix endpoint incompatibility; map-only action has documented zoom but no marker. Document limitation or introduce a distinct view action. No universal custom-label field exists, so ignoring title is a limitation, not a wrong spelling. |
+| HTTPS marker `/maps/search/?api=1&query=lat,lng` | Title/zoom ignored; the search action has no documented custom-label or zoom field. Map-only zoom is a different action. |
 | iOS marker prefers `comgooglemaps://?q=lat,lng(title)&zoom=…` | `zoom` documented; parenthesized label grammar is documented for Android, **not iOS**. Runtime-unverified assumption. |
-| HTTPS directions support destination/origin coordinates or search, four modes, pipe waypoints | Mostly documented. `two-wheeler`, avoid and waypoint IDs lack typed API. No 2,048-character or 3/9-stop enforcement. Nonempty waypoints with search destination rejected by request layer although universal provider supports that combination: **omission**. |
+| HTTPS directions support destination/origin coordinates or search, four modes, pipe waypoints | Final HTTPS URLs are capped at 2,048 characters. Up to nine intermediate stops on Android package-targeted and desktop transports; three on mobile unpinned HTTPS. Over-limit transports are excluded, never truncated. `two-wheeler`, avoid and waypoint IDs lack typed API. Nonempty waypoints with search destination are rejected by the request layer. |
 | iOS coordinate directions use HTTPS (no native coordinate override); iOS search directions use `comgooglemaps` | Important asymmetry: destination representation changes parameter contract even on same platform. Native text origin uses `saddr`; universal uses `origin`. |
-| `GoogleExtra`: `query_place_id`, `destination_place_id`, `origin_place_id`, `dir_action=navigate` | **Platform/action mismatch:** these are universal keys. Unchanged extras are appended to iOS native marker/search-directions URLs where not documented. Prefer universal path when universal-only options are requested, or map only genuinely equivalent native fields. |
-| `originPlaceId` without `from` | Produces HTTPS URL missing required companion `origin`; **validation gap**. Search ID extra on directions or directions extras on marker also not action-scoped. Destination companion present in generated universal directions. |
-| `navigate` doc says starts immediately | **Overstatement:** documented universal behavior may show preview or ignore navigation. Native `dir_action` not documented at all. |
-| Raw extras appended to existing query | Cannot replace built-in keys or change endpoint; can create duplicate `query`, `travelmode`, etc. Provider precedence unspecified. Typed extras merge only with other extras; URL getters omit all extras. Same extras are used on fallback. |
-| No native Android override; Android launches HTTPS targeted to full Maps package, fallback untargeted | Valid provider-recommended strategy, **not missing native intents as a correctness defect**. Omits phone-specific direct navigation/Street View and Automotive actions. |
+| `GoogleExtra` Place IDs and `dir_action=navigate`; raw `waypoint_place_ids` | Select universal URL at launch; ID companions must be nonblank and navigation must target directions. |
+| `dir_action=navigate` | May navigate, preview or be ignored according to device, origin and route; not guaranteed immediate guidance. |
+| Launch extras | Getters omit extras. Identical built-in values are retained once; conflicts use `MapConfigurationError`. Existing bytes are preserved. Google transports use the same Google options; an Apple fallback does not inherit them. Extras cannot change endpoint. |
+| Android HTTPS targets full Maps, with eligible untargeted fallback | Four-to-nine-stop routes cannot retry via the three-stop mobile browser transport. Phone-specific direct navigation/Street View and Automotive actions are not exposed. |
 
 Additional omitted actions: bare app launch, map-only viewport/layers, Street View, editable empty directions form, native desktop-URL import, callback scheme, Automotive categories/EV/control actions. Plain extras cannot reliably implement actions requiring a different path/scheme. Empty iOS `views=` is expressible via raw launch extras (append preserves empty values), despite `buildUrl` filtering empty builder values.
 
-## Verification plan and limits
+Use request `providerExtras: {.google: GoogleExtra(...)}` before automatic
+launch or discovery. Options are immutable snapshots matched by provider ID and
+are conditional preferences, not portable requirements. Nonempty raw extras
+require explicit `show(map: .google, extra: ...)`. Picker entries capture
+validated options and expose parameterless `show()`, never switching provider.
+Transport retries require confirmed non-handoff; blocked popups and unknown
+outcomes stop immediately. Automatic launch may try Apple only after Google is
+ineligible or its eligible transports confirm failure.
 
-- Existing [`google_maps_test.dart`](../../test/maps/google_maps_test.dart) tests generated strings, not provider behavior. No application code/tests changed in this audit.
-- Assert full decoded URLs per platform and destination type: iOS coordinate directions HTTPS versus text directions native; query/destination/origin IDs applied only on documented endpoints; missing companion rejected or handled deliberately.
-- Test waypoint counts 3/4 and 9/10, long encoded URLs 2,048/2,049 characters, asymmetric waypoint order, names containing `|`, and search destination plus stops. Do not silently truncate stops.
-- Test `Café & Bar + #1`, label parentheses and Unicode; verify literal plus encoded once and `extra` duplicate keys visible. Android opaque `google.navigation:q=` grammar must not be routed through a helper that inserts `?`.
-- Distinguish zoom search limitation from map-only zoom 0/21, map layer single value versus native comma `views`, HTTPS pitch +30 versus Android tilt −30, pano ID failure with/without viewpoint fallback.
-- Real-device follow-up: far-away origin versus current location under navigate; denied location; installed/uninstalled fallback; invalid Place ID; regional two-wheeler; native labeled pins; callback scheme availability. Separately test Automotive overview/EV parallel lists and navigation-only actions.
-- Source access gap: callback contract not recovered; page summary alone is inadequate. No confirmed current Google callback requiredness or completion semantics. Numeric native iOS zoom bounds, datum and complete product/mode compatibility matrix remain undocumented here. No claim of app validation, route correctness or runtime rejection of undocumented keys.
+## Reference limits
+
+The current callback contract was not recovered. Native iOS zoom bounds, datum and complete product/mode compatibility remain unspecified. [`google_maps_test.dart`](../../test/maps/google_maps_test.dart) covers generated URLs, not provider runtime behavior.

@@ -1,6 +1,12 @@
-# Sygic Truck external launch audit
+# Sygic Truck
 
-Checked **2026-10-02** against fetched origin/master and HEAD [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131). Implementation: `lib/src/maps/sygic_truck.dart`; driving-only request tests in `test/requests/map_contracts_test.dart`.
+## Current support
+
+`SygicTruck` provides destination-only directions on Android and iOS using `com.sygic.aura://coordinate|longitude|latitude|drive`. Omitted mode and explicit driving are accepted; explicit origins, non-driving modes and nonempty waypoints are rejected. Markers are disabled by capability policy, although the raw marker builder emits `…|show`. Search and universal URLs are unavailable; directions labels and zoom are not serialized.
+
+Configuration: Android `com.sygic.truck`, iOS App Store ID `1005447813`, query scheme `com.sygic.aura`. See [provider](../../lib/src/maps/sygic_truck.dart) and [request contracts](../../test/requests/map_contracts_test.dart). Shared-scheme detection on iOS does not uniquely identify Truck among Sygic editions.
+
+Source check: **2026-10-02**. Current native acceptance and commercial permission remain unresolved.
 
 ## Product boundary and source availability
 
@@ -11,7 +17,7 @@ Checked **2026-10-02** against fetched origin/master and HEAD [8aa7a6e](https://
 | [Custom URL integration overview](https://enterprise.sygic.com/professional-gps-navigation-sdk/custom-url-integration) | Enterprise product overview; not a substitute for a platform/app compatibility matrix. |
 | [Truck product](https://www.sygic.com/truck/) | Distinct from Sygic GPS Navigation consumer product and embedded Maps SDK. Product marketing alone does not establish URL parameters. |
 
-No archive snapshot was used. Cached primary content is not a live verification of the shipping app. Enterprise-host search results suggest a parallel/moved documentation location, but live blocking prevents asserting a verified redirect/migration. Android parity is **unverified**, not inferred from iOS or embedded APIs.
+The inventory uses cached primary content, not an archive snapshot or shipping-app verification. The enterprise host may be a parallel or moved location; HTTP blocking prevents confirming a redirect or migration. Android parity is **unverified**.
 
 **License:** the [iOS reference][ios] restricts Custom URL integration to **personal usage**; commercial usage requires contacting sales. An installed app or purchased navigation entitlement is not evidence of commercial integration permission. No API key/callback is required by the basic coordinate examples. Activation/login actions below are separate licensed administrative operations, not necessary fields on every route.
 
@@ -67,22 +73,11 @@ The [reference][ios] requires percent-encoding the parameter string in most envi
 
 The same page's `https://go.sygic.com/` section is explicitly **consumer Sygic GPS Navigation only**: `/search` (`q`, optional `center`), `/directions` (`to`, optional `from`, repeated `via[]`, `mode=car/walk/van`), `/place` (`q` or `coordinates`), `/store` (`product`/`productId`), `/web` (`url`), `/sign-in`, `/manage-maps`, `/travel-insurance`, `/ev`. These are cataloged to prevent product confusion, **not offered as Truck actions**. In particular, do not add consumer `via[]` or universal-link capability to Truck on this evidence. Truck's cached custom-URL reference supplies no general avoid-tolls/highways/ferries parameter or bicycling/transit mode.
 
-## Implementation comparison and driving-only fix
+## Unimplemented actions and compatibility limits
 
-* Current directions always emit `com.sygic.aura://coordinate|longitude|latitude|drive`, ignoring origin, waypoints and labels. Coordinate order agrees with the primary examples.
-* **Driving-only filtering is correct for the current serializer:** a walking request must not silently produce `drive`. Existing tests establish that restriction through URL generation, discovery and dispatch.
-* **It is not a complete statement of the documented Truck contract:** the iOS introduction names Truck explicitly, and its table lists `walk` and `show`. Walking and marker display are documented implementation gaps on iOS, subject to stale-source/current-app and licensing verification—not proof that Truck only supports driving. Android parity remains unknown.
-* `supportsMarkerCoords=false` blocks a raw marker builder that already emits `…|show`; document this policy instead of claiming the URL protocol lacks marker display. All search and waypoint flags false; no universal URL. Direct raw methods still emit drive even with non-driving arguments; public request filtering provides the protection.
-* `coordinateaddr`, address/search launch and route imports are unimplemented options. `truckSettings` would alter persistent vehicle configuration and should not be hidden behind generic route mode selection. Zoom unsupported by the documented coordinate grammar.
-* iOS uses `com.sygic.aura://`, Android targets `com.sygic.truck`. Shared scheme collision with other Sygic installations is a device question; scheme presence alone does not identify the selected product on iOS.
+The iOS reference explicitly documents Truck `walk` and `show`; the library's driving-only and marker-disabled policy is not a claim that the protocol lacks those actions. Current iOS acceptance and Android parity remain unknown. `coordinateaddr`, address/search and route imports are also unimplemented. `truckSettings` changes vehicle configuration and is not a generic travel-mode selector.
 
-## Discriminating tests and device gaps
-
-Use destination `(-33.856784,151.215297)` so a swapped pair has an invalid latitude. Assert exact `coordinate|151.215297|-33.856784|drive`, no accidental query `?`, and explicit non-driving rejection for the current implementation on **both** platforms. Distinguish null/default mode from explicit walking. For a future walking implementation, assert final `walk`, never a passing capability test with unchanged `drive`.
-
-On licensed current iOS Truck test `show`, `drive`, `walk` separately and record selected screen/mode, not merely successful app opening. Repeat on Android rather than assuming parity. Compare raw/encoded pipes, a `coordinateaddr` label `A & B + Café`, cold/warm start, no GPS, active itinerary and multiple Sygic apps installed. Test imported route permissions and limits independently; do not activate, buy, log in or change truck settings as harmless launch probes.
-
-No native app was executed. Current `walk`/`show` acceptance, scheme collisions, Android action inventory, raw-pipe handling, actual guidance initiation and commercial integration permission remain unresolved. These docs make no application changes.
+Raw-pipe handling, selected Sygic edition, actual guidance initiation, imported-route permissions and commercial licensing require confirmation. Activation, login, purchases, map downloads and configuration changes are separate side-effecting operations, not ordinary route-launch behavior.
 
 [ios]: https://www.sygic.com/developers/professional-navigation-sdk/ios/custom-url
 [android]: https://www.sygic.com/developers/professional-navigation-sdk/android/api-examples/custom-url

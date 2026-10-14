@@ -1,24 +1,26 @@
-# Google Maps Go external-launch audit
+# Google Maps Go
 
-**Checked:** 2026-10-02. **Status:** primary product documentation available, **no Go-specific public external-intent specification established**; our native builders are source-inferred and runtime-unverified. Fetched `origin/master` and verified it includes [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131); checkout matched it.
+The Android-only integration targets `com.google.android.apps.mapslite`, emits coordinate `geo:` markers and `google.navigation:?q=…` directions, and has no HTTPS fallback. Explicit origins are unsupported and are not serialized; zoom and waypoints are not serialized. Mode is the first enum letter (`d/w/b/t`), with all modes inherited as supported. No Go-specific external-intent contract has been established: full Maps intent syntax below is a comparison reference, not evidence of Go acceptance.
+
+Reference check: 2026-10-13. Full Maps Android reference updated 2026-10-06; the Go help recheck failed, so product details retain the earlier reference evidence.
 
 ## Sources and product boundaries
 
 | Source | Date/version and what it establishes |
 | --- | --- |
-| [Use a lighter version of Google Maps](https://support.google.com/maps/answer/7566112?hl=en) | Fresh full retrieval; no update date displayed. Go is a **separate app**, preinstalled on Android Oreo Go devices and available from Play. Chrome required. |
+| [Use a lighter version of Google Maps](https://support.google.com/maps/answer/7566112?hl=en) | Product requirements/features: separate app, preinstalled on Android Oreo Go devices and available from Play; Chrome required. |
 | [Maps Go Play link](https://play.google.com/store/apps/details?id=com.google.android.apps.mapslite) | Package `com.google.android.apps.mapslite`, as linked by official help. Store listing was not independently used to infer intent filters. |
 | [Navigation for Maps Go Play link](https://play.google.com/store/apps/details?id=com.google.android.apps.navlite) | **Separate companion** `com.google.android.apps.navlite`, linked by official help as required for turn-by-turn navigation. No external companion-launch grammar supplied by that help page. |
-| [Standard Google Maps Android intents](https://developer.android.com/guide/components/google-maps-intents) | Updated **2026-02-26 UTC**; full Google Maps package **`com.google.android.apps.maps`**, not Go. Reference syntax only, not proof of Go compatibility. |
-| [Universal Maps URLs](https://developers.google.com/maps/documentation/urls/guide) | Updated **2026-09-28 UTC**, `api=1`; opens standard Maps/browser. Does not promise routing to Go's package. |
+| [Standard Google Maps Android intents](https://developer.android.com/guide/components/google-maps-intents) | Full Maps package **`com.google.android.apps.maps`**; comparison grammar, not Go compatibility. |
+| [Universal Maps URLs](https://developers.google.com/maps/documentation/urls/guide) | `api=1`; standard Maps/browser dispatch, not guaranteed Go targeting. |
 
 The official Go help documents interactive search, place information, driving/transit/walking/cycling directions, region-dependent two-wheeler directions, departure/arrival-time selection and avoiding ferries/tolls/highways. **Interactive features are not an external parameter contract.** In particular, UI transit directions do not establish `google.navigation:mode=t`.
 
 Go cannot share real-time location, download offline areas, report data problems, edit place information, measure distance or add persistent private labels, according to help. The last limitation does not establish whether a transient URI label renders. Navigation requires the companion and is region-dependent. Do not treat Go, Navigation for Go, full Maps or Android Automotive as one product.
 
-## Native URLs: actual implementation versus reference grammar
+## Native URL formats and fields
 
-Sources: [`google_go.dart`](../../lib/src/maps/google_go.dart) and [standard Maps Android intents](https://developer.android.com/guide/components/google-maps-intents). **Every provider-contract row below is documented for full Maps only. Go acceptance is unconfirmed.** This explicit separation prevents manufacturing a Go API from a different product's docs.
+Every provider-contract row below comes from the full Maps Android reference; Go acceptance is unconfirmed.
 
 | URI / field | Full Maps documented contract | Our Go builder / confidence |
 | --- | --- | --- |
@@ -39,36 +41,31 @@ There is **no Go-specific universal-link contract established by the sources**. 
 
 The complete standard Google URL/intent inventory is in [Google Maps](google.md), including required `api=1`, search/Place IDs, directions, ordered waypoints (3 mobile-browser/9 otherwise), navigation action, map display, Street View, native iOS and Automotive. These are **not Go capabilities** merely because Go uses Chrome. No Go public URL fields were found for origin, waypoints, place identifiers, callbacks, favorites, map layers, time selection or two-wheeler choice.
 
-Additional full-Maps external actions relevant to future investigation, **not established Go support**:
+Other full-Maps actions, not established Go support:
 
 - `geo:` plain display and categorical/address search.
 - `google.navigation:` text destination and `mode=l`, `avoid=…`.
 - `google.streetview:cbll=…` / `panoid=…` with camera `cbp`; no evidence Go resolves this.
 - `https://plus.codes/…` location links and universal HTTPS map/panorama actions; browser behavior is not Go app dispatch.
 
-The Go help's “add a stop” UI tip and date/time controls cannot justify waypoint or departure/arrival deep-link fields. No secondary-only field is asserted as supported, and no REST/embedded SDK field is imported.
+The help's “add a stop” UI tip and date/time controls supply no external waypoint or timing grammar.
 
-## Exact capability and extras comparison
+## Plugin limitations
 
 Sources: [`google_go.dart`](../../lib/src/maps/google_go.dart), [`map_app.dart`](../../lib/src/maps/map_app.dart), [`directions_request.dart`](../../lib/src/requests/directions_request.dart), [`launch_helper.dart`](../../lib/src/utils/launch_helper.dart), [`google_extra.dart`](../../lib/src/extras/google_extra.dart), [`Android launcher`](../../android/src/main/kotlin/dev/fluttered/map_launcher/MapLauncherPlugin.kt).
 
-| Implementation | Assessment / action |
+| Plugin behavior | Limit |
 | --- | --- |
-| Coordinate marker/directions true, text-search false, waypoints false | Coordinate support is source-inferred, not provider-verified. Search could be an omitted feature but needs **Go-specific evidence**, not blindly enabling full Maps syntax. Nonempty waypoints are rejected at request level. |
-| All enum travel modes inherited as supported | **Capability/contract mismatch:** transit emits undocumented `t`. Restrict claim until a verified Go contract exists; don't infer supported navigation from transit planning UI. |
-| Explicit coordinate origin ignored | **API semantic defect/risk:** caller's route start silently lost. Full Maps native navigation only supports current location; reject/disclose rather than inventing `saddr`. Search origin already rejected. |
-| `google.navigation:?q=` | **Documented-reference syntax mismatch**, not proof Go fails at runtime. Prefer reference `google.navigation:q=` only after verifying target package and companion behavior; opaque URI needs a scheme-aware serializer. |
-| Methods ignore `platform` and emit geo/navigation on explicit `.ios` calls | **Platform guard gap:** comments say Android-only, but direct scheme getters can return Android URIs on iOS. Normal discovery may omit Go because no iOS installation metadata; direct `show(map: .googleGo)` can still attempt it. |
-| No Go extras type | Raw string extras accepted; `GoogleExtra` is universal-only keys (`query_place_id`, origin/destination IDs, `dir_action`) and **not documented for Go or these native URIs**. Do not recommend it by brand similarity. |
+| Coordinate marker/directions advertised; text search and waypoints false | Go's protocol is unconfirmed. Nonempty waypoints are rejected at request level, ignored by direct builders. |
+| All enum travel modes inherited as supported | Transit emits `t`, absent from full Maps navigation grammar; no Go-specific mode contract is established. |
+| Explicit coordinate origin unsupported | Capability is false; request validation rejects it. Direct builders do not serialize origin. |
+| `google.navigation:?q=` | Differs from full Maps opaque `google.navigation:q=` grammar; Go acceptance is unknown. |
+| Direct scheme getters ignore `platform` | Can return Android URIs on iOS despite Android-only discovery metadata; explicit `show(map: .googleGo)` can attempt launch. |
+| No Go extras type | Raw extras accepted; `GoogleExtra` Place IDs and `dir_action` belong to universal URLs, not these native families. |
 | No HTTPS fallback | If package-targeted launch fails, `MapLaunchException`; there is no retry through `navlite`, full Maps or browser. Merely installing Go is not proof navigation can start. |
 
-Extras append during `show()`, not URL getters. Request/show extras merge with each other; builder keys are **not replaced**, so an extra `q` or `mode` yields duplicates with undefined provider precedence. Raw extras cannot remove the extra question mark, change target package, express a new action, establish companion availability or activate unsupported request types.
+Extras apply during launch preparation, not getters. Identical built-in values are retained once; conflicts exclude a discovery entry or produce `MapLaunchException` on explicit launch. Extras cannot remove the question mark, change package/action or establish companion availability. `GoogleExtra` universal fields do not apply to these native URI families.
 
-## Recommended verification and source gaps
+## Reference limits
 
-- Existing Go cases in [`mobile_only_maps_test.dart`](../../test/maps/mobile_only_maps_test.dart) check scheme substrings and label inclusion; they do not check exact opaque navigation grammar, transit rejection or real package handling.
-- Add exact URL tests for `google.navigation:q=59.3293%2C18.0686`, not merely `contains('google.navigation:')`; test default/d/b/w and explicitly reject or mark unsupported transit rather than accepting `t` as a successful test outcome.
-- Test explicit distant origin, nonempty waypoints, iOS direct getter versus Android, and no universal fallback. Test literal `+`, ampersand, Unicode and nested label parentheses; don't assert real label display from substring tests.
-- Device matrix needed: Go only; Go plus Navigation for Go; full Maps coinstalled; companion only; neither installed; Chrome absent/disabled. Resolve each URI **against the intended package**, then test actual screen/navigation behavior. Never substitute full Maps resolving an unqualified intent as evidence for Go.
-- Evaluate zoom and text-search additions separately from defects; investigate provider or manifest evidence before advertising them. Browser fallback should be an explicit generic-Maps product choice, not called Go support.
-- Access: official Go help and full Maps specifications were accessible. The substantive gap is **absence of an established Go external-launch contract**, not an inaccessible known spec. No app APK/manifest or runtime inspection was performed; store links were used only as provider-published product identities. No claim of real-app validation.
+Go's receiving activities, companion dispatch and supported external modes remain unknown. Installation detection does not establish URI resolution, and full Maps resolving an unqualified intent does not establish Go support. [Shared mobile URL tests](../../test/maps/mobile_only_maps_test.dart) cover serialization only.

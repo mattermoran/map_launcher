@@ -1,22 +1,21 @@
-# Air Navigation Pro external launch contract
+# Air Navigation Pro
 
-Checked **2026-10-02**. map_launcher baseline [`8aa7a6e1152a80c4482003bdfaad8f850bdb6131`](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131) matched HEAD and fetched `origin/master`. Research only; **no installed-app navigation was exercised**.
+Checked: **2026-10-13**. No flight-navigation or native-device execution was performed.
+
+## Plugin behavior
+
+**Metadata only: all launch builders return null.** Coordinate markers and directions are disabled on both platforms. The official [Direct-To manual](https://airnavigation.aero/manual/en/html/manual/import-export-data.html#direct-to) says the command instantly navigates, not passively displays a marker. No safe display-only contract is established, and `add-waypoints` mutates the database. The plugin retains discovery scheme `airnavpro://`, Android package `com.xample.airnavigation` and Apple ID `301046057`. Lack of an established passive marker is an integration limitation, not proof that no private display API exists.
 
 ## Sources and identity
 
-**Post-audit correction:** the app metadata and icon-fetch registry now use
-Apple ID `301046057`, confirmed independently through Apple's live lookup.
-The table below records the audited baseline; the metadata regression test now
-expects the corrected ID. No launch behavior was changed by this correction.
+Primary contract: official [Import / Export Data → Import via URL](https://airnavigation.aero/manual/en/html/manual/import-export-data.html#import-via-url), manual **8.4.150** (no page modification date supplied). This is separate from the manager REST API.
 
-Primary contract: current official [Import / Export Data → Import via URL](https://airnavigation.aero/manual/en/html/manual/import-export-data.html#import-via-url), manual **8.4.150** (no page modification date supplied). Read in full, including examples; this is not the unrelated manager REST API. The guessed `/import-export.html` path returned 403; the correct `import-export-data.html` page was accessible. Homepage access also returned 403, which does not invalidate the accessible manual.
-
-| Platform | Current identity/evidence | Comparison |
+| Platform | Identity / release snapshot | Launch scope |
 | --- | --- | --- |
 | Android | [`com.xample.airnavigation`](https://play.google.com/store/apps/details?id=com.xample.airnavigation), Air Navigation SA; listing updated 2026-07-17 | Matches builder/package query. |
-| iOS | Apple [`301046057`](https://apps.apple.com/us/app/air-navigation-pro/id301046057), bundle `ch.xample.Airnav`; Apple [lookup](https://itunes.apple.com/lookup?id=301046057) returned version **8.4.176**, released **2026-09-22T16:31:47Z** | **Mismatch:** builder uses `304684223`. Lookup of that old ID returned zero results, including Sweden; zero alone is not proof of global removal, but the current product's positive identity is clear. |
-| Custom scheme | `airnavpro://<command>?<query>` in official manual | Matches our iOS detection/launch scheme. Manual does not give a platform-by-platform scheme-registration matrix. |
-| Android HTTPS | Builder uses `https://airnavigation.aero/direct-to?...` | **Not established by accessible official URL docs**, which specify `airnavpro://`. Do not promote this to a verified universal-link/browser contract. |
+| iOS | Apple [`301046057`](https://apps.apple.com/us/app/air-navigation-pro/id301046057), bundle `ch.xample.Airnav`; Apple [lookup](https://itunes.apple.com/lookup?id=301046057): version **8.4.176**, released **2026-09-22T16:31:47Z** | Matches plugin metadata. |
+| Custom scheme | `airnavpro://<command>?<query>` in official manual | Matches plugin iOS discovery scheme; launch remains disabled. Manual gives no platform-by-platform scheme-registration matrix. |
+| Android HTTPS | No established external-launch format | Official URL docs specify `airnavpro://`, not an HTTPS direct-to or universal-link/browser contract. |
 | Web/desktop | URLs may originate in browser, email, QR code or another app | That is an app launch, not a web map fallback. No browser-based route rendering contract established. Apple lists Apple Silicon compatibility, but this does not establish separate desktop URL semantics. |
 
 Both stores describe a 28-day trial and subscriptions. There is no separate free-vs-paid URL grammar documented. Feature availability/account onboarding can prevent use even when a URL opens the app. The manual limits custom-map imports to Smart Advanced; do not infer that all URL route operations have the same gate.
@@ -80,27 +79,8 @@ The same official [Import / Export Data](https://airnavigation.aero/manual/en/ht
 
 No exact Android Intent extras/MIME allowlist or iOS UTI matrix is published on that page. No source repository for the app's launch parser was identified, so no source-level inference is claimed. Embedded Web Server, WebDAV file management and Air Navigation Manager backend APIs are deliberately excluded from the URL-launch contract.
 
-## Comparison with map_launcher
+## Integration limits
 
-Local sources: [`airnav_pro.dart`](../../lib/src/maps/airnav_pro.dart), [`map_app.dart`](../../lib/src/maps/map_app.dart), [`url_builder.dart`](../../lib/src/utils/url_builder.dart), [Android queries](../../android/src/main/AndroidManifest.xml), [iOS example plist](../../example/ios/Runner/Info.plist).
+Local sources: [`airnav_pro.dart`](../../lib/src/maps/airnav_pro.dart), [`map_app.dart`](../../lib/src/maps/map_app.dart), [`url_builder.dart`](../../lib/src/utils/url_builder.dart), [example Android queries](../../example/android/app/src/main/AndroidManifest.xml), [iOS example plist](../../example/ios/Runner/Info.plist).
 
-| Existing behavior | Assessment |
-| --- | --- |
-| Marker emits `direct-to`, `coordinates=wgs84-decimal`, `location=lat_lon,0.0` | **Concrete semantic mismatch with official action description:** “marker” starts direct-to navigation if accepted. Source comment “marker only” is misleading. |
-| Location record omits identifier and name | **Underdocumented/truncated payload**, not proven invalid. Official grammar shows four fields, wrapper sends two. Needs installed-app test/vendor clarification. Title ignored. |
-| Elevation fixed `0.0` | Sends a real zero-meter value; docs do not identify it as unknown. Wrapper has no altitude field. |
-| `supportsDirectionsCoords=false`, but directions builder returns same direct-to URL | Capability/model inconsistency relative to aviation navigation contract; disabling directions does not make marker action passive. Ordinary driving/walking/transit/bicycling do not describe this app's aviation navigation. |
-| Origin, waypoints, mode, zoom ignored | Omitted route/waypoint features; zoom and road modes not documented launch fields. `new-route` supports ordered points without a road-mode enum. |
-| No search/web URL methods, `hasUniversalLink=false` | Conservative wrapper limitation. Android HTTPS native dispatch remains unverified, not a certified web fallback. |
-| App Store ID `304684223` | **Concrete identity mismatch** with current official Apple product `301046057`. Android package correct. |
-
-## Proposed validation inputs
-
-1. Compare wrapper's two-field `location=46.875_7.234,0.0` with full `46.875_7.234,125.5,WP1,Grass field`. Check whether each is accepted, whether a route replaces current state, and which altitude/name is retained. Do this on the ground, not during flight.
-2. Invoke both iOS custom scheme and Android HTTPS/custom scheme on cold/warm current releases. Confirm app association and actual action, not just browser success. Repeat with trial expired and active subscription.
-3. Use `-33.8688_151.2093` to expose order/sign mistakes; zero elevation versus nonzero meters; malformed format, missing required keys, empty name/id, two and three ordered route waypoints.
-4. Encode `A&B + café/港` and names containing comma/semicolon separately to discover outer-query versus inner-record parsing. `%20` versus `+` must be tested rather than assumed equivalent.
-5. Compare `add-waypoints` (database mutation), `new-route` (load route) and `direct-to` (navigate) with separate expectations. Do not model all three as markers.
-6. Assert store URL points to `301046057`; verify no app can be identified merely from a stale URL or absent lookup result.
-
-No app behavior, subscription gating or platform URL-registration equivalence was verified. The official manual is strong evidence for command semantics but incomplete for defaults/limits, Android HTTPS routing, and permissive truncated records.
+Ordinary driving/walking/transit/bicycling do not model aviation navigation. `new-route`, `add-waypoints` and `direct-to` are distinct, state-changing operations, none implemented by the plugin. The manual is strong evidence for command semantics but leaves defaults, limits, subscription gating, platform registration and truncated-record acceptance unresolved.

@@ -1,6 +1,12 @@
-# TomTom Go external launch audit
+# TomTom Go
 
-Checked **2026-10-02** against [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131). `git fetch origin master` confirmed that both HEAD and origin/master resolve to that commit. It changes example discovery refresh, not these builders. Implementation: `lib/src/maps/tomtom.dart`, inherited capabilities in `map_app.dart`, encoding in `utils/url_builder.dart`.
+## Current support
+
+`TomTomGo` supports destination-only directions on Android and iOS, and coordinate markers on Android. Explicit origins, all explicit travel modes (including driving), and nonempty waypoints are rejected. iOS marker builders return null because the known endpoint navigates rather than displays a passive pin. No universal URL or text-search action is provided; directions labels and marker zoom are not serialized.
+
+Configuration: Android package `com.tomtom.gplay.navapp`; iOS App Store ID `884963367`, query scheme `tomtomgo`. See [provider](../../lib/src/maps/tomtom.dart), [capabilities](../../lib/src/maps/map_app.dart), and [URL encoding](../../lib/src/utils/url_builder.dart).
+
+Source check: **2026-10-02**. Native dispatch and navigation behavior remain unverified.
 
 ## Evidence and product boundary
 
@@ -26,18 +32,8 @@ No current public TomTom-owned GO app launch specification was located. Do not s
 
 The iOS endpoint name is not evidence that `x-success`, `x-error`, `x-cancel`, caller identity, or return callbacks work. No callback/API-key requirement, travel-mode selector, route policy, waypoint count, zoom, title limit, automatic-navigation guarantee, or URL-length limit was located for GO. Ordinary app subscription/map availability can still gate navigation; the URL is not a license activation mechanism. The secondary report's attempted `?name=` used a second `?`; its failure is **not** proof that correctly encoded `&name=` is unsupported, but neither form has a documented GO contract.
 
-## Implementation comparison
+## Builder behavior and compatibility limits
 
-| Current behavior | Assessment |
-| --- | --- |
-| iOS markers and directions both call `navigate?destination=…`; markers advertised true | Concrete semantic mismatch: the marker operation is implemented as navigation, not a dedicated show-pin action. Flag is not platform-specific. |
-| Android marker uses `geo:lat,lon?q=lat,lon(title)` | Generic fallback, package-targeted to `com.tomtom.gplay.navapp`; not a dedicated TomTom protocol. Title is query-encoded by `buildUrl`; zoom ignored. |
-| Android directions use `google.navigation:q=…`, removing the initial `?` | Correct spelling relative to Google's protocol. Actual GO acceptance still requires device evidence; do not “fix” by restoring `?`. |
-| Inherits `supportsTravelMode => true`, ignores every requested mode | Concrete capability/serialization mismatch. Walking, cycling and transit are not represented. Narrow advertised modes or implement only independently verified alternatives. |
-| No universal URL, search or waypoints; origin and title ignored in directions | Implementation limitations. No GO-owned evidence makes these missing dedicated options proven bugs. |
+Android markers use `geo:lat,lon?q=lat,lon(title)` with query-encoded titles. Android directions use `google.navigation:q=…`, deliberately without `?` after the colon. iOS directions encode `destination` in the evidenced navigate endpoint. The generic marker capability is not platform-specific; it does not override the null iOS builder.
 
-## Discriminating checks and device gaps
-
-Propose exact URL tests with destination `(50.71035,-1.995259)`, distinct origin `(51.5,-0.12)` and a third waypoint, rather than equal coordinates. Assert Android starts `google.navigation:q=` and not `google.navigation:?q=`; decode `destination` on iOS and `q` on Android. For marker labels use `A & B + Café (West)` and verify a single decode, then test how GO interprets parentheses. Enumerate every travel mode and distinguish request acceptance from mode actually encoded. Assert iOS marker requests cannot be claimed to provide a dedicated display action.
-
-No current GO binary was launched in this audit. Test cold/warm starts, existing route replacement, GPS missing, subscription missing, map unavailable, and actual navigation start versus a route-preview screen. Record app/OS versions and whether the Android package accepts each intent. URL generation tests alone cannot settle these points.
+GO acceptance of the Android intents, parenthesized label parsing, route replacement, GPS/map/subscription requirements, and preview versus active guidance remain unresolved. Correct URL generation does not establish native route delivery.

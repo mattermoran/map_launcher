@@ -1,12 +1,14 @@
-# HERE WeGo: external launch audit
+# HERE WeGo
 
-Checked **2026-10-02** against [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), fetched and verified on `origin/master`. Research only; **no native device testing**.
+The plugin uses HTTPS share links for coordinate markers and routes. Routes serialize an explicit coordinate origin or `mylocation`, destination coordinates and optional `m=d/w/pt/b`; null mode omits `m`. Marker and origin titles are encoded; destination titles and intermediate waypoints are not emitted. Android discovery uses `com.here.app.maps`; iOS uses `here-location` as an installation query scheme, not an action builder.
 
-## Status and sources
+Reference check: 2026-10-13. Tables include provider features not exposed by the plugin.
 
-**The HTTPS builder uses the current share-link family, but omits documented waypoints, current-location syntax, place sharing, settings, and other routing options.** Its destination-only path is outside the documented two-or-more-waypoint route grammar. App rejection has not been demonstrated.
+## Sources
 
-Primary source set, all read in full; dates below are each page's explicit `updatedAt`, not inferred release dates:
+The share-link reference covers consumer location/place/route sharing and separately licensed Pro features; its `wego-pro` host does not make the entire interface Pro-only.
+
+Provider references (dates are page updates, not app releases):
 
 - [Introduction](https://docs.here.com/wego-pro/docs/readme-here-deeplinking-api-developer-guide-dl), **2026-03-10**.
 - [URL format](https://docs.here.com/wego-pro/docs/request-format-dl), **2026-06-16**.
@@ -18,11 +20,11 @@ Primary source set, all read in full; dates below are each page's explicit `upda
 - [Errors](https://docs.here.com/wego-pro/docs/errors-dl), **2026-03-10**.
 - [Pro deeplinking overview](https://docs.here.com/wego-pro/docs/deeplinking), **2026-05-14**; says links can directly navigate to a destination/sequence of stops. It does not introduce a separate `navigate` parameter.
 
-The [official section index](https://docs.here.com/wego-pro/docs/here-deeplinking-api-developer-guide/llms.txt) exposed all seven action/reference pages and machine-readable `.md` variants. No page in that set was inaccessible. Although hosted under `wego-pro`, the reference describes ordinary consumer location/place/route sharing as well as explicitly licensed Pro features; **do not label the entire API Pro-only**. No secondary source is used as a parameter authority.
+The [reference index](https://docs.here.com/wego-pro/docs/here-deeplinking-api-developer-guide/llms.txt) links the action pages and machine-readable `.md` variants.
 
 ## Shared URL grammar and common fields
 
-Source: [URL format](https://docs.here.com/wego-pro/docs/request-format-dl).
+Reference: URL format.
 
 `https://share.here.com/{share_object}/{path_parameters}?{query_parameters}` uses HTTP **GET**. Android `ACTION_VIEW` and iOS `openURL` examples both use HTTPS; native custom-scheme action grammars such as `here-location://` are not documented in this current reference. The repository's scheme is an installation probe, not an implemented launch family.
 
@@ -38,7 +40,7 @@ Coordinates in location and route payloads are **latitude,longitude in decimal d
 
 ## Location and place actions
 
-Sources: [location](https://docs.here.com/wego-pro/docs/share-location-dl) and [place](https://docs.here.com/wego-pro/docs/share-place-dl).
+References: Location sharing and Place sharing.
 
 | Action/field | Requirement and type | Semantics/defaults |
 | --- | --- | --- |
@@ -51,7 +53,7 @@ No free-text search launch action is listed in the current Deeplinking API. Plac
 
 ## Route parameters and waypoint grammar
 
-Source: [route sharing](https://docs.here.com/wego-pro/docs/share-route-dl).
+Reference: Route sharing.
 
 | Field | Type/requiredness | Values/defaults/constraints |
 | --- | --- | --- |
@@ -61,7 +63,7 @@ Source: [route sharing](https://docs.here.com/wego-pro/docs/share-route-dl).
 | Sharing-ID waypoint | String alternative | A place Sharing ID can be used instead of coordinates. |
 | `mylocation` waypoint | String keyword alternative | Use current location **when possible**; allowed as any waypoint. This is the documented way to request current-position origin while retaining a destination, not a claim that dropping the first path segment is equivalent. |
 | `m` | Optional routing-mode string | `d` driving, `w` walking, `pt` transit, `b` bicycle, `cs` car sharing, `t` taxi, `tr` truck. No default given for omission. Truck requires Pro; non-entitled devices show car route instead. |
-| `a` | Optional avoidance string | Examples use comma-separated `tunnel,motorway`. The fetched reference does **not** supply a complete enum/default or semantics for other values. Do not import REST avoid-feature names. |
+| `a` | Optional avoidance string | Examples use comma-separated `tunnel,motorway`; complete enum, default and other values' semantics are unspecified. REST avoid-feature names are a separate contract. |
 | Waypoint type | Optional fourth comma field | `lat,lon,title,s` stopover or `lat,lon,,p` pass-through. Default stopover; origin/destination always stopovers. See licensing ambiguity below. |
 
 The waypoint-type section follows the “HERE WeGo Pro requirements” heading and does not explicitly repeat its entitlement rule. Treat Pro applicability as **source-layout ambiguity**, not a promise all consumer versions support pass-through. A source example for omitted type contains extra commas and the final example has a stray quote; rely on the stated four-field grammar, not these typographical artifacts.
@@ -70,7 +72,7 @@ No explicit callback, return-to-caller, completion URL, or `navigate=true` field
 
 ## Settings, truck options and activation
 
-Sources: [settings](https://docs.here.com/wego-pro/docs/share-settings-dl), [route Pro requirements](https://docs.here.com/wego-pro/docs/share-route-dl), [activation](https://docs.here.com/wego-pro/docs/activate-device-dl). Truck route options explicitly require Pro. Settings examples use `/s/truckparams?m=tr&…`; fields can also accompany `/r/…?m=tr`. No unspecified numeric bounds or defaults should be assumed.
+References: Settings sharing, Route sharing (Pro requirements), Device activation. Truck options require Pro. Settings use `/s/truckparams?m=tr&…`; fields can also accompany `/r/…?m=tr`.
 
 | Field/action | Type, units and requirement | Values/ranges/default/interaction |
 | --- | --- | --- |
@@ -89,30 +91,21 @@ Sources: [settings](https://docs.here.com/wego-pro/docs/share-settings-dl), [rou
 
 The settings source delegates hazardous-material names to [HERE's linked Android SDK enum](https://here-dni.github.io/HERESDKforAndroidAPIReferenceNavigate/com/here/sdk/transport/HazardousMaterial.html), which lists `EXPLOSIVE`, `GAS`, `FLAMMABLE`, `COMBUSTIBLE`, `ORGANIC`, `POISON`, `RADIOACTIVE`, `CORROSIVE`, `POISONOUS_INHALATION`, `HARMFUL_TO_WATER`, `OTHER`. However, actual deep-link examples use lowercase/camelCase (`harmfulToWater`). **The complete accepted wire spelling/case cannot be resolved from that inconsistent cross-reference alone.** Only the example spellings above are directly demonstrated as URL values; verify remaining material spellings before exposing an exhaustive typed enum. This explicitly referenced enum is the limited exception to excluding unrelated SDK APIs.
 
-[Error behavior](https://docs.here.com/wego-pro/docs/errors-dl): no special API error codes; malformed links redirect with HTTP 301 to a default map view. A redirect or successfully opened app alone does not prove correct route interpretation. Do not activate a shared/real device just to test URL formatting.
+The Errors reference defines no special API error codes: malformed links redirect with HTTP 301 to a default map view. A redirect does not indicate route success.
 
-## Implementation comparison and gaps
+## Plugin limitations
 
-Inspected [builder](../../lib/src/maps/here.dart), [base capabilities](../../lib/src/maps/map_app.dart), [URL builder](../../lib/src/utils/url_builder.dart), and [extra appending](../../lib/src/utils/launch_helper.dart).
+Code: [builder](../../lib/src/maps/here.dart), [capabilities](../../lib/src/maps/map_app.dart), [encoding](../../lib/src/utils/url_builder.dart), [launch extras](../../lib/src/utils/launch_helper.dart).
 
 | Capability | Current implementation | Assessment |
 | --- | --- | --- |
 | Marker | `/l/lat,lon[,encoded title]`, optional `z` | Matches location/title grammar. Omitted zoom conflicts with format page but agrees with location page; flag documentation ambiguity rather than confirmed bug. |
 | Explicit-origin route | `/r/originLat,originLon,encodedOriginTitle/destLat,destLon` | Coordinate order and modes correct; blank origin title produces trailing comma. Destination title discarded despite documented optional titles. |
-| No-origin route | `/r/destLat,destLon` | **Confirmed grammar mismatch** against required two-or-more points; documented alternative is `/r/mylocation/destLat,destLon`. Runtime compatibility unverified. |
+| No-origin route | `/r/mylocation/destLat,destLon` | Matches current-location waypoint grammar; unavailable-location fallback is unspecified. |
 | Modes | `d`, `w`, `pt`, `b`; omitted when null | All four supported values documented. Taxi/car sharing/truck omitted from public enum. Null mode default left to provider, not guaranteed driving. |
 | Waypoints | Ignored; flag false | Ordinary multi-point route support (100 total/50 soft) omitted. Distinguish standard points from Pro-layout pass-through types. |
-| Additional actions | No place, settings or activation builder | Documented omissions; API additions should separate privileged activation from ordinary map launch. |
-| Extras | No typed HERE class; query append | Can convey absent query fields such as `a`/`ref`/truck dimensions; cannot add path waypoints or change share object. Existing fields are duplicated rather than overridden. |
+| Additional actions | No place, settings or activation builder | Pro activation is a privileged action, distinct from ordinary map launch. |
+| Extras | No typed HERE class; query append | Absent `a`/`ref`/truck fields can be appended; cannot add path points or change share object. Identical built-in values are retained once; conflicts exclude discovery entries or cause `MapLaunchException` on explicit launch. |
 | Native detection | `here-location://`, Android package `com.here.app.maps`; actual launch HTTPS | Current source documents HTTPS launch, not custom-scheme actions. Probe validity requires installed-app verification. |
 
 HERE Routing REST APIs, geocoding/search services, embedded SDK navigation callbacks, and Pro user-service APIs are different contracts. Do not imply their tokens, transport modes or callback mechanisms are accepted by `share.here.com`.
-
-## Concrete proposed tests (not executed)
-
-1. Asymmetric coordinate fixtures for marker and route; titles `Café / A,B & #` must remain a single title after decoding. Verify destination title preservation separately from origin.
-2. No-origin routes should follow an explicitly chosen policy: use documented `mylocation` or preserve legacy compatibility only after device evidence. Test GPS denied/unavailable and available; do not equate a fallback map with successful routing.
-3. Ordered 2/3/50/100/101 total-waypoint cases, respecting endpoints; choose a length/error policy without silent truncation. Pass-through types need separate entitlement/version tests.
-4. All documented modes, absent mode, `tr` entitled versus non-entitled fallback; `a=tunnel,motorway` without assuming additional avoidance tokens.
-5. Zoom 0/20/21 and pin yes/no on web versus mobile, verifying mobile ignores zoom/map type as documented. This resolves behavior, not the conflicting mandatory wording.
-6. Truck fixtures: centimeter/kilogram units, trailer 0/6/7, axles 1/2/13/14, `wpax` precedence. Resolve `straight` versus `truck` and hazard-material spelling using authorized device tests or provider clarification before typed validation.

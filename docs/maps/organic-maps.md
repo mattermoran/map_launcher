@@ -1,18 +1,20 @@
 # Organic Maps
 
-Checked: **2026-10-02**. Research only; no native-device tests. Baseline fetched and verified: [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), equal to `origin/master`. Requested in [issue 111](https://github.com/mattermoran/map_launcher/issues/111); no existing Organic Maps entry at that baseline.
+Checked: **2026-10-02**. Native-device behavior has not been verified.
 
-## Product, identity and recommendation
+## Plugin status and identity
+
+**Organic Maps is not implemented in map_launcher.** Support is requested in [issue 111](https://github.com/mattermoran/map_launcher/issues/111). The formats below describe provider interfaces, not plugin capabilities.
 
 Organic Maps is an active offline map/navigation product, not another spelling of MAPS.ME. Official identities: [Android `app.organicmaps`](https://play.google.com/store/apps/details?id=app.organicmaps), [Apple ID `1567437057`](https://apps.apple.com/app/id1567437057), primary native scheme `om`. The [Android API](https://github.com/organicmaps/api-android/blob/f813cc11ee7262a1b33f64aade4443843c83c9ea/README.md) additionally recognizes `.beta`, `.debug`, and `.web` package variants; they must not be mistaken for the production Play app. [iOS API store fallback](https://github.com/organicmaps/api-ios/blob/045dbce7756dfc116be3469f939eda5455b151fe/api/OrganicMapsAPI.swift) confirms the Apple identity.
 
-**Integration-ready candidate:** `om://map` for pins and legacy `om://route` for explicit two-point directions, subject to real-device verification. Do not promise destination-only/current-location routes or waypoints from the legacy API. **Do not implement the advertised v2 API yet:** current documentation and app parser disagree, as detailed below.
+`om://map` supports pins and legacy `om://route` supports explicit two-point directions in the pinned source. The legacy API has no destination-only/current-location route or waypoint contract. The advertised v2 API conflicts with the inspected app parser, as detailed below.
 
-Evidence versions:
+## Sources and versions
 
 - Official [API/test page](https://omaps.app/api), undated, checked on the date above.
 - App source pinned at [b90c786](https://github.com/organicmaps/organicmaps/tree/b90c786f839d930dcf16590acd9f97201cc988b4); GitHub reports committer date 2026-10-02.
-- Latest GitHub Android release checked directly: [2026.09.29-32-android](https://github.com/organicmaps/organicmaps/releases/tag/2026.09.29-32-android), published 2026-09-29, commit [b20d141](https://github.com/organicmaps/organicmaps/commit/b20d1417eef1e3c63a447ac8658db4307a066024). Its parser was also inspected. Store rollout/version may differ; no iOS release parity inferred.
+- Android release snapshot: [2026.09.29-32-android](https://github.com/organicmaps/organicmaps/releases/tag/2026.09.29-32-android), published 2026-09-29, commit [b20d141](https://github.com/organicmaps/organicmaps/commit/b20d1417eef1e3c63a447ac8658db4307a066024). Store rollout/version may differ; no iOS release parity inferred.
 - Official external-app helper repositories: [Android f813cc1](https://github.com/organicmaps/api-android/tree/f813cc11ee7262a1b33f64aade4443843c83c9ea), [iOS 045dbce](https://github.com/organicmaps/api-ios/tree/045dbce7756dfc116be3469f939eda5455b151fe), both 2026-05-17. Their code is a launch wrapper, not an embedded map SDK or REST service. Android README says basic API supported since 2022-07-26; this is not a claim every newer parameter existed then.
 
 ## Coordinate and encoding conventions
@@ -38,7 +40,7 @@ All native API coordinate pairs below are **latitude,longitude**, decimal geogra
 
 The [Android helper's style enum](https://github.com/organicmaps/api-android/blob/f813cc11ee7262a1b33f64aade4443843c83c9ea/lib/src/main/java/app/organicmaps/api/Point.java) emits `placemark-red`, `placemark-blue`, `placemark-purple`, `placemark-yellow`, `placemark-pink`, `placemark-brown`, `placemark-green`, `placemark-orange`. It describes null style as the default violet circle. This helper enum is narrower than the parser's arbitrary string acceptance and does not establish a complete renderer style set.
 
-Example candidate (one label, no side-effecting callback):
+Single-pin example (no callback):
 
 ```text
 om://map?v=1&ll=59.3293,18.0686&n=Stockholm
@@ -129,17 +131,6 @@ There is **no `om://import` action** in the inspected dispatcher. Android [manif
 
 iOS [document declarations](https://github.com/organicmaps/organicmaps/blob/b90c786f839d930dcf16590acd9f97201cc988b4/iphone/Maps/OMaps.plist) include `com.topografix.gpx`, `com.google.earth.kml`, `com.google.earth.kmz`, `public.geojson`, `public.json`; [handler](https://github.com/organicmaps/organicmaps/blob/b90c786f839d930dcf16590acd9f97201cc988b4/iphone/Maps/Core/DeepLink/DeepLinkHandler.swift) imports while security-scoped access remains valid. File payload schemas/coordinate orders belong to their standards (GeoJSON is longitude-first), not the latitude-first URL API. No import size or route-point cap is established here. Import creates user data and is not a substitute for a transient marker.
 
-## Integration limits, privacy and proposed tests
+## Integration limits and privacy
 
 Do not silently obtain caller GPS to fill the legacy required origin, pretend `0,0` means current location, or drop waypoints. Expose lack of capability explicitly. Offline map download/coverage and GPS permissions remain app concerns. Native-only launch can avoid a web-service request, but HTTPS fallback can reveal coordinates to the website; pin URLs and callback IDs can carry sensitive data. Avoid untrusted callback destinations, secrets in IDs, and logging precise coordinates.
-
-Proposed checks, **not executed**:
-
-1. Single pin and two distinct pins: verify repeated `ll,n,id` order survives encoding; `n` before first `ll` fails, misplaced `s` does not invalidate. Test `balloonaction=0` as enabled versus omitted as disabled.
-2. Valid legacy route with empty name values versus omitted name keys, and ordered keys versus `sll,dll,saddr,daddr,type`. Assert endpoint identity, not only app foregrounding.
-3. Distinct `vehicle`, `pedestrian`, `bicycle`, `transit`; unsupported type rejected. Test absent origin rather than manufacturing a current-location convention.
-4. Compare documented `v2/dir`/`v2/nav` with working legacy route on the same app version. Treat failure to construct a route as a documentation issue, not successful launch support.
-5. Coordinate boundaries and asymmetric signs; Unicode, `+`, `&`, callback query strings; clear-link `z=20` versus `21`/`14.5` (fallback 14).
-6. Crosshair Android activity result versus iOS rejection; menu/settings iOS versus Android TODO. Test canceled selection and missing result data.
-7. Cold/warm startup, offline downloaded/missing map, installed/uninstalled app, tapped HTTPS link versus custom scheme, and conflicting legacy-handler apps.
-8. Only on disposable app data, exercise valid/malformed file import and verify actual resulting data; do not import into a user's bookmarks as research.

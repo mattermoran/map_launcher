@@ -1,14 +1,14 @@
-# Apple Maps external-launch audit
+# Apple Maps
 
-**Checked:** 2026-10-02. **Status:** current primary documentation plus an explicitly archived compatibility interface; no real-app validation. Baseline: fetched `origin/master` and verified it contains [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131); checkout matched that commit.
+The plugin uses legacy HTTPS root links for coordinate markers, text search and directions with coordinate/text origins. It emits `dirflg=d/w/r` for driving/walking/transit; cycling and waypoints are rejected. `AppleExtra` supplies map type and nearby search bias. Apple Maps is treated as always available on iOS; there is no native scheme override. Modern action paths below are provider features, not plugin builders.
 
-## Sources and confidence
+Reference check: 2026-10-02.
+
+## Sources
 
 - [Unified Maps URLs](https://developer.apple.com/documentation/mapkit/unified-map-urls) — current primary source; no update date displayed. Availability: iOS 18.4+, macOS 15.4+, watchOS 11.4+. This is external URL documentation, despite living under MapKit.
-- [Map Links, Apple URL Scheme Reference](https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html) — **archived**, updated 2017-09-19. Page-reader request failed, but direct HTTPS retrieval succeeded and the entire parameter table was inspected.
+- [Map Links, Apple URL Scheme Reference](https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html) — archived compatibility interface, updated 2017-09-19.
 - [Default navigation app](https://developer.apple.com/documentation/mapkit/preparing-your-app-to-be-the-default-navigation-app) — primary search-result evidence for `geo-navigation://`; not evidence that it always targets Apple Maps. EU iOS/iPadOS 18.4+, Japan iOS 26.2+ stated in the source.
-
-“Documented” below means provider URL documentation, not observed app behavior. “Source-inferred” means our code establishes the behavior. Unspecified ranges/defaults are not supplied from embedded MapKit or REST APIs. No secondary-only parameter is promoted to supported status.
 
 ## Universal links: current interface
 
@@ -16,7 +16,7 @@ Base: `https://maps.apple.com`. Paths select independent actions; adding modern 
 
 ### Framing and search
 
-Source: [unified URL framing/search tables](https://developer.apple.com/documentation/mapkit/unified-map-urls).
+Reference: Unified Maps URLs, framing/search tables.
 
 | Path / fields | Requirement, syntax and behavior |
 | --- | --- |
@@ -31,7 +31,7 @@ Source: [unified URL framing/search tables](https://developer.apple.com/document
 
 ### Place cards, Look Around, guides and reports
 
-Source: [unified URL place/action tables](https://developer.apple.com/documentation/mapkit/unified-map-urls).
+Reference: Unified Maps URLs, place/action tables.
 
 | Path / fields | Requirement, syntax and behavior |
 | --- | --- |
@@ -49,7 +49,7 @@ Apple Place IDs are not Google Place IDs. The documentation links a Place ID loo
 
 ### Directions and navigation
 
-Source: [unified URL directions table and examples](https://developer.apple.com/documentation/mapkit/unified-map-urls).
+Directions use `/directions`; reference: Unified Maps URLs, directions table.
 
 | Field | Requirement / syntax / semantics |
 | --- | --- |
@@ -64,13 +64,13 @@ Source: [unified URL directions table and examples](https://developer.apple.com/
 | `transit-preferences` | Optional comma-separated `bus`, `subway`, `commuter`, `ferry`; meaningful for transit. |
 | `start` | Optional integer delay in seconds before navigation begins. No allowed range, minimum, default, origin restrictions or confirmation behavior stated. |
 
-The article's overview mentions multistop driving, walking and transit, but concrete multistop examples are driving. It does not give a complete mode/waypoint support matrix. Test combinations before promising equivalence across OS versions or browser fallback.
+The overview mentions multistop driving, walking and transit, but concrete multistop examples are driving; the complete mode/waypoint matrix is unspecified.
 
 ## Legacy root links and native schemes
 
-The archived specification explicitly uses regular `http://maps.apple.com/?…`, **not a `maps:` scheme**. Our builder uses HTTPS. The modern article also uses HTTPS; neither audited page establishes a separate `maps://` parameter contract. No callbacks are documented on either audited Apple Maps URL interface.
+The archived specification uses `http://maps.apple.com/?…`, not a `maps:` scheme; the plugin uses HTTPS. Neither URL reference defines a separate `maps://` contract or callbacks.
 
-Source: [archived Map Links table](https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html).
+Reference: archived Map Links table.
 
 | Field | Requirement / values / constraints |
 | --- | --- |
@@ -89,30 +89,34 @@ Source: [archived Map Links table](https://developer.apple.com/library/archive/f
 
 The archive's examples also use `t=s`, contrary to the enumerated table. Treat those as documentation inconsistencies, not additional validated values.
 
-`geo-navigation://` is a separate **default-navigation-app** handoff, not Apple-specific targeting. Primary search evidence describes `/directions` with `source`, `destination`, repeated `waypoint` (address/place/coordinates), and `/place` with `coordinate` or `address`. Our Apple builder does not use it. Full behavioral/OS routing validation remains outside this audit; do not substitute it silently for Apple Maps.
+`geo-navigation://` targets the default navigation app, not specifically Apple Maps. The default-navigation reference describes `/directions` with `source`, `destination`, repeated `waypoint` (address/place/coordinates), and `/place` with `coordinate` or `address`. The plugin does not use it.
 
-## Exact implementation comparison
+## Plugin limitations
 
 Sources: [`apple_maps.dart`](../../lib/src/maps/apple_maps.dart), [`apple_extra.dart`](../../lib/src/extras/apple_extra.dart), [`map_app.dart`](../../lib/src/maps/map_app.dart), [`directions_request.dart`](../../lib/src/requests/directions_request.dart), [`launch_helper.dart`](../../lib/src/utils/launch_helper.dart), [`url_builder.dart`](../../lib/src/utils/url_builder.dart).
 
-| Current code | Assessment / actionable consequence |
+| Plugin behavior | Limit |
 | --- | --- |
-| Marker `https://maps.apple.com/?ll=lat,lng&q=title&z=int`; `q` only with title | **Semantic gap:** unnamed “marker” is only documented as centering, not guaranteed pin placement. Consider current `/place?coordinate=…` for guaranteed place action on supported OS versions; test unnamed legacy pins. |
+| Marker `/?ll=lat,lng&q=title&z=int`; `q` only with title | Without a name, legacy `ll` documents centering rather than guaranteed pin placement. Modern `/place` is not exposed. |
 | Search `/?q=text`; directions `/?daddr=…&saddr=…&dirflg=…` | Matches archived contract for search/address directions; text origin appended under `saddr`. No native scheme override. |
-| All four enum modes accepted; bicycling emits `dirflg=b` | **Undocumented legacy value**, not a proven runtime defect. Modern documented spelling is `/directions?mode=cycling`. Gate/migrate or explicitly document runtime evidence before promising cycling. |
-| `supportsWaypoints=false`; nonempty waypoint request rejected | **Omitted current capability**, not a bug in the legacy contract. Modern repeated `waypoint` keys need a new path and repeated-key representation. `Map<String,String>` extras cannot represent repeated keys. |
+| Bicycling unsupported | Getters return null; discovery excludes Apple and explicit launch reports `MapLaunchException`. Automatic launch can try Google. Modern `/directions?mode=cycling` is a separate contract. |
+| Waypoints unsupported | Requests reject nonempty waypoints; modern repeated keys cannot be represented by `Map<String,String>` extras. |
 | `AppleExtra(display, near)` emits `t=m/k/h/r`, `near=lat,lng` | Correct archived values; no typed current `map`, camera, IDs, route preferences, `start` or waypoint support. |
 | Integer zoom, no range/combination checks | Omitted fractional zoom; invalid 1/22 or `extra` spans can violate archived constraints. |
-| Universal capability; always available on iOS; no iOS scheme | Repository assumption is not proof of installed app or modern-path support on every device/browser. Universal URLs can open web content; new-path platform minima must be accounted for. |
+| Always available on iOS; HTTPS launch | May open web content; modern paths have separate OS minima and are not emitted by the plugin. |
 
-Extras append at launch, not in `getUrl()`/`getUniversalUrl()`/`getSchemeUrl()`. They are query strings, not native SDK options. Request/show extras merge with show values winning each other, but **do not replace builder keys**: `extra={'q':'other'}` appends a second `q`. Provider duplicate-key precedence is unspecified. `buildUrl` filters blank values and uses Dart URI encoding; launch-time append preserves blank extras. Modern action paths cannot be selected through extras.
+Extras apply during launch preparation, not URL getters. Use request
+`providerExtras: {.apple: AppleExtra(...)}` for automatic launch or discovery;
+these are conditional Apple preferences, not requirements for a Google fallback.
+Nonempty raw extras require explicit `show(map: .apple, extra: ...)`. Show extras
+override request extras, which override provider options; identical built-in
+values are retained once and conflicts use `MapConfigurationError`. Picker
+entries capture validated options and their parameterless `show()` stays Apple.
+Existing URL bytes are preserved. The builder filters blank values, while launch
+extras preserve them. Extras cannot select modern action paths or represent
+repeated waypoint keys. Retry requires confirmed non-handoff; blocked or unknown
+outcomes are terminal.
 
-## Verification gaps and recommended cases
+## Reference limits
 
-- Existing [`apple_maps_test.dart`](../../test/maps/apple_maps_test.dart) checks URL construction, not app behavior; its all-modes test only checks that `dirflg` exists. Add exact `d/w/r` expectations and explicitly track legacy cycling uncertainty.
-- Distinguish marker with/without title at `59.3293,18.0686`; test `/place` separately. Do not infer pin behavior from a URL containing `ll`.
-- Encode `Café & Ferry + #1` once; decode generated parameters and ensure reserved characters do not become new fields. Exercise coordinate boundaries already enforced by `LocationCoords` (finite latitude −90…90, longitude −180…180).
-- Test legacy zoom 2/21 versus 1/22, and span conflicts. Test unequal modern spans `0.02,0.07` to resolve the provider ambiguity on a real device.
-- If migrating, test repeated distinct waypoints, ID companion requirements, omitted source, cycling, tracking-versus-camera precedence, `start` opt-in and older-OS/browser fallback. Do not silently drop stops.
-- Source inconsistencies include malformed percent escapes, `heading=18a0`, distance prose/number disagreement and inconsistent visible versus linked coordinates. Parameter tables are stronger evidence than those example URLs.
-- No Apple app, OS-version matrix, permission state, browser fallback, navigation start or callback behavior was tested. Archived page access was recovered; current full URL page was accessible. No fixed datum, complete mode/avoid matrix or numeric camera limits were established.
+Source examples contain malformed percent escapes, `heading=18a0`, distance prose/number disagreement and inconsistent visible versus linked coordinates. Parameter tables take precedence. Datum, complete mode/avoid compatibility and numeric camera limits are unspecified. The library separately validates finite latitude −90…90 and longitude −180…180. [`apple_maps_test.dart`](../../test/maps/apple_maps_test.dart) covers generated URLs, not native behavior.

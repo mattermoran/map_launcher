@@ -1,14 +1,20 @@
-# Naver Map external links
+# Naver Map
 
-Checked **2026-10-02** against the Korean [current Maps URL Scheme guide](https://guide.ncloud-docs.com/docs/application-maps-url-scheme-vpc) and [English translation](https://guide.ncloud-docs.com/docs/en/application-maps-url-scheme-vpc). No revision date or minimum app version was exposed in the retrieved current page. The older [Maps guide](https://guide.ncloud-docs.com/docs/maps-url-scheme) belongs to the deprecated Maps API documentation, not evidence that the app scheme itself is deprecated. No native application was tested.
+The plugin opens native coordinate markers and car routes with optional coordinate origins. Supply `NaverMap(appName: ...)` or an `appname` extra containing the caller's Android application ID, iOS bundle ID or mobile page URL. This is caller identity, not an API key. The provider documents it as required, but the plugin permits discovery and launch without it for compatibility; provider acceptance has not been device-verified. Marker names fall back to coordinate text for absent/blank titles and do not send zoom. Only driving is advertised; waypoints and browser URLs are unsupported.
 
-Implementation baseline: [`8aa7a6e`](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), verified as fetched `origin/master`; [builder](../../lib/src/maps/naver.dart), [capability defaults](../../lib/src/maps/map_app.dart), [encoding helper](../../lib/src/utils/url_builder.dart).
+Reference check: 2026-10-13. The [Korean guide](https://guide.ncloud-docs.com/docs/application-maps-url-scheme-vpc) and [English translation](https://guide.ncloud-docs.com/docs/en/application-maps-url-scheme-vpc) show no minimum app version. The [older guide](https://guide.ncloud-docs.com/docs/maps-url-scheme) belongs to deprecated Maps API documentation, not a stated retirement of the app scheme. Protocol tables include unimplemented actions.
+
+Implementation: [builder](../../lib/src/maps/naver.dart), [capabilities](../../lib/src/maps/map_app.dart), [encoding](../../lib/src/utils/url_builder.dart).
+
+With shorthand `.naver`, use `NaverExtra(appName: 'com.example.myapp')` in
+`extra`, or `providerExtras: {.naver: NaverExtra(appName: 'com.example.myapp')}`
+before discovery. No custom map instance or raw parameter key is needed.
 
 ## Transport, identity, and coordinates
 
 The native form is `nmap://{action}?{parameters}&appname={caller}`. The apparent `/place` action path in the reference becomes `nmap://place`, not `nmap:///place`. Android opens it with `ACTION_VIEW`/`CATEGORY_BROWSABLE`; iOS needs `nmap` in `LSApplicationQueriesSchemes` to query installation. Provider fallback targets are Android `com.nhn.android.nmap` and App Store `311867728`. A mobile website can launch the scheme or an Android intent; these are **not** browser-rendered map URLs.
 
-Source: [syntax and setup](https://guide.ncloud-docs.com/docs/application-maps-url-scheme-vpc).
+Reference: current Korean guide, syntax/setup.
 
 | Field / rule | Requiredness, syntax, and limits |
 | --- | --- |
@@ -26,7 +32,7 @@ intent://{action}?{parameters}&appname={caller};scheme=nmap;action=android.inten
 
 **Source caveat:** the printed template omits the usual Android `#Intent` delimiter. Treat it as provider example text, not a verified `Intent.parseUri` serialization; verify generated intents on Android rather than copying that omission. The repository builds the native scheme instead. No standalone HTTPS map/route URL contract, API-key field, callback, return URL, or additional attribution field is specified in this guide.
 
-## Actions and every table-defined field
+## Actions and parameters
 
 Source for all rows: [current Korean action reference](https://guide.ncloud-docs.com/docs/application-maps-url-scheme-vpc#url-scheme-사용). “Optional” and defaults below follow the provider, not observed app behavior.
 
@@ -64,25 +70,10 @@ The current guide's car-with-waypoint example also includes `secoords`, `decoord
 
 The [government-cloud copy](https://guide-gov.ncloud-docs.com/docs/naveropenapiv3-maps-url-scheme-url-scheme), indexed with update **2026-08-20**, contains a map example with `level=13&mode=3&traffic=false` despite a table listing `zoom`. Those are conflicting/example-only legacy-style fields, not substitutes for the current guide's explicit `zoom=20` example. Their ranges/defaults are not established here.
 
-## Implementation comparison
+## Plugin limitations
 
-| Contract | Current implementation | Classification |
-| --- | --- | --- |
-| Every URL identifies caller with `appname` | Neither marker nor route emits it | **Demonstrable contract violation**, independent of whether a particular app version tolerates omission. |
-| `place` requires `name` | Only supplied when title is non-null; helper also drops blank values | **Contract violation** for absent/blank titles. |
-| `place` coordinate fields | Emits `lat`, `lng` correctly | Matches field names/order; only global coordinate ranges are validated. Korean bounds are not enforced. |
-| Marker zoom | Sends `zoom` to `place` | Undocumented field on this action; do not claim it works or is definitely rejected. |
-| Route destination / origin / names | Emits correct `dlat`, `dlng`, optional `dname`, `slat`, `slng`, `sname` | Matches documented subset. Origin can be omitted despite class comment “with origin.” |
-| Route modes | Always `route/car`; advertises driving only | Honest capability restriction, but other documented modes are omitted. Direct calls ignore a non-driving argument. |
-| Waypoints | Argument ignored; `supportsWaypoints=false` | Omitted provider feature; capability accurately reflects implementation. |
-| Search, bus, main map, navigation, example-only entrance coordinates | Not implemented; search flags false | Omitted actions, not evidence of provider incapability. |
-| Web | Both universal URL methods return null; `hasUniversalLink=false` | Consistent with implementation; mobile web launching a native app is a different capability. |
-
-## Concrete follow-up tests
-
-1. Assert Android/iOS caller identity and percent-encoding independently; use a caller URL containing `?source=a&b=c` for the web case. A URL without `appname` must not pass a contract test.
-2. Marker title cases: absent, empty, whitespace, and `서울 & 출구/1?#`; independently assert a required nonempty `name` policy and exact decoded value. Resolve policy before changing code.
-3. Use `(37.3595953,127.1053971)` and `(37.4200267,127.1267772)` to detect latitude/longitude or origin/destination swaps. Test no origin separately.
-4. Test Korean bounds exactly and just outside them, independently of `LocationCoords` global validation. Test zoom 4/20 and 3/21 only on the documented `map` action; treat `place` zoom as a device experiment.
-5. If exposed, assert the four distinct action paths, ordered waypoint slots 1–5, and explicit rejection/handling of a sixth. Test transit waypoints on devices before advertising them.
-6. Device matrix still needed: Android/iOS installed and absent, non-ASCII labels, navigation versus route preview, and correctly serialized Android intent fallback. None was run in this research.
+The plugin validates global coordinate ranges, not Naver's narrower Korean bounds.
+Direct builders ignore non-driving modes and waypoints; use the request API to
+check capabilities before launching. Search, bus search, the main map, navigation
+and entrance-coordinate fields are not exposed. Mobile websites can launch the
+native scheme, but the plugin provides no browser-rendered fallback.

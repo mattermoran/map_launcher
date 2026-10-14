@@ -1,10 +1,12 @@
-# Huawei Petal Maps (花瓣地图): external launch protocol audit
+# Huawei Petal Maps (花瓣地图)
 
-Checked **2026-10-02**. Fetched `origin/master` and verified it matched [`8aa7a6e`](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131). **Runtime-unverified:** this audit reads provider launch specifications and package implementation; it does not establish successful app navigation on a device.
+Checked: **2026-10-02**. Native-device behavior has not been verified.
 
-The primary contract is **PetalMaps Intents for Android** in Huawei Map Kit, not arbitrary Map Kit SDK methods or REST routes. Chinese pages read: [introduction](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/petal-maps-introduction-0000001059189679), [route planning](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/petal-maps-application-route-0000001060197996), [keyword search](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/petal-maps-application-textsearch-0000001059480273), [POI details](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/petal-maps-application-poi-details-0000001116495363), updated **2026-03-04 08:38**. English [navigation](https://developer.huawei.com/consumer/en/doc/HMSCore-Guides/petal-maps-application-navigation-0000001060038018) and [nearby search](https://developer.huawei.com/consumer/en/doc/HMSCore-Guides/petal-maps-application-nearbysearch-0000001059560208) updated **2026-03-04 08:44** were read. The Chinese nearby page and English keyword page timed out during this audit; this is an **access limitation**, not missing functionality.
+## Plugin behavior
 
-“Documented” means explicit provider URI evidence. “Inferred” identifies conclusions from examples, and “unresolved” identifies ambiguities rather than assumed support. No secondary-only claim is treated as a contract, and no SDK availability or coordinate converter is used to prove a URI feature.
+Android-only markers use `petalmaps://poidetail?marker=lat,lng[&z=ZOOM]`; routes use `petalmaps://route` with `daddr=lat,lng(label)`, optional `saddr`, and `type=drive/walk/bus/bicycle` (default drive). Omitted origin means current location. Marker title is ignored; route labels are included. Zoom is forwarded without validating the provider's 3–20 range. Search, waypoints, navigation/exit and HTTPS alternatives are not implemented.
+
+The primary contract is **PetalMaps Intents for Android** in Huawei Map Kit. Sources: Chinese [introduction](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/petal-maps-introduction-0000001059189679), [route planning](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/petal-maps-application-route-0000001060197996), [keyword search](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/petal-maps-application-textsearch-0000001059480273), [POI details](https://developer.huawei.com/consumer/cn/doc/HMSCore-Guides/petal-maps-application-poi-details-0000001116495363), updated **2026-03-04 08:38**; English [navigation](https://developer.huawei.com/consumer/en/doc/HMSCore-Guides/petal-maps-application-navigation-0000001060038018) and [nearby search](https://developer.huawei.com/consumer/en/doc/HMSCore-Guides/petal-maps-application-nearbysearch-0000001059560208), updated **2026-03-04 08:44**. Keyword and nearby tables below rely on those respective language editions; alternate translations were unavailable.
 
 ## Platform and link families
 
@@ -96,33 +98,10 @@ Sources: [Chinese keyword search](https://developer.huawei.com/consumer/cn/doc/H
 
 No search paging/count/locale/POI category enumeration is defined. REST Site Kit/Map Kit search filters must not be imported into these URI fields.
 
-## Implementation audit
+## Encoding and integration limits
 
 Sources: [`PetalMaps`](../../lib/src/maps/petal.dart), inherited [`MapApp`](../../lib/src/maps/map_app.dart), [`LocationCoords`](../../lib/src/models/location.dart), [`buildUrl`](../../lib/src/utils/url_builder.dart), [`launch helper`](../../lib/src/utils/launch_helper.dart), [`Petal tests`](../../test/maps/osmand_petal_test.dart).
 
-| Generated key / flag | Comparison |
-| --- | --- |
-| `petalmaps://poidetail`, `marker=lat,lng` | Matches explicit marker table. No title emitted; label not supported in audited marker URI contract. |
-| Optional marker `z` | Correct key, **range 3–20 not validated** by builder/request; arbitrary integer forwarded. Omitted correctly leaves provider default 15. |
-| `petalmaps://route`, `daddr` | Documented endpoint/key. Uses latitude-first and `lat,lng(label)`, matching Chinese example. Translation ambiguity is not evidence of an implementation reversal bug. |
-| Optional `saddr` | Correct key; omission is explicitly current location. Parenthesized origin labels supported by route table. |
-| `type=drive/walk/bus/bicycle` | All four mappings documented; default drive correct. Existing `bicycle` spelling is correct. |
-| Attribution | Not generated; allowed omission because all utm fields optional. |
-| Coordinate flags true, all four modes true | Consistent with Android marker/route contract. They do not imply walking/cycling/bus support on navigation endpoint. |
-| Search flags false | Current implementation lacks documented `textSearch`/nearby and route name-based destination builders. Provider has broader capabilities. |
-| `supportsWaypoints=false` | Consistent with **no URI waypoint parameter found**. Direct builder ignores argument; request layer rejects nonempty list. App UI multiple stops not evidence to change flag. |
-| `hasUniversalLink=false`, HTTPS methods null | Implementation omits explicitly documented `/place/`, `/routes/`, `/navigate/` app links. A future HTTPS implementation still needs app-absent/browser tests before treating them as portable universal fallbacks. |
-| Android-only metadata | Play package present; iOS scheme/App Store ID absent. Appropriate to audited Android contract. Direct scheme builder itself does not guard platform; don't mistake a returned string for supported iOS behavior. |
-| Extras | No typed Petal extra. Generic extras can add `center`,`placeId`,`utm_*`; they append encoded query pairs, not replace existing generated values. Cannot switch route to navigation endpoint; duplicate `type`,`z`/`daddr` keys have unestablished precedence. |
+Optional attribution is not generated. Generic extras can add absent `center`, `placeId` and `utm_*` fields but reject conflicting generated values and cannot change route to navigation. Nonempty waypoint requests are rejected; the direct builder omits them. A direct scheme-builder call does not guard the platform and is not evidence of iOS support.
 
 The provider says names containing special characters need `UriEncode`. Package builds the whole `daddr`/`saddr` decoded string then encodes once through Dart `Uri(queryParameters: …)`, including Unicode, ampersands, percent signs and hashes. Spaces use query/form encoding; app interpretation of `+` versus `%20` remains unverified. Parentheses inside a title are potentially ambiguous after URL decoding because they are also syntax; no nested label-escaping rule is documented. Blank but non-null title becomes empty parentheses, unlike absence. Existing tests only round-trip through Dart's parser, not Petal's grammar.
-
-## Proposed discriminating tests
-
-1. Zoom: test omitted, 3, 20, and invalid 2/21; verify chosen validation policy or actual app result. Do not assert merely that `z` appears.
-2. Route coordinates: use Bangkok `13.7457891,100.5528094` versus reversed order; test labeled/unlabeled endpoints and separate custom-scheme / HTTPS links. Check actual destination; a permissive app may open even with bad coordinates.
-3. Test origin omitted versus `home`, `company`, and an explicit origin far from current location. Test text-only destination and coordinates-plus-label as distinct contracts.
-4. Exercise all four **route** modes; separately test **navigation** drive and exit, including exit with/without `daddr`, and `language=en/zh_CN`. Record whether route preview or active guidance is reached.
-5. Compare app-link keyword `q` and `text`; verify normalized path, percent encoding and app-absent browser behavior. Do not create a nearby HTTPS URL by analogy.
-6. Label inputs should include `Café & Tea/入口? #1`, literal `+`, `%`, nested parentheses and empty title. Inspect displayed name and exact endpoint after provider parsing, not only `Uri.queryParameters`.
-7. Check a mainland landmark against known source datums without assuming a conversion key; record app version/region/device and coordinate provenance. No new datum promise until provider/device evidence resolves it.

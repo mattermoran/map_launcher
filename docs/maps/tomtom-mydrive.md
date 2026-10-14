@@ -1,6 +1,8 @@
 # TomTom MyDrive
 
-Checked: **2026-10-02**. Research only; no native-device tests. Baseline fetched and verified: [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), equal to `origin/master`. [Issue 111](https://github.com/mattermoran/map_launcher/issues/111) requests MyDrive separately from TomTom. Existing `TomTomGo`/`TomTomGoFleet` code is not evidence for MyDrive support.
+**Not included in map_launcher.** [Issue 111](https://github.com/mattermoran/map_launcher/issues/111) requests MyDrive separately from TomTom GO and GO Fleet. MyDrive mobile is discontinued; those providers do not implement it.
+
+Source check: **2026-10-02**.
 
 ## MyDrive mobile is discontinued, not renamed to GO
 
@@ -17,11 +19,11 @@ The supported route-planning alternative is **[Plan.TomTom.com](https://plan.tom
 | Product identity | What is verified / what is not |
 | --- | --- |
 | TomTom MyDrive mobile | Former Android/iOS product confirmed by the official discontinuation notice. No current installable store identity should be advertised. |
-| Historical Android package / Apple numerical ID | Not established from readable primary sources in this research. Searches surfaced other TomTom products rather than a verifiable old listing. Do not substitute GO's `com.tomtom.gplay.navapp` or Apple ID `884963367`. |
+| Historical Android package / Apple numerical ID | Not established by the available primary sources. Do not substitute GO's `com.tomtom.gplay.navapp` or Apple ID `884963367`. |
 | Plan.TomTom.com | Verified official replacement **website**, not a package ID, custom scheme, or verified installed-app identity. |
 | MyDrive Connect | Verified desktop updater, not an inbound route-launch target. |
 
-This gap is deliberately recorded instead of guessing an old package or app ID. If historical installation detection is required for migration UI, obtain an archived official listing or a legitimately installed signed application's manifest before coding it. Package discovery alone would not make the discontinued app a safe supported target.
+Historical installation detection would require an archived official listing or a signed application's manifest. Package discovery alone would not make the discontinued app a supported target.
 
 ## External action/parameter inventory
 
@@ -42,16 +44,10 @@ No native iOS/Android link parity can be claimed. Opening the replacement websit
 
 [TomTom developer documentation](https://developer.tomtom.com/) covers routing/search web services and embedded SDKs. API keys, REST route coordinate formats, SDK navigation methods, and device synchronization APIs are not evidence that the discontinued consumer MyDrive binary accepts those inputs. Do not derive an app scheme from them.
 
-**Do not add MyDrive as a newly supported native map.** The integration-ready option is an explicitly labelled generic link to the replacement planner, which cannot honestly implement `showMarker` or `showDirections` with supplied coordinates based on this evidence. It should not silently replace a user's selected map or claim launch success means a route reached a sat nav.
+MyDrive is not a candidate for newly supported native navigation. A labelled generic link can open the replacement planner, but the available contract cannot implement `showMarker` or `showDirections` with supplied coordinates. It must not silently replace a selected map or equate website launch with delivery to a sat nav.
 
-If a prefilled web-planner integration is desired, treat it as a separate product investigation: ask TomTom for a supported URL specification, applicable terms, share-link lifetime, account requirements, supported destinations/waypoint limits, and platform fallback rules. No user account or production sync was accessed during this research.
+Prefilled web-planner integration requires its own supported URL specification, terms, share-link lifetime, account requirements, destination/waypoint limits and fallback rules.
 
 Location/route data sent for cloud synchronization can reveal home, work, travel history, and device associations. Do not upload routes or inspect users' favourites as a discovery test. Publicly shared route URLs may disclose stops; redact them from logs.
 
-## Proposed discriminating tests (not executed)
-
-1. For any future package proposal, verify the signed app label and package on a real pre-existing installation; distinguish MyDrive from GO, GO Fleet, and the desktop updater. Do not sideload an untrusted archived APK.
-2. Prove a supported prefilled link preserves two asymmetric endpoints and stop order, rather than merely opening Plan's landing page. Compare signed-in and signed-out sessions.
-3. Distinguish website route display, account save, cloud sync, and actual device navigation as four separate outcomes; do not infer later steps from the first.
-4. Check new-device/store-unavailable behavior and show honest migration messaging rather than an install button that cannot succeed.
-5. Only with explicit user authorization, test sync using disposable non-sensitive routes and a test account/device; no production favourites, writes, or ride/navigation side effects for research.
+Website route display, account save, cloud synchronization and device navigation are separate outcomes. Opening Plan's landing page establishes none of the later steps, and a home-screen shortcut does not restore native MyDrive availability.

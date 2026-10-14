@@ -1,8 +1,12 @@
-# Mappls / MapmyIndia external links
+# Mappls / MapmyIndia
 
-Checked **2026-10-02** against current provider [web/app links](https://developer.mappls.com/mappls-apps/mappls-app), [Android](https://developer.mappls.com/mappls-apps/android), and [iOS](https://developer.mappls.com/mappls-apps/ios) documentation, plus the [provider Android overview](https://about.mappls.com/api/move-api/android). These live pages expose no revision date or minimum application version. The provider's corresponding [navigation source revision dated 2025-05-16](https://github.com/mappls-api/mapmyindia-api-addendums/blob/e70a44e3d2e363277716e803361c62515ff5d35a/mapmyindia-mappls-deeplinks/android/readme.md) matches the current navigation text. No native application was tested.
+Checked: **2026-10-13**. Native-device behavior has not been verified.
 
-Baseline: [`8aa7a6e`](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131), verified as fetched `origin/master`; [builder](../../lib/src/maps/mappls.dart), [capabilities](../../lib/src/maps/map_app.dart), [existing tests](../../test/maps/mapy_mappls_test.dart).
+## Plugin behavior
+
+The [builder](../../lib/src/maps/mappls.dart) uses `https://mappls.com/@lat,lng` for markers, ignoring title/zoom, and `https://mappls.com/navigation?places=lat,lng[,title]` for directions. Optional modes are `driving`, `walking`, `biking`; omitted mode is left absent. Transit, explicit origins and nonempty waypoint lists are rejected by direct builders as well as request capabilities. `biking` is the documented spelling, but pedal-cycle semantics remain unresolved. The builder does not send `isNav=true`, expose trucking or implement search/report/Pin actions. HTTPS is the launch transport; `mappls://` is used for iOS discovery. Association and fallback behavior remain unverified.
+
+Sources: [web/app guide](https://developer.mappls.com/mappls-apps/mappls-app), [Android guide](https://developer.mappls.com/mappls-apps/android), [iOS guide](https://developer.mappls.com/mappls-apps/ios), [Android overview](https://about.mappls.com/api/move-api/android), and pinned [navigation documentation, 2025-05-16](https://github.com/mappls-api/mapmyindia-api-addendums/blob/e70a44e3d2e363277716e803361c62515ff5d35a/mapmyindia-mappls-deeplinks/android/readme.md). The live guides give no revision date or minimum app version. Local references: [capabilities](../../lib/src/maps/map_app.dart), [Mappls tests](../../test/maps/mapy_mappls_test.dart).
 
 ## Current navigation links and mode verification
 
@@ -69,28 +73,3 @@ These are historical primary documentation, **not recommended current defaults**
 | `https://maps.mapmyindia.com/corona` | Same bare query tokens `safety_alert` or `containment_zone_gradient,corona_testing_centre,corona_treatment_centre` as successor. |
 
 Do not copy the old Android two-point `places` template into current `/navigation` and claim current documented origin/waypoint support: the current reference specifies one destination. Current `/direction` is the documented multi-point web interface.
-
-## Implementation comparison
-
-| Field / capability | Current builder | Assessment |
-| --- | --- | --- |
-| Marker path | `https://www.mappls.com/location/{lat},{lng}` | **Not a documented marker form in retrieved current/legacy references**; documented forms are `/@...` and `/pom/...`. This is a source mismatch, not proof `/location/` is rejected. |
-| Marker title / zoom | Ignored | Neither is defined on the documented coordinate sharing forms. |
-| Route destination | `https://mappls.com/navigation?places=lat,lng[,title]` | Matches current one-destination tuple shape; optional title encoded with shared helper. |
-| Origin / waypoints | Both ignored; `supportsWaypoints=false` | Current `/navigation` does not define these; `/direction` supports multi-point routes. Omitted alternative action, not proof current query needs extra `origin` key. |
-| Driving / walking | `mode=driving` / `mode=walking` | Both documented. |
-| Transit | Emits `mode=transit` and advertises support | **Contradicts documented allowed-value list**; runtime handling unknown. No verified replacement transit token. |
-| Bicycling | Emits `mode=biking` and advertises support | Spelling documented, bicycle semantics **unproven**; related provider terminology suggests two-wheeler routing. Do not silently equate bicycle and motorcycle. |
-| Trucking | Not representable by generic travel-mode enum | Omitted documented provider mode. |
-| Immediate navigation | Never emits `isNav=true` | Omitted feature; a directions method need not automatically start guidance. Do not claim omission is itself an error. |
-| Native transport | `iosScheme=mappls://` for discovery but no custom navigation builder; falls back to HTTPS | HTTPS navigation documented; iOS app association still device-unverified. `hasUniversalLink=true` describes intended package behavior. |
-| Search, Pin, profile/report/review, COVID | No builders; search flags false | Omitted actions, not provider incapability. |
-
-## Concrete follow-up tests
-
-1. Use destination `(28.612964,77.229463)` and different origin `(28.550716,77.268928)`; independently assert latitude-first tuple, origin preservation only on an explicit `/direction` implementation, and ordered intermediates.
-2. Test `driving` and `walking` against literal expected strings; reject/mark unsupported `transit` rather than allowing a test to canonize the existing undocumented value. Request provider clarification before advertising bicycle semantics for `biking`.
-3. Marker contract test should choose the documented `/@` or `/pom` action and separately device-test old `/location` compatibility. A test that merely checks `contains('mappls.com/location')` validates implementation, not provider support.
-4. Keep `/navigation` with/without `isNav=true` separate from `/direction` route preview; do not start guidance unintentionally while adding origin support.
-5. Existing `Café & Tea/入口? #1` test confirms Dart decoding, not provider behavior. Add comma/semicolon label experiments and a three-point asymmetric route. No maximum via limit should be invented from unrelated REST quotas.
-6. Real-device/browser checks remain: both host spellings, Android/iOS installation and fallback, `biking` vehicle meaning, omitted mode, unsupported mode, `/location` versus documented markers, and legacy redirects. No navigation or report submission was performed.

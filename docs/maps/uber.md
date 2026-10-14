@@ -1,6 +1,8 @@
 # Uber rider app
 
-Checked: **2026-10-02**. Research only; no native-device tests or ride requests. Baseline: fetched `origin/master`, verified it equals [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131). Requested in [issue 111](https://github.com/mattermoran/map_launcher/issues/111); absent from the baseline map registry.
+**Not included in map_launcher.** Requested in [issue 111](https://github.com/mattermoran/map_launcher/issues/111). The documented surface is a rider-UI handoff, not marker display or turn-by-turn navigation.
+
+Source check: **2026-10-02**. Current native behavior remains unverified.
 
 ## Product and suitability
 
@@ -10,7 +12,7 @@ Uber remains available. The rider app is [Android `com.ubercab`](https://play.go
 
 ## External URL contracts
 
-Primary documentation was live-fetched on the checked date: [deep-link introduction](https://developer.uber.com/docs/riders/ride-requests/tutorials/deep-links/introduction), [FAQ](https://developer.uber.com/docs/riders/ride-requests/tutorials/deep-links/faq), [widget migration](https://developer.uber.com/docs/riders/ride-requests/tutorials/widget/migration-to-deep-links), and [promotions](https://developer.uber.com/docs/riders/ride-promotions/introduction). Pages have no reliable publication/version date and retain historical Windows Phone/iOS 9/May 2016 wording. Treat OS minimums there as historical, not current installation requirements.
+Contract sources: [deep-link introduction](https://developer.uber.com/docs/riders/ride-requests/tutorials/deep-links/introduction), [FAQ](https://developer.uber.com/docs/riders/ride-requests/tutorials/deep-links/faq), [widget migration](https://developer.uber.com/docs/riders/ride-requests/tutorials/widget/migration-to-deep-links), and [promotions](https://developer.uber.com/docs/riders/ride-promotions/introduction). These primary pages have no reliable publication/version date and retain historical Windows Phone/iOS 9/May 2016 wording. Those OS minimums are not current installation requirements.
 
 | Entry point | Action/platform/fallback |
 | --- | --- |
@@ -72,12 +74,6 @@ Serialize raw Unicode strings inside JSON, then encode that JSON as one query va
 - Sending pickup/dropoff, labels, callback data, or payment IDs discloses them to Uber and potentially browser history/logging systems. Avoid patient/customer names in labels, redact URL telemetry, and do not silently collect caller GPS just to enable product selection. Universal-link fallback can send data to a website even when no app is installed.
 - No ride-booking transaction, callback authentication, or business attribution should be inferred from a returned URL. Prefer no callbacks and no payment-method selection in the initial integration.
 
-## Proposed discriminating tests (not executed)
+## Remaining compatibility questions
 
-1. Use pickup `59.3293,18.0686` and destination `59.3421,18.0520`; assert separate fields and compare explicit pickup with `my_location`, including denied location permission.
-2. Compare destination pair alone against pair plus nickname: distinguish “app opened” from “destination visible”. On Android check after pickup confirmation.
-3. Round-trip `Å & + # café`, bracketed keys, and a callback containing its own query; ensure one decoding yields the original value. Compare JSON address lines encoded once versus twice.
-4. Exercise `/looking` versus `/` with app installed/uninstalled, signed in/out, tapped link versus pasted URL, and unsupported region. No real booking confirmation.
-5. Compare one `drop[0]` with two distinct stops; establish practical supported limits before exposing waypoints.
-6. Compare omitted product against a known pickup-local product and one from another city. Confirm a rejected ID cannot create a misleading mode guarantee.
-7. Keep promotion, callback, and payment-method tests behind explicit test-account consent; never submit a paid ride or apply a real promotion as a documentation check.
+Current acceptance of legacy versus JSON links, JSON address-line encoding, mobile-web fallback and multi-stop limits require confirmation. Product selection is pickup-local and is not a generic travel-mode guarantee. Promotions, return links and payment-method selection are separate account-sensitive features, not necessary parts of a basic ride handoff.

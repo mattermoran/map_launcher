@@ -1,10 +1,12 @@
-# Waze external-launch audit
+# Waze
 
-**Checked:** 2026-10-02. **Status:** current primary-source audit; all app behavior runtime-unverified. Baseline: fetched `origin/master` and verified [8aa7a6e](https://github.com/mattermoran/map_launcher/commit/8aa7a6e1152a80c4482003bdfaad8f850bdb6131) is included; checkout matched it.
+The plugin opens destination navigation with `ll` and `navigate=yes` through HTTPS or `waze://`. It accepts omitted/driving mode and rejects explicit origins, non-driving modes and nonempty waypoints, including direct builders. Marker/search actions are not exposed; destination title and zoom are unused. Android targets `com.waze`; iOS callers declare `waze` for installation queries. Provider actions and preferences below extend beyond plugin builders.
+
+Reference check: 2026-10-13.
 
 ## Sources and scope
 
-[How to use Waze Deep Links](https://developers.google.com/waze/deeplinks), **updated 2026-06-01 UTC**, fetched fresh in full. This is the public external-launch interface, not an embedded navigation SDK or partner-only API. Current documented routing preferences are broader than older “navigation only” descriptions. No inaccessible source was needed for the table below; no secondary-only parameters are asserted.
+[How to use Waze Deep Links](https://developers.google.com/waze/deeplinks), updated 2026-06-01 UTC: public launch actions, routing preferences and examples.
 
 ## Universal and native launch contracts
 
@@ -16,7 +18,7 @@
 
 ## Parameters and actions
 
-Source for all rows: [current Waze deep-link tasks, routing table and examples](https://developers.google.com/waze/deeplinks). Requiredness is action-specific; a bare URL is allowed. The source says no parameters uses driver settings, while listing explicit defaults for routing parameters; precedence against stored user settings is not fully explained.
+The Waze reference allows bare launch using driver settings, while also listing routing defaults below; precedence against stored settings is unspecified.
 
 | Parameter | Type / requiredness / documented values and semantics |
 | --- | --- |
@@ -38,27 +40,21 @@ Source for all rows: [current Waze deep-link tasks, routing table and examples](
 
 **Not documented in this public contract:** explicit route origin, multiple waypoints, arrival/departure times, custom pin title, public POI/place-ID selector, callbacks/return URL, result payload, route alternatives selector, or pedestrian/transit/cycling modes. Do not infer support from a Waze SDK or from opaque shared-link IDs. Combinations of `favorite`, `q`, and `ll` have no general precedence rule; avoid conflicting selectors. No claim is made that unknown parameters are rejected rather than ignored.
 
-## Exact implementation comparison
+## Plugin limitations
 
 Sources: [`waze.dart`](../../lib/src/maps/waze.dart), [`waze_extra.dart`](../../lib/src/extras/waze_extra.dart), [`directions_request.dart`](../../lib/src/requests/directions_request.dart), [`launch_helper.dart`](../../lib/src/utils/launch_helper.dart).
 
-| Current implementation | Finding / suggested treatment |
+| Plugin behavior | Limit |
 | --- | --- |
-| HTTPS and native directions both emit `ll=destination&navigate=yes` | Matches documented coordinate navigation syntax. Android native launch targets `com.waze`; launch exception retries HTTPS without package. Native scheme preferred on mobile, HTTPS on web/desktop. This is launch acceptance, not route-success detection. |
-| `supportsMarkerCoords=false`; marker URL null; text-search flags false | **Omitted capabilities:** provider documents map display, search and search-navigation. Tests call Waze “navigation only”; that describes this implementation, not the provider. |
-| `supportsTravelMode` only driving | Appropriate for current request enum. Taxi/motorcycle are vehicle classes, not transit/bicycling. Omitted typed vehicle preference, not evidence that driving-only selection is wrong. |
-| Coordinate `origin` accepted but unused | **API semantic defect/risk:** a caller can request a non-current origin but receive navigation from Waze's actual context. Reject unsupported origin or disclose it; do not invent an origin parameter. Search origins are already rejected by request-level capability checks. |
-| Nonempty waypoints rejected by request layer | Appropriate absent a documented waypoint contract. Direct low-level builder accepts but ignores its waypoint argument; distinguish that from `DirectionsRequest` behavior. |
-| `WazeExtra(navigate:false)` emits nothing | Cannot disable the builder's unconditional `navigate=yes`. `navigate:true` appends a second `navigate=yes`, redundant; boolean name/default must not imply navigation opt-out. |
-| No typed route preferences, favorites or attribution | **Omitted capabilities.** Raw extras can carry route preferences and `utm_source` on the existing navigation URL. Favorites would conflict with generated `ll`; use a dedicated action rather than assuming precedence. |
+| HTTPS and native directions both emit `ll=destination&navigate=yes` | Matches documented coordinate navigation syntax. Android native launch targets `com.waze`; confirmed rejection permits retrying HTTPS without package. Native scheme preferred on mobile, HTTPS on web/desktop. This is launch acceptance, not route-success detection. |
+| Marker/search flags false; marker URL null | Provider map display, search and search-navigation actions are not exposed. |
+| Driving-only travel mode | Taxi/motorcycle are vehicle classes, not selectable enum modes; no typed vehicle preference. |
+| Origins and nonempty waypoints | Rejected by request capabilities and direct builders. |
+| `WazeExtra(navigate:false)` emits nothing | Does not disable unconditional `navigate=yes`; `navigate:true` matches the built-in value and is retained once. |
+| No typed preferences, favorites or attribution | Raw extras can carry preferences and `utm_source`. Combining favorite selection with generated `ll` has unspecified precedence. |
 
-Extras are only appended during `show()`, not URL getters. Show-level extras override request-level extras, **not builder fields**; raw `{'navigate':'no'}` produces duplicate keys and an undocumented value, not a supported cancellation mechanism. URI encoding is applied; extras cannot change action base/path or remove `ll`/`navigate`. Coordinate titles and zoom arguments are unused by navigation; there is no marker builder to consume zoom.
+Extras apply during launch preparation, not getters. Show extras override request extras; identical built-in values are retained once. Conflicting `ll`/`navigate` values exclude discovery entries or cause `MapLaunchException` on explicit launch. Extras cannot remove navigation or select a different action. Absent routing preferences and attribution can be appended.
 
-## Recommended verification and unresolved points
+## Reference limits
 
-- Existing [`waze_test.dart`](../../test/maps/waze_test.dart) checks strings/flags only, not app navigation. Retain its valid coordinate tests but describe disabled marker/search as implementation limitations.
-- Add URL-level cases with asymmetric coordinates `59.3293,18.0686`, explicit far-away origin, and waypoint rejection to expose silent origin loss versus correct waypoint rejection.
-- Add extras tests for duplicate `navigate`, false not disabling navigation, each `avoid_*` spelling/default, `vehicle_type=taxi/motorcycle`, and `utm_source=Café & + #` encoded exactly once. These test serialization, not Waze acceptance.
-- If adding marker/search, exercise native and HTTPS: bare launch, `ll` without navigate, encoded `q`, `q+ll+navigate`, home/work set/unset, magnification boundaries 6/8192 versus 5/8193. Separately investigate `zoom=17` versus `z=17` rather than asserting equality.
-- Test installed/uninstalled Android and iOS, web fallback, location permission disabled, unsupported regions and stored routing preferences versus explicit defaults. No real-device tests, app screenshots, route-result checks or navigation-start validation were performed.
-- Provider omissions: coordinate datum, `z` numeric subtype, `zoom` alias, conflicting-selector precedence, duplicate-key behavior and complete app/web routing-preference parity. These are **documentation gaps**, not verified provider defects.
+Coordinate datum, `z` numeric subtype, `zoom` alias, selector precedence and full app/web preference parity are unspecified. [`waze_test.dart`](../../test/maps/waze_test.dart) covers generated URLs and capability flags, not app navigation.
