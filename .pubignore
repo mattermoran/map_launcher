@@ -4,7 +4,7 @@
 
 build/
 tool/
-doc/
+doc/api/
 .fvmrc
 .claude/
 .agents/

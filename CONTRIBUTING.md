@@ -83,7 +83,7 @@ Add a test file at `test/maps/my_map_test.dart` covering the URLs your map gener
 ### 7. Update docs
 
 - Add your map to the supported maps list and capability tables in [`README.md`](README.md).
-- Add or update its [map reference](docs/maps/README.md). Keep provider documentation
+- Add or update its [map reference](doc/maps/README.md). Keep provider documentation
   links, parameter formats, platform limits, and the source-check date. Describe
   current plugin support separately from other features in the provider's API;
   put change history in the changelog, not the reference page.

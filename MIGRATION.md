@@ -80,7 +80,7 @@ handoffs. Set `blocked: true` for terminal restrictions such as blocked popups.
 Other exceptions stop retries to avoid opening a second map.
 
 Naver/Baidu caller attribution and Tencent's `referer` remain optional in the
-plugin. Follow [provider requirements](docs/maps/README.md) for app acceptance;
+plugin. Follow [provider requirements](doc/maps/README.md) for app acceptance;
 Naver/Baidu attribution is not an API key.
 
 ### Check stricter request support

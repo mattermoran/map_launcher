@@ -21,7 +21,7 @@ Map implementations and icons are tree-shakeable in Dart release builds. Native 
 
 ### Supported Maps
 
-See the [map references](docs/maps/README.md) for per-map documentation
+See the [map references](doc/maps/README.md) for per-map documentation
 links, detailed parameter references, platform differences, and known gaps.
 
 | Map                                                                                                                                 | Marker | Search | Directions | Origin | Travel Mode | Waypoints | Platform |
@@ -408,7 +408,7 @@ parameters are rejected; identical values are kept once. Extras and waypoints
 are copied into immutable snapshots; duplicate provider IDs are rejected.
 
 Google Place-ID/navigation extras select HTTPS and require companion fields.
-See the [Google reference](docs/maps/google.md) for requirements and limits.
+See the [Google reference](doc/maps/google.md) for requirements and limits.
 
 ```dart
 // Google: Place IDs, navigation mode

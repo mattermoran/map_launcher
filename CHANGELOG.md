@@ -65,7 +65,7 @@ See the [6 → 7 migration guide](MIGRATION.md#6x--70) before upgrading.
 - Update development and example tooling to Flutter 3.47.6 / Dart 3.13.5,
   AGP 9.1.0, Kotlin 2.4.0 and Gradle 9.3.1. Set example deployment targets to
   iOS 15 / macOS 12 and retain CI coverage for Flutter 3.41 / AGP 8.
-- Add [provider references](docs/maps/README.md) with source links, supported
+- Add [provider references](doc/maps/README.md) with source links, supported
   parameters and limitations, including research on requested apps from
   [#111](https://github.com/mattermoran/map_launcher/issues/111) (not new integrations).
 - Fix cached icon fetching and ImageMagick support outside macOS.
