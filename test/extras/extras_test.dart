@@ -1,5 +1,7 @@
 import 'package:map_launcher/src/extras/apple_extra.dart';
+import 'package:map_launcher/src/extras/baidu_extra.dart';
 import 'package:map_launcher/src/extras/google_extra.dart';
+import 'package:map_launcher/src/extras/naver_extra.dart';
 import 'package:map_launcher/src/extras/tencent_extra.dart';
 import 'package:map_launcher/src/extras/waze_extra.dart';
 import 'package:map_launcher/src/extras/yandex_navi_extra.dart';
@@ -7,6 +9,16 @@ import 'package:map_launcher/src/models/location.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('caller extras preserve raw identity and complete attribution', () {
+    expect(NaverExtra(appName: 'https://example.com/서울?a=1&b=2+3'), {
+      'appname': 'https://example.com/서울?a=1&b=2+3',
+    });
+    expect(BaiduExtra(src: 'ios.example.myapp'), {'src': 'ios.example.myapp'});
+    expect(BaiduExtra(src: 'andr.example.other'), {
+      'src': 'andr.example.other',
+    });
+  });
+
   group('GoogleExtra', () {
     test('with no parameters produces empty map', () {
       final extra = GoogleExtra();

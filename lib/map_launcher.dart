@@ -69,7 +69,9 @@ export 'src/maps/yandex_navi.dart';
 
 // Extras (map-specific parameter helpers)
 export 'src/extras/apple_extra.dart';
+export 'src/extras/baidu_extra.dart';
 export 'src/extras/google_extra.dart';
+export 'src/extras/naver_extra.dart';
 export 'src/extras/tencent_extra.dart';
 export 'src/extras/waze_extra.dart';
 export 'src/extras/yandex_navi_extra.dart';
