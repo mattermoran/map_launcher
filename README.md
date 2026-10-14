@@ -122,44 +122,54 @@ if (maps.isNotEmpty) await maps.first.show();
 
 ### iOS: Add URL schemes to Info.plist
 
-Required for detecting installed native apps. **Add only the schemes for the
-maps your app uses**. Each entry is visible to App Store review, so keep the
-list as short as your map list:
+For installed-app discovery, add only the schemes your app uses to
+`Info.plist`. For example, Google Maps and Waze:
 
 ```xml
 <key>LSApplicationQueriesSchemes</key>
 <array>
-    <string>comgooglemaps</string>  <!-- Google Maps -->
-    <!-- Add more only if you use them:
-    <string>waze</string>              Waze
-    <string>iosamap</string>            Amap
-    <string>baidumap</string>           Baidu Maps
-    <string>yandexmaps</string>         Yandex Maps
-    <string>yandexnavi</string>         Yandex Navigator
-    <string>citymapper</string>         Citymapper
-    <string>mapswithme</string>         MAPS.ME
-    <string>osmandmaps</string>         OsmAnd
-    <string>dgis</string>               2GIS
-    <string>qqmap</string>              Tencent (QQ Maps)
-    <string>here-location</string>      HERE WeGo
-    <string>tomtomgo</string>           TomTom Go
-    <string>copilot</string>            CoPilot
-    <string>com.sygic.aura</string>     Sygic Truck
-    <string>nmap</string>               Naver Map
-    <string>kakaomap</string>           Kakao Maps
-    <string>tmap</string>               TMap
-    <string>szn-mapy</string>           Mapy.cz
-    <string>mappls</string>             Mappls
-    <string>moovit</string>             Moovit
-    <string>neshan</string>             Neshan
-    <string>airnavpro</string>          Air Navigation Pro
-    <string>magicearth</string>         Magic Earth
-    -->
+  <string>comgooglemaps</string>
+  <string>waze</string>
 </array>
 ```
 
-Apple Maps needs no entry. Each map's scheme is also available in code as
-`MapApp.<name>.iosScheme`.
+Apple Maps needs no entry. Other schemes are available as
+`MapApp.<name>.iosScheme`. The [example plist](example/ios/Runner/Info.plist)
+lists the full showcase; copy only your selected entries.
+
+<details>
+<summary>All iOS schemes — copy only the maps you use</summary>
+
+Add selected lines inside your `LSApplicationQueriesSchemes` array:
+
+```xml
+<string>comgooglemaps</string> <!-- Google Maps -->
+<string>waze</string> <!-- Waze -->
+<string>iosamap</string> <!-- Amap -->
+<string>baidumap</string> <!-- Baidu Maps -->
+<string>yandexmaps</string> <!-- Yandex Maps -->
+<string>yandexnavi</string> <!-- Yandex Navigator -->
+<string>citymapper</string> <!-- Citymapper -->
+<string>mapswithme</string> <!-- MAPS.ME -->
+<string>osmandmaps</string> <!-- OsmAnd -->
+<string>dgis</string> <!-- 2GIS -->
+<string>qqmap</string> <!-- Tencent (QQ Maps) -->
+<string>here-location</string> <!-- HERE WeGo -->
+<string>tomtomgo</string> <!-- TomTom Go -->
+<string>copilot</string> <!-- CoPilot -->
+<string>com.sygic.aura</string> <!-- Sygic Truck -->
+<string>nmap</string> <!-- Naver Map -->
+<string>kakaomap</string> <!-- Kakao Maps -->
+<string>tmap</string> <!-- TMap -->
+<string>szn-mapy</string> <!-- Mapy.cz -->
+<string>mappls</string> <!-- Mappls -->
+<string>moovit</string> <!-- Moovit -->
+<string>neshan</string> <!-- Neshan -->
+<string>airnavpro</string> <!-- Air Navigation Pro -->
+<string>magicearth</string> <!-- Magic Earth -->
+```
+
+</details>
 
 If you pass a map to discovery but forget its plist entry, debug builds print
 a warning naming the exact scheme to add. Without the entry the map can
@@ -169,7 +179,8 @@ never be detected, which is otherwise indistinguishable from "not installed".
 
 On Android 11+, installed-app discovery requires package visibility. Version 7
 does not bundle provider `<queries>` in the library manifest. Add the packages
-you want to discover under `<manifest>` in your app's `AndroidManifest.xml`:
+you want to discover under `<manifest>` in your app's `AndroidManifest.xml`.
+For example, Google Maps and Waze:
 
 ```xml
 <queries>
@@ -183,6 +194,45 @@ Apple Maps has no Android package. Other package names are available as
 declares the full showcase; copy only your selected entries. Missing visibility
 can make an installed app appear absent. These declarations are for discovery,
 not a requirement to call bare `show()`, which launches without detection.
+
+<details>
+<summary>All Android packages — copy only the maps you use</summary>
+
+Add selected lines inside your manifest's `<queries>` element:
+
+```xml
+<package android:name="com.google.android.apps.maps" /> <!-- Google Maps -->
+<package android:name="com.google.android.apps.mapslite" /> <!-- Google Maps Go -->
+<package android:name="com.waze" /> <!-- Waze -->
+<package android:name="com.autonavi.minimap" /> <!-- Amap -->
+<package android:name="com.baidu.BaiduMap" /> <!-- Baidu Maps -->
+<package android:name="ru.yandex.yandexmaps" /> <!-- Yandex Maps -->
+<package android:name="ru.yandex.yandexnavi" /> <!-- Yandex Navigator -->
+<package android:name="com.citymapper.app.release" /> <!-- Citymapper -->
+<package android:name="com.mapswithme.maps.pro" /> <!-- MAPS.ME -->
+<package android:name="net.osmand" /> <!-- OsmAnd -->
+<package android:name="net.osmand.plus" /> <!-- OsmAnd+ -->
+<package android:name="ru.dublgis.dgismobile" /> <!-- 2GIS -->
+<package android:name="com.tencent.map" /> <!-- Tencent (QQ Maps) -->
+<package android:name="com.here.app.maps" /> <!-- HERE WeGo -->
+<package android:name="com.huawei.maps.app" /> <!-- Petal Maps -->
+<package android:name="com.tomtom.gplay.navapp" /> <!-- TomTom Go -->
+<package android:name="com.tomtom.gplay.navapp.gofleet" /> <!-- TomTom Go Fleet -->
+<package android:name="com.alk.copilot.mapviewer" /> <!-- CoPilot -->
+<package android:name="com.sygic.truck" /> <!-- Sygic Truck -->
+<package android:name="nl.flitsmeister" /> <!-- Flitsmeister -->
+<package android:name="com.nhn.android.nmap" /> <!-- Naver Map -->
+<package android:name="net.daum.android.map" /> <!-- Kakao Maps -->
+<package android:name="com.skt.tmap.ku" /> <!-- TMap -->
+<package android:name="cz.seznam.mapy" /> <!-- Mapy.cz -->
+<package android:name="com.mmi.maps" /> <!-- Mappls -->
+<package android:name="com.tranzmate" /> <!-- Moovit -->
+<package android:name="org.rajman.neshan.traffic.tehran.navigator" /> <!-- Neshan -->
+<package android:name="com.xample.airnavigation" /> <!-- Air Navigation Pro -->
+<package android:name="com.generalmagic.magicearth" /> <!-- Magic Earth -->
+```
+
+</details>
 
 ### Web / Desktop: No setup needed
 
