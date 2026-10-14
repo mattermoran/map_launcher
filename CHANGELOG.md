@@ -1,87 +1,112 @@
 ## 7.0.0
 
-This release changes launch validation, discovery types and option scoping.
-See the [6 → 7 migration guide](MIGRATION.md#6x--70).
+Version 7 makes provider selection explicit, validates requests before launch,
+and limits retries to confirmed failed handoffs. See the
+[6 → 7 migration guide](MIGRATION.md#6x--70) before upgrading.
 
-- Add `NaverExtra(appName: ...)` and `BaiduExtra(src: ...)` for typed caller
-  options with shorthand providers, alongside the existing `TencentExtra`.
-- Preserve spaces and literal plus signs in MAPS.ME route and marker labels
-  for its percent-only URL decoder.
-- Keep Naver, Baidu and Tencent discovery and handoff available without caller
-  options. The example supplies its own Naver/Baidu attribution and does not
-  block Tencent behind a key-entry dialog.
-- Remove `MapApp.all` without a core/safe replacement; consumers provide
-  explicit discovery lists. Bare `show()` retains Apple/Google defaults.
-- Remove bundled Android provider `<queries>` from the library manifest.
-  Apps declare selected package names for Android 11+ installed-app discovery;
-  selected iOS `LSApplicationQueriesSchemes` remain app-owned and unchanged.
-  The example keeps its full showcase in `DemoData.maps` and its own native
-  declarations. Dart tree shaking does not prune native declarations, and
-  release/archive checks cannot guarantee store approval.
-- Keep `show({map, extra})`, but make automatic launch try Apple then Google on
-  iOS, Google then Apple elsewhere, without awaiting installation detection.
-  Retry transports/providers only after confirmed non-handoff; blocked popups
-  and unknown outcomes stop immediately. Explicit maps and picker entries never
-  switch providers.
-- Add provider-scoped `providerExtras` to requests and factories, copied into
-  immutable snapshots and matched by provider ID. Nonempty raw `extra` requires
-  explicit `show(map: ...)`; automatic launch and discovery reject it.
-- Separate metadata-only `AvailableMap` from request-bound `SupportedMap`.
-  Picker entries capture validated options and expose parameterless `show()`.
-  Discovery excludes expected configuration rejections, not just unsupported
-  capabilities; it cannot certify credentials or predict the OS handler.
-- Add typed `MapLaunchException.reason`, ordered `issues` and nullable `url`.
-  Provider validation hooks use `MapConfigurationError` for expected rejections.
-- Reject legacy Apple cycling and enforce Google's 2,048-character HTTPS URL
-  cap and transport-specific waypoint limits: nine for Android package-targeted
-  and desktop launches, three for mobile unpinned HTTPS. Never truncate routes.
+### Breaking changes
 
-- Correct provider route/marker serialization (Amap, HERE, Kakao, MAPS.ME,
-  Mapy, Mappls, OsmAnd and Neshan), and gate unsupported origins, modes and
-  marker actions instead of silently dropping request semantics. MAPS.ME
-  requires origin; Baidu Android routes without origin return null; TomTom iOS
-  markers and Fleet iOS directions return null; Air Navigation Pro has no pin.
-- Support caller configuration for Naver (`appName`/`appname`), Baidu
-  (`source`/complete `src`) and Tencent (`referer`), without inventing credentials.
-  These fields are documented by providers, not enforced as launch gates.
-  Naver blank marker names use coordinate text.
-- Reject conflicting extras during preparation, retain identical built-ins
-  once and preserve existing URL bytes/opaque navigation syntax. Google
-  universal-only extras select HTTPS and validate companion fields at show;
-  universal markers omit unsupported `z`. Getters remain raw base URLs.
-- Add dated protocol research and documentation links for every existing map
-  integration and the remaining requested apps from issue #111.
+- **Provider lists and native discovery:** remove `MapApp.all`. Pass your own
+  list to discovery and declare the selected Android packages in your app's
+  `<queries>`; the library no longer bundles them. iOS query declarations remain
+  app-owned. Bare `show()` still uses Apple/Google defaults.
+- **Discovery results:** `getAvailableMaps()` now returns metadata-only
+  `AvailableMap` entries. Request discovery returns `SupportedMap` entries with
+  prepared options and parameterless `show()`; configure extras before discovery.
+  The unnamed `SupportedMap` constructor is removed. Entries now use identity
+  equality, so retain provider IDs rather than entries across discovery refreshes.
+- **Extra parameters:** nonempty raw `extra` requires explicit `show(map: ...)`.
+  Use `providerExtras` for automatic selection or discovery. Extras that conflict
+  with generated URL parameters are rejected rather than appended as duplicates.
+- **Immutable requests:** extras and waypoints are copied into unmodifiable
+  snapshots. Request constructors are no longer `const`.
+- **Launch failures and retries:** unsupported explicit launches now throw
+  `MapLaunchException` instead of `UnsupportedError`, and its `url` is nullable.
+  Retries require confirmation that no handoff occurred; blocked or unknown
+  outcomes stop immediately. Custom platform adapters must use
+  `MapHandoffException` to identify confirmed failed handoffs.
+- **Request support:** reject unsupported origins, modes, marker actions and
+  stops instead of silently dropping them. This includes Apple legacy cycling
+  links, non-driving Sygic Truck requests, MAPS.ME routes without an origin,
+  Baidu Android routes without an origin, TomTom iOS markers, Fleet iOS
+  directions and Air Navigation Pro markers. Search destinations cannot have
+  waypoints; use coordinates instead.
+- **Google URL limits:** enforce the 2,048-character HTTPS limit and allow up to
+  nine intermediate stops for Android package-targeted or desktop launches,
+  three for mobile unpinned HTTPS. Over-limit transports are excluded, not
+  truncated, including browser fallbacks.
+- **Input validation:** reject non-finite coordinates and blank search queries.
+- **Minimum Flutter version:** correct the declared minimum from 3.3 to 3.41
+  to match the existing Dart 3.11 requirement.
+
+### Added
+
+- Add provider-scoped `providerExtras` to requests and factories. Options are
+  matched by provider ID and copied into immutable snapshots.
+- Add `NaverExtra(appName: ...)` and `BaiduExtra(src: ...)` for use with shorthand
+  providers, plus optional `NaverMap(appName: ...)` and `BaiduMaps(source: ...)`
+  configuration. Naver/Baidu caller attribution and Tencent's existing `referer`
+  option remain optional for plugin discovery and launch; provider acceptance
+  is not guaranteed.
+- Add `MapLaunchException.reason` and ordered `issues` for inspecting launch
+  failures. Add provider validation hooks using `MapConfigurationError` for
+  expected configuration rejections.
+- Let custom providers define text-origin parameter names independently of
+  their IDs.
+
+### Fixed
+
+- Prepare requests consistently for discovery and launch. Exclude providers
+  with unsupported operations or rejected configuration, including custom maps
+  whose universal links cannot fulfill the request. URL getters remain base
+  URLs without extras or launch validation.
+- Try Apple then Google on iOS, Google then Apple elsewhere for automatic
+  launches, without awaiting installation detection. Explicit selection and
+  picker entries never switch providers. Android HTTPS fallbacks remove the
+  package target, even when retrying the same URL.
+- Preserve existing URL bytes when appending extras, keep identical built-in
+  parameters once, and handle opaque navigation URLs correctly.
+- Correct route and marker URLs for Amap, HERE, Kakao, MAPS.ME, Mapy, Mappls,
+  OsmAnd and Neshan. Preserve spaces and literal plus signs in MAPS.ME labels
+  for the referenced receiver's percent-only decoder.
+- Preserve Google Maps text origins in iOS URLs. Select HTTPS for universal-only
+  extras, validate their companion fields, and omit unsupported marker zoom.
+- Preserve the empty origin slot in Yandex Maps route URLs so the first waypoint
+  is not serialized as the origin ([#228](https://github.com/mattermoran/map_launcher/issues/228)).
+  Current-location routing with waypoints still needs native-app verification.
+- Send latitude and longitude fields for CoPilot markers, use coordinates for
+  blank Naver marker names, and correct Petal's bicycling mode and label encoding.
 - Correct Air Navigation Pro and Magic Earth App Store links and icon lookup IDs.
-- Fix CoPilot markers to send the required latitude and longitude fields.
-- Invalidate stale example discovery results after parameter changes and keep
-  failed refreshes retryable.
-- Reject non-driving requests for Sygic Truck.
-- Let map providers define text-origin parameter names independently of map IDs.
-- Upgrade development and example tooling to Flutter 3.47.6 / Dart 3.13.5.
-  Align Android tooling with its plugin template (AGP 9.1.0, Kotlin 2.4.0,
-  Gradle 9.3.1) and example deployment targets with iOS 15 / macOS 12.
-  Retain the plugin's Flutter 3.41 / Dart 3.11 minimum and AGP 8 coverage.
-- Fix Android builds on Flutter 3.41 / AGP 8 while retaining AGP 9 support (#227).
-- Fix Yandex Maps routes from the current location, including waypoints (#228).
-- Retry Android browser fallbacks without a package target, even for the same URL.
-- Launch Windows URLs as encoded PowerShell data instead of interpolating them
+- Restore Android build compatibility with Flutter 3.41 / AGP 8 while retaining
+  AGP 9 support ([#227](https://github.com/mattermoran/map_launcher/issues/227)).
+- Pass Windows URLs as encoded PowerShell data rather than interpolating them
   into `cmd`, preserving query separators and preventing shell expansion.
-- Exclude custom maps whose universal links do not support the requested operation.
-- Snapshot request extras and waypoints; exposed collections are now unmodifiable.
-  Request constructors are no longer `const` (locations already require runtime
-  construction). Snapshot per-launch extras before launch.
-- Consistently report platform launch failures as `MapLaunchException`.
-- Preserve Google Maps text origins in iOS scheme URLs.
-- Reject unsupported travel modes, text origins, and waypoint combinations rather
-  than silently dropping them. Search destinations with waypoints are unsupported;
-  use a coordinate destination instead.
-- Correct Petal's bicycling mode and avoid double-encoding map labels.
-- Report blocked browser popups and reject non-finite coordinates and blank searches.
-- Add example input validation and recoverable discovery/launch errors.
+- Report blocked browser popups and wrap platform launch failures in
+  `MapLaunchException`.
 - Bundle the iOS privacy manifest through CocoaPods and Swift Package Manager.
-- Fix cached icon fetching; support ImageMagick outside macOS and signal failures.
-- Correct Flutter's minimum to 3.41 (matching Dart 3.11), macOS default-map docs,
-  and tree-shaking claims: native manifest entries must be pruned separately.
+- Validate example inputs, discard stale discovery results after parameter
+  changes, and make discovery and launch failures recoverable.
+
+### Deprecated
+
+- Deprecate `opensNatively` and `opensInBrowser`. Use `isInstalled` and
+  `hasUniversalLink` as availability hints, not guarantees of which app the OS
+  will open.
+
+### Tooling and documentation
+
+- Update development and example tooling to Flutter 3.47.6 / Dart 3.13.5,
+  AGP 9.1.0, Kotlin 2.4.0 and Gradle 9.3.1. Set example deployment targets to
+  iOS 15 / macOS 12 and retain CI coverage for Flutter 3.41 / AGP 8.
+- Add [provider references](docs/maps/README.md) with source links, supported
+  parameters and known uncertainties for existing integrations and requested
+  maps from [#111](https://github.com/mattermoran/map_launcher/issues/111).
+  Research entries do not imply new built-in providers.
+- Document v7 migration, platform defaults and the distinction between Dart
+  tree shaking and app-owned native declarations. Neither tree shaking nor
+  archive inspection guarantees store approval.
+- Fix cached icon fetching, support ImageMagick outside macOS, and report
+  icon-generation failures.
 
 ## 6.0.0
 
