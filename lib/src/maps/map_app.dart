@@ -42,8 +42,8 @@ import 'package:map_launcher/src/maps/yandex_navi.dart';
 /// etc.) and knows how to generate URLs for markers and directions on that app.
 ///
 /// **Tree shaking:** referencing a static const (e.g. `MapApp.google`) compiles
-/// in only that map's code, strings, and icon, nothing else. Use [all] to
-/// opt in to every map (at the cost of larger binaries).
+/// in that map's code, strings, and icon. Pass an explicit list of providers
+/// to discovery, and declare their native queries in your app separately.
 ///
 /// Consumers can also subclass [MapApp] to add support for regional or
 /// proprietary map apps not included in the plugin.
@@ -149,43 +149,6 @@ abstract class MapApp {
 
   /// Magic Earth.
   static const magicEarth = MagicEarth();
-
-  /// Every supported map.
-  ///
-  /// **Warning:** referencing this list opts out of tree shaking. All map
-  /// classes, their URL strings, and their icons will ship in the binary.
-  static const all = <MapApp>[
-    apple,
-    google,
-    waze,
-    yandexMaps,
-    doubleGis,
-    here,
-    mapyCz,
-    mappls,
-    googleGo,
-    amap,
-    baidu,
-    yandexNavi,
-    citymapper,
-    mapswithme,
-    osmand,
-    osmandplus,
-    tencent,
-    petal,
-    tomtomgo,
-    tomtomgofleet,
-    copilot,
-    sygicTruck,
-    flitsmeister,
-    naver,
-    kakao,
-    tmap,
-    moovit,
-    neshan,
-    airnavPro,
-    magicEarth,
-  ];
 
   // ---------------------------------------------------------------------------
   // Identity & metadata
@@ -349,9 +312,18 @@ abstract class MapApp {
 
   /// Validates provider-required inputs after extras have been appended.
   ///
-  /// Called before launching; throw [ArgumentError] for missing configuration.
+  /// Throw MapConfigurationError for an expected configuration rejection.
+  /// Other errors propagate as implementation bugs, not fallback signals.
   /// Raw URL builders do not validate caller-supplied extras.
   void validateLaunchUrl(String url) {}
+
+  /// Validates transport-specific limits after URL configuration validation.
+  /// Throw MapConfigurationError to omit only this transport.
+  void validateLaunchTransport(
+    String url, {
+    MapPlatform? platform,
+    bool packageTargeted = false,
+  }) {}
 
   // ---------------------------------------------------------------------------
   // Best-URL helpers (scheme preferred on mobile, universal fallback)

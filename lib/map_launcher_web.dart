@@ -1,5 +1,6 @@
 import 'package:map_launcher/map_launcher_platform_interface.dart';
 import 'package:map_launcher/src/maps/map_app.dart';
+import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:web/web.dart' as web;
 
 /// Web implementation.
@@ -16,8 +17,9 @@ class MapLauncherWeb extends MapLauncherPlatform {
   Future<void> launch(String url, {String? androidPackageName}) async {
     final opened = web.window.open(url, '_blank');
     if (opened == null) {
-      throw Exception(
+      throw const MapHandoffException(
         'The browser blocked the map window. Allow popups and retry.',
+        blocked: true,
       );
     }
   }

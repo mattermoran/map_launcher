@@ -1,6 +1,7 @@
 package dev.fluttered.map_launcher
 
 import android.content.Context
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -42,10 +43,17 @@ class MapLauncherPlugin : FlutterPlugin, MethodCallHandler {
                         intent.setPackage(packageName)
                     }
                     context.startActivity(intent)
-                    result.success(null)
+                } catch (e: ActivityNotFoundException) {
+                    result.error("LAUNCH_REJECTED", "No activity accepts this map URL", null)
+                    return
+                } catch (e: SecurityException) {
+                    result.error("LAUNCH_REJECTED", "Permission denied for this map URL", null)
+                    return
                 } catch (e: Exception) {
-                    result.error("LAUNCH_FAILED", "Failed to launch URL: ${e.message}", null)
+                    result.error("LAUNCH_FAILED", "Map handoff could not be confirmed", null)
+                    return
                 }
+                result.success(null)
             }
 
             "getInstalledMaps" -> {

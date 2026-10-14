@@ -39,8 +39,8 @@ public class MapLauncherPlugin: NSObject, FlutterPlugin {
                 } else {
                     result(
                         FlutterError(
-                            code: "LAUNCH_FAILED",
-                            message: "Failed to open URL: \(urlString)",
+                            code: "LAUNCH_REJECTED",
+                            message: "The operating system rejected the map URL",
                             details: nil
                         )
                     )

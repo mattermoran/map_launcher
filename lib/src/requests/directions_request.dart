@@ -1,6 +1,7 @@
 import 'package:map_launcher/map_launcher_platform_interface.dart';
 import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/location.dart';
+import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/supported_map.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
@@ -27,7 +28,8 @@ class DirectionsRequest {
   ///   the map app may use the device's current location.
   /// * [mode] Travel mode (driving, walking, transit, bicycling).
   /// * [waypoints] Intermediate stops (coordinates only). Not supported by all maps.
-  /// * [extra] Additional query parameters appended to the generated URL.
+  /// * [extra] Raw query options for explicit `show(map: ...)` only.
+  /// * [providerExtras] Conditional options bound to each provider ID.
   ///
   /// Collections are copied into unmodifiable snapshots.
   DirectionsRequest({
@@ -36,8 +38,10 @@ class DirectionsRequest {
     this.mode,
     List<LocationCoords>? waypoints,
     Map<String, String>? extra,
+    Map<MapApp, Map<String, String>> providerExtras = const {},
   }) : waypoints = waypoints == null ? null : List.unmodifiable(waypoints),
-       extra = extra == null ? null : Map.unmodifiable(extra);
+       extra = extra == null ? null : Map.unmodifiable(extra),
+       providerExtras = snapshotProviderExtras(providerExtras);
 
   /// The destination (coordinates or search query).
   final Location destination;
@@ -53,40 +57,39 @@ class DirectionsRequest {
   /// Requires a coordinate destination and a map with waypoint support.
   final List<LocationCoords>? waypoints;
 
-  /// Extra query parameters appended to the URL.
+  /// Raw query parameters for explicit launches; not usable during discovery.
   final Map<String, String>? extra;
+
+  /// Options applied only when their provider ID is selected.
+  /// Essential routing requirements belong in the portable request fields.
+  final Map<MapApp, Map<String, String>> providerExtras;
 
   /// Shows directions in a map app.
   ///
-  /// If [map] is null, uses the best available app from [defaultMaps]
-  /// (Apple Maps on iOS, Google Maps elsewhere, with fallback).
+  /// If [map] is null, tries eligible [defaultMaps] in order. Explicit selection
+  /// never switches providers. Retries require a confirmed failed handoff;
+  /// blocked or unknown outcomes stop with [MapLaunchException].
   ///
   /// * [extra] Additional query parameters merged with constructor [extra];
   ///   values from this call take precedence on conflict.
   Future<void> show({MapApp? map, Map<String, String>? extra}) async {
     final mergedExtra = {...?this.extra, ...?extra};
-    final targetMap =
-        map ?? await resolveBestMap(() => getSupportedMaps(defaultMaps));
-    if (targetMap == null) {
-      throw UnsupportedError(
-        'No map app available for this directions request.',
-      );
-    }
-
-    final url = getUrl(map: targetMap);
-    if (url == null) {
-      throw UnsupportedError(
-        '${targetMap.name} does not support this directions type.',
-      );
-    }
-
-    await launchMapUrl(
-      map: targetMap,
-      url: url,
-      universalUrl: getUniversalUrl(map: targetMap),
-      extra: mergedExtra,
+    if (map == null) requireScopedExtras(mergedExtra);
+    await showMapRequest(
+      map: map,
+      prepare: (candidate) => _prepare(candidate, mergedExtra),
     );
   }
+
+  PreparedMapLaunch _prepare(
+    MapApp map, [
+    Map<String, String> extra = const {},
+  ]) => prepareMapLaunch(
+    map: map,
+    url: getUrl(map: map),
+    universalUrl: getUniversalUrl(map: map),
+    extra: {...providerOptions(map, providerExtras), ...extra},
+  );
 
   /// Returns the base URL for [map], without opening or appending extras.
   ///
@@ -168,26 +171,35 @@ class DirectionsRequest {
   /// - Travel mode support
   /// - Waypoint support (if waypoints are specified)
   /// - Installation status and universal link availability
+  /// - Provider configuration and transport limits, including [providerExtras]
+  ///
+  /// Results capture prepared URLs. Configuration does not certify credentials
+  /// or future OS acceptance. Raw [extra] must be replaced with [providerExtras].
   Future<List<SupportedMap>> getSupportedMaps(List<MapApp> maps) async {
+    requireScopedExtras(extra);
     final installedIds = await MapLauncherPlatform.instance.getInstalledMaps(
       maps,
     );
     final results = <SupportedMap>[];
 
     for (final map in maps) {
-      if (getUrl(map: map) == null) continue;
+      final PreparedMapLaunch prepared;
+      try {
+        prepared = _prepare(map);
+      } on MapConfigurationError {
+        continue;
+      }
 
       final isInstalled = installedIds.contains(map.id);
 
       // Universal support can differ by operation, even for the same map.
       if (isInstalled ||
-          (map.hasUniversalLink && getUniversalUrl(map: map) != null)) {
+          (map.hasUniversalLink && prepared.hasUniversalAttempt)) {
         results.add(
           SupportedMap.launchable(
             map: map,
             isInstalled: isInstalled,
-            launcher: ({Map<String, String>? extra}) =>
-                show(map: map, extra: extra),
+            launcher: prepared.show,
           ),
         );
       }

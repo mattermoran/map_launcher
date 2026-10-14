@@ -18,7 +18,7 @@ void main() {
   });
 
   group('DirectionsRequest.show() error paths', () {
-    test('throws UnsupportedError when getUrl returns null', () async {
+    test('reports no eligible map when getUrl returns null', () async {
       mockPlatform.platformResponse = null;
       final req = DirectionsRequest(destination: LocationCoords(48.85, 2.29));
       final url = req.getUrl(map: .citymapper);
@@ -26,11 +26,13 @@ void main() {
       await expectLater(
         req.show(map: .citymapper),
         throwsA(
-          isA<UnsupportedError>().having(
-            (e) => e.message,
-            'message',
-            contains('does not support this directions type'),
-          ),
+          isA<MapLaunchException>()
+              .having((e) => e.reason, 'reason', MapLaunchFailure.noEligibleMap)
+              .having(
+                (e) => e.issues.single.cause,
+                'cause',
+                isA<MapConfigurationError>(),
+              ),
         ),
       );
     });
@@ -296,7 +298,9 @@ void main() {
           extra: {'x': 'y'},
         ).show(map: .google),
         throwsA(
-          isA<MapLaunchException>().having((e) => e.cause, 'cause', cause),
+          isA<MapLaunchException>()
+              .having((e) => e.reason, 'reason', MapLaunchFailure.unknown)
+              .having((e) => e.cause, 'cause', cause),
         ),
       );
       expect(mockPlatform.attempts, hasLength(1));
@@ -305,7 +309,7 @@ void main() {
     test('fallback error preserves fallback URL and cause', () async {
       mockPlatform.platformResponse = .ios;
       mockPlatform.failAlways = true;
-      final cause = Exception('fallback');
+      final cause = const MapHandoffException('fallback');
       mockPlatform.failure = cause;
       await expectLater(
         DirectionsRequest(
@@ -313,6 +317,7 @@ void main() {
         ).show(map: .google),
         throwsA(
           isA<MapLaunchException>()
+              .having((e) => e.reason, 'reason', MapLaunchFailure.exhausted)
               .having((e) => e.url, 'url', startsWith('https://'))
               .having((e) => e.cause, 'cause', cause),
         ),
@@ -342,14 +347,18 @@ void main() {
     );
   });
 
-  group('DirectionsRequest.getSupportedMaps(MapApp.all) filtering', () {
+  group('DirectionsRequest.getSupportedMaps filtering', () {
     test('walking mode explicitly filters out Waze', () async {
       mockPlatform.installedIds = {'google', 'waze', 'apple'};
       final walkingReq = DirectionsRequest(
         destination: LocationCoords(48.85, 2.29),
         mode: .walking,
       );
-      final walkingMaps = await walkingReq.getSupportedMaps(MapApp.all);
+      final walkingMaps = await walkingReq.getSupportedMaps([
+        .google,
+        .waze,
+        .apple,
+      ]);
       final walkingTypes = walkingMaps.map((m) => m.map).toSet();
 
       expect(walkingTypes, contains(MapApp.google));
@@ -357,7 +366,13 @@ void main() {
       expect(walkingReq.getUrl(map: .waze), isNull);
       await expectLater(
         walkingReq.show(map: .waze),
-        throwsA(isA<UnsupportedError>()),
+        throwsA(
+          isA<MapLaunchException>().having(
+            (e) => e.reason,
+            'reason',
+            MapLaunchFailure.noEligibleMap,
+          ),
+        ),
       );
     });
   });
@@ -373,7 +388,13 @@ void main() {
       expect(req.getUniversalUrl(map: .google), isNull);
       await expectLater(
         req.show(map: .google),
-        throwsA(isA<UnsupportedError>()),
+        throwsA(
+          isA<MapLaunchException>().having(
+            (e) => e.reason,
+            'reason',
+            MapLaunchFailure.noEligibleMap,
+          ),
+        ),
       );
     });
 
@@ -393,7 +414,16 @@ void main() {
       expect(req.getUrl(map: .waze), isNull);
       expect(req.getUniversalUrl(map: .waze), isNull);
       expect(req.getSchemeUrl(map: .waze, platform: .ios), isNull);
-      await expectLater(req.show(map: .waze), throwsA(isA<UnsupportedError>()));
+      await expectLater(
+        req.show(map: .waze),
+        throwsA(
+          isA<MapLaunchException>().having(
+            (e) => e.reason,
+            'reason',
+            MapLaunchFailure.noEligibleMap,
+          ),
+        ),
+      );
     });
   });
 }
@@ -413,7 +443,7 @@ class MockMapLauncherPlatform extends Fake
   /// When true, launch() always throws.
   bool failAlways = false;
   bool failWhenPackaged = false;
-  Exception failure = Exception('Launch failed');
+  Exception failure = const MapHandoffException('Launch failed');
 
   @override
   Future<void> launch(String url, {String? androidPackageName}) async {
@@ -422,7 +452,7 @@ class MockMapLauncherPlatform extends Fake
       throw failure;
     }
     if (failOnScheme && !url.startsWith('https://')) {
-      throw Exception('Scheme launch failed');
+      throw const MapHandoffException('Scheme launch failed');
     }
     launchedUrl = url;
   }

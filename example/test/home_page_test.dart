@@ -9,15 +9,25 @@ class _FakePlatform extends MapLauncherPlatform {
 
   final bool failLaunch;
   bool failDiscovery;
+  final launchedUrls = <String>[];
+
+  @override
+  MapPlatform get platform => MapPlatform.android;
 
   @override
   Future<Set<String>> getInstalledMaps(List<MapApp> maps) async {
     if (failDiscovery) throw Exception('discovery failed');
-    return {MapApp.google.id};
+    return {
+      MapApp.google.id,
+      MapApp.naver.id,
+      MapApp.baidu.id,
+      MapApp.tencent.id,
+    };
   }
 
   @override
   Future<void> launch(String url, {String? androidPackageName}) async {
+    launchedUrls.add(url);
     if (failLaunch) throw Exception('launch failed');
   }
 }
@@ -36,6 +46,38 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: HomePage()));
     await tester.pumpAndSettle();
   }
+
+  testWidgets('installed providers launch without setup dialogs', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final platform = MapLauncherPlatform.instance as _FakePlatform;
+    await pumpHome(tester);
+    expect(find.text('Setup required'), findsNothing);
+    for (final name in ['Naver Map', 'Baidu Maps', 'Tencent (QQ Maps)']) {
+      await tester.tap(find.text(name));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+    }
+    expect(platform.launchedUrls, hasLength(3));
+    expect(
+      Uri.parse(platform.launchedUrls[0]).queryParameters['appname'],
+      'dev.fluttered.map_launcher_example',
+    );
+    expect(
+      Uri.parse(platform.launchedUrls[1]).queryParameters['src'],
+      'andr.fluttered.map_launcher_example',
+    );
+    expect(
+      Uri.parse(platform.launchedUrls[2]).queryParameters
+          .containsKey('referer'),
+      isFalse,
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('discovery failure replaces spinner and can be retried', (
     tester,

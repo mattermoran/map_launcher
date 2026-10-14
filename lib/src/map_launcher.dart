@@ -45,13 +45,21 @@ abstract final class MapLauncher {
   /// ```
   ///
   /// * [zoom] Optional map zoom level (integer). Not supported by all maps.
-  /// * [extra] Additional query parameters appended to the generated URL.
+  /// * [extra] Raw query options for explicit `show(map: ...)` only.
+  /// * [providerExtras] Provider-specific conditional options, including for
+  ///   automatic selection and discovery. Copied into immutable snapshots.
   static MarkerRequest marker(
     Location location, {
     int? zoom,
     Map<String, String>? extra,
+    Map<MapApp, Map<String, String>> providerExtras = const {},
   }) {
-    return MarkerRequest(location: location, zoom: zoom, extra: extra);
+    return MarkerRequest(
+      location: location,
+      zoom: zoom,
+      extra: extra,
+      providerExtras: providerExtras,
+    );
   }
 
   /// Creates a directions request to [destination].
@@ -69,13 +77,16 @@ abstract final class MapLauncher {
   ///   the map app's default when null.
   /// * [waypoints] Intermediate stops (coordinates only). Requires a coordinate
   ///   destination and a map with waypoint support.
-  /// * [extra] Additional query parameters appended to the generated URL.
+  /// * [extra] Raw query options for explicit `show(map: ...)` only.
+  /// * [providerExtras] Provider-specific conditional options, including for
+  ///   automatic selection and discovery. Copied into immutable snapshots.
   static DirectionsRequest directions(
     Location destination, {
     Location? from,
     TravelMode? mode,
     List<LocationCoords>? waypoints,
     Map<String, String>? extra,
+    Map<MapApp, Map<String, String>> providerExtras = const {},
   }) {
     return DirectionsRequest(
       destination: destination,
@@ -83,6 +94,7 @@ abstract final class MapLauncher {
       mode: mode,
       waypoints: waypoints,
       extra: extra,
+      providerExtras: providerExtras,
     );
   }
 
@@ -93,16 +105,16 @@ abstract final class MapLauncher {
   ///
   /// For request-specific filtering, use [MarkerRequest.getSupportedMaps] or
   /// [DirectionsRequest.getSupportedMaps] instead.
-  static Future<List<SupportedMap>> getAvailableMaps(List<MapApp> maps) async {
+  static Future<List<AvailableMap>> getAvailableMaps(List<MapApp> maps) async {
     final installedIds = await MapLauncherPlatform.instance.getInstalledMaps(
       maps,
     );
-    final results = <SupportedMap>[];
+    final results = <AvailableMap>[];
 
     for (final map in maps) {
       final isInstalled = installedIds.contains(map.id);
       if (isInstalled || map.hasUniversalLink) {
-        results.add(SupportedMap(map: map, isInstalled: isInstalled));
+        results.add(AvailableMap(map: map, isInstalled: isInstalled));
       }
     }
 

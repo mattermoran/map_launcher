@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:map_launcher/map_launcher.dart';
 
+import 'provider_fixture.dart';
+
 /// Expected metadata for every map, pinned to the `MapApp` objects
 /// (name, store ids), the iOS `mapSchemes` dict (iosScheme), and the
 /// Android `mapPackages` dict (playStoreId).
@@ -294,9 +296,9 @@ const _expected = <_Expected>[
 
 void main() {
   group('MapApp metadata', () {
-    test('covers every map in MapApp.all exactly once', () {
-      expect(_expected.map((e) => e.app).toSet(), MapApp.all.toSet());
-      expect(_expected, hasLength(MapApp.all.length));
+    test('covers every provider fixture entry exactly once', () {
+      expect(_expected.map((e) => e.app).toSet(), providerFixture.toSet());
+      expect(_expected, hasLength(providerFixture.length));
     });
 
     for (final e in _expected) {
@@ -311,12 +313,12 @@ void main() {
     }
 
     test('ids are unique', () {
-      final ids = MapApp.all.map((m) => m.id).toList();
+      final ids = providerFixture.map((m) => m.id).toList();
       expect(ids.toSet(), hasLength(ids.length));
     });
 
     test('only Apple Maps is always available, and only on iOS', () {
-      for (final map in MapApp.all) {
+      for (final map in providerFixture) {
         expect(
           map.isAlwaysAvailable(MapPlatform.ios),
           map == MapApp.apple,
@@ -331,7 +333,7 @@ void main() {
     });
 
     test('every map is detectable or always available on some platform', () {
-      for (final map in MapApp.all) {
+      for (final map in providerFixture) {
         final detectable =
             map.iosScheme != null ||
             map.playStoreId != null ||

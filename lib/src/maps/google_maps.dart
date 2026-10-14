@@ -1,7 +1,8 @@
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/maps/icons/google_icon.dart';
 import 'package:map_launcher/src/models/location.dart';
+import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
@@ -67,12 +68,39 @@ class GoogleMaps extends MapApp {
     }.entries) {
       if (params.containsKey(entry.key) &&
           params[entry.value]?.trim().isNotEmpty != true) {
-        throw ArgumentError('${entry.key} requires ${entry.value}.');
+        throw MapConfigurationError('${entry.key} requires ${entry.value}.');
       }
     }
     if (params.containsKey('dir_action') &&
         !uri.path.startsWith('/maps/dir/')) {
-      throw ArgumentError('dir_action requires a directions request.');
+      throw MapConfigurationError('dir_action requires a directions request.');
+    }
+  }
+
+  @override
+  void validateLaunchTransport(
+    String url, {
+    MapPlatform? platform,
+    bool packageTargeted = false,
+  }) {
+    if (Uri.parse(url).scheme == 'https' && url.length > 2048) {
+      throw MapConfigurationError(
+        'Google Maps URLs must not exceed 2048 characters.',
+      );
+    }
+    final stops = Uri.parse(url).queryParameters['waypoints'];
+    if (stops == null || stops.isEmpty) return;
+    final mobile =
+        platform != null ||
+        (kIsWeb &&
+            (defaultTargetPlatform == TargetPlatform.android ||
+                defaultTargetPlatform == TargetPlatform.iOS));
+    // Unpinned HTTPS may open in a mobile browser, even if an app is installed.
+    final limit = mobile && !packageTargeted ? 3 : 9;
+    if (stops.split('|').length > limit) {
+      throw MapConfigurationError(
+        'This Google Maps transport supports at most $limit waypoints.',
+      );
     }
   }
 

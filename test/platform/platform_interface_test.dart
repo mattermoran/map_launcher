@@ -46,7 +46,7 @@ void main() {
     test('getInstalledMaps throws UnimplementedError by default', () {
       final platform = _ExtendsMapLauncherPlatform();
       expect(
-        () => platform.getInstalledMaps(MapApp.all),
+        () => platform.getInstalledMaps([MapApp.google]),
         throwsUnimplementedError,
       );
     });

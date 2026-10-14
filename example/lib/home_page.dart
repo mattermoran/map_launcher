@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   TravelMode _travelMode = TravelMode.driving;
   String _searchQuery = 'Eiffel Tower';
 
-  List<SupportedMap>? _allMaps;
+  List<AvailableMap>? _allMaps;
   List<SupportedMap>? _markerMaps;
   List<SupportedMap>? _directionsMaps;
   List<SupportedMap>? _searchMaps;
@@ -55,16 +55,16 @@ class _HomePageState extends State<HomePage> {
       _loadError = null;
     });
     try {
-      final all = await MapLauncher.getAvailableMaps(MapApp.all);
+      final all = await MapLauncher.getAvailableMaps(DemoData.maps);
       final marker = await MapLauncher.marker(_dest)
-          .getSupportedMaps(MapApp.all);
+          .getSupportedMaps(DemoData.maps);
       final directions = await MapLauncher.directions(
         _dest,
         from: _origin,
         mode: _travelMode,
-      ).getSupportedMaps(MapApp.all);
+      ).getSupportedMaps(DemoData.maps);
       final search = await MapLauncher.marker(LocationSearch(_searchQuery))
-          .getSupportedMaps(MapApp.all);
+          .getSupportedMaps(DemoData.maps);
 
       if (!mounted || generation != _loadGeneration) return;
       setState(() {
@@ -112,10 +112,10 @@ class _HomePageState extends State<HomePage> {
   List<_MapEntry> _entriesFor(List<SupportedMap>? supported) {
     final supportedIds = supported?.map((m) => m.map.id).toSet() ?? <String>{};
     final availableMap = {
-      for (final m in _allMaps ?? <SupportedMap>[]) m.map.id: m,
+      for (final m in _allMaps ?? <AvailableMap>[]) m.map.id: m,
     };
 
-    final entries = MapApp.all.map((mapApp) {
+    final entries = DemoData.maps.map((mapApp) {
       final isSupported = supportedIds.contains(mapApp.id);
       final available = availableMap[mapApp.id];
       final isAvailable = available != null;
@@ -328,7 +328,7 @@ class _HomePageState extends State<HomePage> {
         ),
         _MapGrid(
           title: 'Install',
-          entries: MapApp.all
+          entries: DemoData.maps
               .map((m) => _MapEntry(map: m, status: _MapStatus.supported))
               .toList(),
           subtitle: 'Tap to open store page',

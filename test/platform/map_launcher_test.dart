@@ -83,50 +83,44 @@ void main() {
       expect(mockPlatform.launchedUrl, startsWith('comgooglemaps://'));
     });
 
-    test(
-      '.getSupportedMaps(MapApp.all) includes universal link maps',
-      () async {
-        final apps = await MapLauncher.marker(
-          LocationCoords(37.759, -122.510),
-        ).getSupportedMaps(MapApp.all);
+    test('.getSupportedMaps includes universal link maps', () async {
+      final apps = await MapLauncher.marker(
+        LocationCoords(37.759, -122.510),
+      ).getSupportedMaps([.google, .apple]);
 
-        final appIds = apps.map((a) => a.map).toList();
-        expect(appIds, contains(MapApp.google));
-        expect(appIds, contains(MapApp.apple));
-      },
-    );
+      final appIds = apps.map((a) => a.map).toList();
+      expect(appIds, contains(MapApp.google));
+      expect(appIds, contains(MapApp.apple));
+    });
 
-    test(
-      '.getSupportedMaps(MapApp.all) marks installed apps correctly',
-      () async {
-        mockPlatform.installedIds = {'google'};
+    test('.getSupportedMaps marks installed apps correctly', () async {
+      mockPlatform.installedIds = {'google'};
 
-        final apps = await MapLauncher.marker(
-          LocationCoords(37.759, -122.510),
-        ).getSupportedMaps(MapApp.all);
+      final apps = await MapLauncher.marker(
+        LocationCoords(37.759, -122.510),
+      ).getSupportedMaps([.google, .apple]);
 
-        final googleApp = apps.firstWhere((a) => a.map == MapApp.google);
-        expect(googleApp.isInstalled, isTrue);
+      final googleApp = apps.firstWhere((a) => a.map == MapApp.google);
+      expect(googleApp.isInstalled, isTrue);
 
-        final appleApp = apps.firstWhere((a) => a.map == MapApp.apple);
-        expect(appleApp.isInstalled, isFalse);
-      },
-    );
+      final appleApp = apps.firstWhere((a) => a.map == MapApp.apple);
+      expect(appleApp.isInstalled, isFalse);
+    });
 
-    test(
-      '.getSupportedMaps(MapApp.all) includes installed native-only apps',
-      () async {
-        mockPlatform.installedIds = {'kakao', 'naver'};
+    test('.getSupportedMaps includes installed native-only apps', () async {
+      mockPlatform.installedIds = {'kakao', 'naver'};
 
-        final apps = await MapLauncher.marker(
-          LocationCoords(37.759, -122.510),
-        ).getSupportedMaps(MapApp.all);
+      final apps = await MapLauncher.marker(
+        LocationCoords(37.759, -122.510),
+        providerExtras: {
+          MapApp.naver: {'appname': 'com.example.caller'},
+        },
+      ).getSupportedMaps([.kakao, .naver]);
 
-        final appIds = apps.map((a) => a.map).toList();
-        expect(appIds, contains(MapApp.kakao));
-        expect(appIds, contains(MapApp.naver));
-      },
-    );
+      final appIds = apps.map((a) => a.map).toList();
+      expect(appIds, contains(MapApp.kakao));
+      expect(appIds, contains(MapApp.naver));
+    });
   });
 
   group('MapLauncher.directions', () {
@@ -196,11 +190,17 @@ void main() {
     });
   });
 
-  group('MapLauncher.getAvailableMaps(MapApp.all)', () {
+  group('MapLauncher.getAvailableMaps', () {
     test('returns universal link maps even with no installed apps', () async {
       mockPlatform.installedIds = {};
 
-      final maps = await MapLauncher.getAvailableMaps(MapApp.all);
+      final maps = await MapLauncher.getAvailableMaps([
+        .google,
+        .apple,
+        .waze,
+        .yandexMaps,
+        .doubleGis,
+      ]);
       final mapApps = maps.map((m) => m.map).toList();
 
       // All Tier 1 universal link maps should be present
@@ -216,7 +216,11 @@ void main() {
       () async {
         mockPlatform.installedIds = {'kakao', 'baidu'};
 
-        final maps = await MapLauncher.getAvailableMaps(MapApp.all);
+        final maps = await MapLauncher.getAvailableMaps([
+          .google,
+          .kakao,
+          .baidu,
+        ]);
         final mapApps = maps.map((m) => m.map).toList();
 
         // Installed scheme-only apps should appear
@@ -232,7 +236,7 @@ void main() {
       () async {
         mockPlatform.installedIds = {'google'};
 
-        final maps = await MapLauncher.getAvailableMaps(MapApp.all);
+        final maps = await MapLauncher.getAvailableMaps([.google, .apple]);
 
         final googleMap = maps.firstWhere((m) => m.map == MapApp.google);
         expect(googleMap.isInstalled, isTrue);
@@ -246,7 +250,7 @@ void main() {
       // Kakao has no universal link and is not installed
       mockPlatform.installedIds = {};
 
-      final maps = await MapLauncher.getAvailableMaps(MapApp.all);
+      final maps = await MapLauncher.getAvailableMaps([.kakao, .naver, .baidu]);
       final mapApps = maps.map((m) => m.map).toList();
 
       expect(mapApps, isNot(contains(MapApp.kakao)));
@@ -372,14 +376,14 @@ void main() {
     });
   });
 
-  group('DirectionsRequest.getSupportedMaps(MapApp.all) filtering', () {
+  group('DirectionsRequest.getSupportedMaps filtering', () {
     test('filters out maps that do not support search destinations', () async {
       // Google and Apple support directionsSearch; most others don't
       mockPlatform.installedIds = {'waze', 'kakao'};
 
       final maps = await MapLauncher.directions(
         LocationSearch('Eiffel Tower'),
-      ).getSupportedMaps(MapApp.all);
+      ).getSupportedMaps([.google, .apple, .waze, .kakao]);
 
       final mapApps = maps.map((m) => m.map).toList();
 
@@ -402,7 +406,7 @@ void main() {
         final maps = await MapLauncher.directions(
           LocationCoords(48.85, 2.29),
           waypoints: [LocationCoords(48.86, 2.34)],
-        ).getSupportedMaps(MapApp.all);
+        ).getSupportedMaps([.google, .apple, .waze]);
 
         final mapApps = maps.map((m) => m.map).toList();
 
@@ -423,11 +427,11 @@ void main() {
         final mapsFiltered = await MapLauncher.directions(
           LocationCoords(48.85, 2.29),
           waypoints: [LocationCoords(48.86, 2.34)],
-        ).getSupportedMaps(MapApp.all);
+        ).getSupportedMaps([.google, .apple, .waze]);
 
         final mapsUnfiltered = await MapLauncher.directions(
           LocationCoords(48.85, 2.29),
-        ).getSupportedMaps(MapApp.all);
+        ).getSupportedMaps([.google, .apple, .waze]);
 
         // Without waypoints, more maps should be available
         expect(mapsUnfiltered.length, greaterThan(mapsFiltered.length));

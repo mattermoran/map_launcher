@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
+import 'package:map_launcher/src/models/map_launch_exception.dart';
 
 import 'map_launcher_platform_interface.dart';
 
@@ -16,10 +17,19 @@ class MethodChannelMapLauncher extends MapLauncherPlatform {
 
   @override
   Future<void> launch(String url, {String? androidPackageName}) async {
-    await methodChannel.invokeMethod('launch', {
-      'url': url,
-      'packageName': ?androidPackageName,
-    });
+    try {
+      await methodChannel.invokeMethod('launch', {
+        'url': url,
+        'packageName': ?androidPackageName,
+      });
+    } on PlatformException catch (error) {
+      if (error.code == 'LAUNCH_REJECTED') {
+        throw const MapHandoffException(
+          'The operating system rejected the map URL.',
+        );
+      }
+      rethrow;
+    }
   }
 
   @override
@@ -68,7 +78,7 @@ class MethodChannelMapLauncher extends MapLauncherPlatform {
   void _warnUndeclaredSchemes(List<String> ids, List<MapApp> maps) {
     if (!kDebugMode) return;
     // One message per call covering every newly-seen map, so passing a large
-    // list (e.g. MapApp.all) doesn't print a wall of separate warnings.
+    // list doesn't print a wall of separate warnings.
     final newIds = <String>[];
     for (final id in ids) {
       if (warnedUndeclaredIds.add(id)) newIds.add(id);

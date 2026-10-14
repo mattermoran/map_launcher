@@ -40,6 +40,9 @@ class AppleMaps extends MapApp {
   String directionsSearchOriginKey(String url) => 'saddr';
 
   @override
+  bool supportsTravelMode(TravelMode mode) => mode != .bicycling;
+
+  @override
   String markerUrl(LocationCoords coords, {int? zoom}) => buildUrl(
     url: 'https://maps.apple.com/',
     queryParams: {
@@ -54,43 +57,47 @@ class AppleMaps extends MapApp {
       buildUrl(url: 'https://maps.apple.com/', queryParams: {'q': query});
 
   @override
-  String directionsUrl({
+  String? directionsUrl({
     required LocationCoords destination,
     LocationCoords? origin,
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
-  }) => buildUrl(
-    url: 'https://maps.apple.com/',
-    queryParams: {
-      'daddr': destination.latlng,
-      if (origin != null) 'saddr': origin.latlng,
-      if (travelMode != null)
-        'dirflg': switch (travelMode) {
-          .driving => 'd',
-          .walking => 'w',
-          .transit => 'r',
-          .bicycling => 'b',
-        },
-    },
-  );
+  }) => travelMode == .bicycling || (waypoints?.isNotEmpty ?? false)
+      ? null
+      : buildUrl(
+          url: 'https://maps.apple.com/',
+          queryParams: {
+            'daddr': destination.latlng,
+            if (origin != null) 'saddr': origin.latlng,
+            if (travelMode != null)
+              'dirflg': switch (travelMode) {
+                .driving => 'd',
+                .walking => 'w',
+                .transit => 'r',
+                .bicycling => 'b',
+              },
+          },
+        );
 
   @override
-  String directionsSearchUrl(
+  String? directionsSearchUrl(
     String query, {
     LocationCoords? origin,
     TravelMode? travelMode,
-  }) => buildUrl(
-    url: 'https://maps.apple.com/',
-    queryParams: {
-      'daddr': query,
-      if (origin != null) 'saddr': origin.latlng,
-      if (travelMode != null)
-        'dirflg': switch (travelMode) {
-          .driving => 'd',
-          .walking => 'w',
-          .transit => 'r',
-          .bicycling => 'b',
-        },
-    },
-  );
+  }) => travelMode == .bicycling
+      ? null
+      : buildUrl(
+          url: 'https://maps.apple.com/',
+          queryParams: {
+            'daddr': query,
+            if (origin != null) 'saddr': origin.latlng,
+            if (travelMode != null)
+              'dirflg': switch (travelMode) {
+                .driving => 'd',
+                .walking => 'w',
+                .transit => 'r',
+                .bicycling => 'b',
+              },
+          },
+        );
 }

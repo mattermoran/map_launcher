@@ -225,7 +225,7 @@ void main() {
 
         final entry = maps.singleWhere((m) => m.map == acme);
         expect(entry.isInstalled, isFalse);
-        expect(entry.opensInBrowser, isTrue);
+        expect(entry.hasUniversalLink, isTrue);
       },
     );
 

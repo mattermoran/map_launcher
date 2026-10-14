@@ -31,6 +31,9 @@ abstract class MapLauncherPlatform extends PlatformInterface {
   ///
   /// On Android, [androidPackageName] targets the specific app package
   /// so the system resolver doesn't open a different app (e.g. Go vs Maps).
+  /// Complete only once handoff is accepted. Throw MapHandoffException only
+  /// for confirmed rejection; other exceptions stop fallback because the
+  /// outcome is unknown. A blocked popup must be marked blocked, not retried.
   Future<void> launch(String url, {String? androidPackageName}) {
     throw UnimplementedError('launch() has not been implemented.');
   }

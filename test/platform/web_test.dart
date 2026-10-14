@@ -38,8 +38,10 @@ void main() {
     }).toJS;
 
     final request = MapLauncher.marker(LocationSearch('Coffee & cake'));
-    await request.show(map: .google);
+    final pending = request.show();
+    // The popup must be requested synchronously within the user's gesture.
     expect(calls, [(request.getUniversalUrl(map: .google)!, '_blank')]);
+    await pending;
   });
 
   test('blocked popup becomes a launch exception without retrying', () async {
@@ -50,13 +52,11 @@ void main() {
     }).toJS;
 
     await expectLater(
-      MapLauncher.marker(LocationCoords(59.33, 18.07)).show(map: .google),
+      MapLauncher.marker(LocationCoords(59.33, 18.07)).show(),
       throwsA(
-        isA<MapLaunchException>().having(
-          (e) => e.cause.toString(),
-          'cause',
-          contains('blocked'),
-        ),
+        isA<MapLaunchException>()
+            .having((e) => e.reason, 'reason', MapLaunchFailure.blocked)
+            .having((e) => e.cause.toString(), 'cause', contains('blocked')),
       ),
     );
     expect(calls, 1);

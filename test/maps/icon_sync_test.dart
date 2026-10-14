@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:map_launcher/map_launcher.dart';
+
+import 'provider_fixture.dart';
 
 /// Guards the sync between the PNG source files in assets/icons/ and the
 /// generated base64-encoded Uint8List in lib/src/maps/icons/.
@@ -11,7 +12,7 @@ import 'package:map_launcher/map_launcher.dart';
 /// If this fails after updating an icon, run: dart run tool/generate_icons.dart
 void main() {
   group('icon sync', () {
-    for (final map in MapApp.all) {
+    for (final map in providerFixture) {
       test(map.id, () {
         final file = File('assets/icons/${map.id}.png');
         expect(file.existsSync(), isTrue, reason: 'missing ${file.path}');
@@ -27,7 +28,7 @@ void main() {
     }
 
     test('no orphan PNG files', () {
-      final ids = MapApp.all.map((m) => m.id).toSet();
+      final ids = providerFixture.map((m) => m.id).toSet();
       final orphans = Directory('assets/icons')
           .listSync()
           .whereType<File>()

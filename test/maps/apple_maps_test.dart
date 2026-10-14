@@ -70,7 +70,12 @@ void main() {
             destination: LocationCoords(37.0, -122.0),
             travelMode: mode,
           );
-          expect(url, contains('dirflg='));
+          if (mode == TravelMode.bicycling) {
+            expect(url, isNull);
+            expect(apple.directionsSearchUrl('Park', travelMode: mode), isNull);
+          } else {
+            expect(url, contains('dirflg='));
+          }
         }
       });
     });

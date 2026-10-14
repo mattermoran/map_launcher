@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:map_launcher/map_launcher_method_channel.dart';
-import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
+import 'package:map_launcher/src/models/map_launch_exception.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +39,21 @@ void main() {
 
   group('MethodChannelMapLauncher', () {
     group('launch', () {
+      test('only confirmed native rejection permits fallback', () async {
+        for (final code in ['LAUNCH_REJECTED', 'LAUNCH_FAILED']) {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(channel, (_) async {
+                throw PlatformException(code: code);
+              });
+          await expectLater(
+            launcher.launch('https://example.com'),
+            code == 'LAUNCH_REJECTED'
+                ? throwsA(isA<MapHandoffException>())
+                : throwsA(isA<PlatformException>()),
+          );
+        }
+      });
+
       test('sends correct method call with url argument', () async {
         await launcher.launch('https://maps.google.com/?q=Coffee');
 
@@ -82,7 +97,7 @@ void main() {
 
     group('getInstalledMaps', () {
       test('returns installed map ids from native probe', () async {
-        final result = await launcher.getInstalledMaps(MapApp.all);
+        final result = await launcher.getInstalledMaps([.google, .waze]);
 
         expect(log, hasLength(1));
         expect(log.first.method, 'getInstalledMaps');
@@ -100,7 +115,7 @@ void main() {
               return null;
             });
 
-        final result = await launcher.getInstalledMaps(MapApp.all);
+        final result = await launcher.getInstalledMaps([.google, .apple]);
         // Even with null response, Apple Maps is always available
         // (since test platform may report null, it depends on defaultTargetPlatform)
         expect(result, isA<Set<String>>());

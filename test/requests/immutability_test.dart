@@ -45,7 +45,46 @@ void main() {
 
   for (final directions in [false, true]) {
     test(
-      'show snapshots extras before discovery (directions: $directions)',
+      'discovery captures scoped options (directions: $directions)',
+      () async {
+        final original = MapLauncherPlatform.instance;
+        final platform = _DeferredPlatform();
+        MapLauncherPlatform.instance = platform;
+        addTearDown(() => MapLauncherPlatform.instance = original);
+        final options = {'key': 'original'};
+        final extras = <MapApp, Map<String, String>>{MapApp.google: options};
+        final location = LocationCoords(1, 2);
+        final marker = MapLauncher.marker(location, providerExtras: extras);
+        final route = MapLauncher.directions(location, providerExtras: extras);
+        final pending = directions
+            ? route.getSupportedMaps([MapApp.google, MapApp.apple])
+            : marker.getSupportedMaps([MapApp.google, MapApp.apple]);
+        options['key'] = 'changed';
+        extras.clear();
+        platform.detection.complete({});
+        final entries = await pending;
+        expect(entries, hasLength(2));
+        expect(platform.launchedUrl, isNull);
+        await entries.first.show();
+        expect(
+          Uri.parse(platform.launchedUrl!).queryParameters['key'],
+          'original',
+        );
+        await entries.last.show();
+        expect(
+          Uri.parse(platform.launchedUrl!).queryParameters,
+          isNot(contains('key')),
+        );
+        expect(() => marker.providerExtras.clear(), throwsUnsupportedError);
+        expect(
+          () => route.providerExtras[MapApp.google]!.clear(),
+          throwsUnsupportedError,
+        );
+      },
+    );
+
+    test(
+      'explicit show snapshots extras before awaiting handoff (directions: $directions)',
       () async {
         final original = MapLauncherPlatform.instance;
         final platform = _DeferredPlatform();
@@ -54,8 +93,8 @@ void main() {
         final extra = {'key': 'original'};
         final location = LocationCoords(1, 2);
         final pending = directions
-            ? MapLauncher.directions(location).show(extra: extra)
-            : MapLauncher.marker(location).show(extra: extra);
+            ? MapLauncher.directions(location).show(map: .google, extra: extra)
+            : MapLauncher.marker(location).show(map: .google, extra: extra);
         extra['key'] = 'changed';
         platform.detection.complete({});
         await pending;

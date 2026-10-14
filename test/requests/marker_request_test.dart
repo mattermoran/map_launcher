@@ -27,7 +27,7 @@ void main() {
       expect(url, isNull, reason: 'Citymapper has no universal marker URL');
     });
 
-    test('show() throws UnsupportedError when getUrl returns null', () async {
+    test('show() reports no eligible map when getUrl returns null', () async {
       // On web/desktop, Citymapper's getUrl returns null for markers.
       mockPlatform.platformResponse = null;
       final req = MarkerRequest(location: LocationCoords(48.85, 2.29));
@@ -35,11 +35,13 @@ void main() {
       expect(
         () => req.show(map: .citymapper),
         throwsA(
-          isA<UnsupportedError>().having(
-            (e) => e.message,
-            'message',
-            contains('does not support this marker type'),
-          ),
+          isA<MapLaunchException>()
+              .having((e) => e.reason, 'reason', MapLaunchFailure.noEligibleMap)
+              .having(
+                (e) => e.issues.single.cause,
+                'cause',
+                isA<MapConfigurationError>(),
+              ),
         ),
       );
     });
@@ -198,14 +200,16 @@ void main() {
       await expectLater(
         req.show(map: .google),
         throwsA(
-          isA<MapLaunchException>().having((e) => e.cause, 'cause', cause),
+          isA<MapLaunchException>()
+              .having((e) => e.reason, 'reason', MapLaunchFailure.unknown)
+              .having((e) => e.cause, 'cause', cause),
         ),
       );
       expect(mockPlatform.attempts, hasLength(1));
     });
 
     test(
-      'native-only failure includes attempted URL and original cause',
+      'unknown native failure includes attempted URL and does not try HTTPS',
       () async {
         mockPlatform.platformResponse = .ios;
         mockPlatform.failAlways = true;
@@ -214,10 +218,11 @@ void main() {
         final req = MarkerRequest(location: LocationCoords(48.85, 2.29));
 
         await expectLater(
-          req.show(map: .copilot),
+          req.show(map: .google),
           throwsA(
             isA<MapLaunchException>()
-                .having((e) => e.url, 'url', startsWith('copilot://'))
+                .having((e) => e.reason, 'reason', MapLaunchFailure.unknown)
+                .having((e) => e.url, 'url', startsWith('comgooglemaps://'))
                 .having((e) => e.cause, 'cause', cause),
           ),
         );
@@ -228,13 +233,14 @@ void main() {
     test('fallback failure preserves fallback cause and URL', () async {
       mockPlatform.platformResponse = .ios;
       mockPlatform.failAlways = true;
-      final cause = Exception('both failed');
+      final cause = const MapHandoffException('both failed');
       mockPlatform.failure = cause;
 
       await expectLater(
         MarkerRequest(location: LocationCoords(48.85, 2.29)).show(map: .google),
         throwsA(
           isA<MapLaunchException>()
+              .having((e) => e.reason, 'reason', MapLaunchFailure.exhausted)
               .having((e) => e.url, 'url', startsWith('https://'))
               .having((e) => e.cause, 'cause', cause),
         ),
@@ -259,7 +265,7 @@ class MockMapLauncherPlatform extends Fake
   /// When true, launch() always throws.
   bool failAlways = false;
   bool failWhenPackaged = false;
-  Exception failure = Exception('Launch failed');
+  Exception failure = const MapHandoffException('Launch failed');
 
   @override
   Future<void> launch(String url, {String? androidPackageName}) async {
@@ -268,7 +274,7 @@ class MockMapLauncherPlatform extends Fake
       throw failure;
     }
     if (failOnScheme && !url.startsWith('https://')) {
-      throw Exception('Scheme launch failed');
+      throw const MapHandoffException('Scheme launch failed');
     }
     launchedUrl = url;
   }

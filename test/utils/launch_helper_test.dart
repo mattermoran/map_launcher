@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:map_launcher/map_launcher_platform_interface.dart';
 import 'package:map_launcher/src/maps/map_app.dart';
-import 'package:map_launcher/src/models/supported_map.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/map_launch_exception.dart';
 import 'package:map_launcher/src/utils/launch_helper.dart';
@@ -28,7 +27,7 @@ class FakePlatform extends MapLauncherPlatform {
     if (failAlways ||
         (failPackage != null && androidPackageName == failPackage) ||
         (failScheme && !url.startsWith('https://'))) {
-      throw Exception('failed');
+      throw const MapHandoffException('failed');
     }
   }
 
@@ -140,91 +139,18 @@ void main() {
     });
   });
 
-  group('resolveBestMap', () {
-    setUp(() {
-      MapLauncherPlatform.instance = FakePlatform();
-    });
-
-    test('returns null when getSupportedMaps returns empty list', () async {
-      final result = await resolveBestMap(() async => []);
-      expect(result, isNull);
-    });
-
-    test('returns Apple Maps when on iOS and Apple is in list', () async {
-      MapLauncherPlatform.instance = FakePlatform(
-        platformOverride: MapPlatform.ios,
-      );
-      final apps = [
-        const SupportedMap(map: .google, isInstalled: true),
-        const SupportedMap(map: .apple, isInstalled: true),
-      ];
-      final result = await resolveBestMap(() async => apps);
-      expect(result, MapApp.apple);
-    });
-
-    test('returns Google Maps when NOT on iOS and Google is in list', () async {
-      MapLauncherPlatform.instance = FakePlatform(
-        platformOverride: MapPlatform.android,
-      );
-      final apps = [
-        const SupportedMap(map: .apple, isInstalled: true),
-        const SupportedMap(map: .google, isInstalled: true),
-      ];
-      final result = await resolveBestMap(() async => apps);
-      expect(result, MapApp.google);
-    });
-
-    test('returns first installed app when default is not in list', () async {
-      MapLauncherPlatform.instance = FakePlatform(
-        platformOverride: MapPlatform.android,
-      );
-      final apps = [
-        const SupportedMap(map: .waze, isInstalled: false),
-        const SupportedMap(map: .yandexMaps, isInstalled: true),
-        const SupportedMap(map: .here, isInstalled: true),
-      ];
-      final result = await resolveBestMap(() async => apps);
-      expect(result, MapApp.yandexMaps);
-    });
-
-    test('returns first app when no installed apps match', () async {
-      MapLauncherPlatform.instance = FakePlatform(
-        platformOverride: MapPlatform.android,
-      );
-      final apps = [
-        const SupportedMap(map: .waze, isInstalled: false),
-        const SupportedMap(map: .yandexMaps, isInstalled: false),
-      ];
-      final result = await resolveBestMap(() async => apps);
-      expect(result, MapApp.waze);
-    });
-
-    test('prefers default over other installed apps', () async {
-      MapLauncherPlatform.instance = FakePlatform(
-        platformOverride: MapPlatform.android,
-      );
-      final apps = [
-        const SupportedMap(map: .waze, isInstalled: true),
-        const SupportedMap(map: .google, isInstalled: true),
-        const SupportedMap(map: .yandexMaps, isInstalled: true),
-      ];
-      final result = await resolveBestMap(() async => apps);
-      expect(result, MapApp.google);
-    });
-  });
-
   group('launchMapUrl', () {
     test('fallback conflicts fail before launching the native URL', () async {
       final fake = FakePlatform(platformOverride: .ios);
       MapLauncherPlatform.instance = fake;
       await expectLater(
-        launchMapUrl(
+        () => launchMapUrl(
           map: .google,
           url: 'comgooglemaps://?q=first',
           universalUrl: 'https://www.google.com/maps/search/?api=1&query=first',
           extra: {'query': 'second'},
         ),
-        throwsArgumentError,
+        throwsA(isA<MapConfigurationError>()),
       );
       expect(fake.attempts, isEmpty);
     });
