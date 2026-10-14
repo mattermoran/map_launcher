@@ -1,5 +1,7 @@
 # Map Launcher
 
+![Illustrated map apps connected by routes](screenshots/banner.webp)
+
 [![pub package](https://img.shields.io/pub/v/map_launcher)](https://pub.dev/packages/map_launcher)
 [![likes](https://img.shields.io/pub/likes/map_launcher)](https://pub.dev/packages/map_launcher/score)
 ![Pub Monthly Downloads](https://img.shields.io/pub/dm/map_launcher)

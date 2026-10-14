@@ -44,6 +44,8 @@ flutter:
 
 
 screenshots:
+  - description: 'Illustrated collage of map apps and connected routes'
+    path: screenshots/cover.webp
   - description: 'Show marker demo'
     path: screenshots/marker.webp
   - description: 'Show directions demo'
