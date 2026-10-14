@@ -1,5 +1,6 @@
 import 'package:map_launcher/src/maps/here.dart';
 import 'package:map_launcher/src/models/location.dart';
+import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -24,6 +25,32 @@ void main() {
     });
 
     group('directionsUrl', () {
+      for (final entry in <TravelMode?, String>{
+        null: '',
+        TravelMode.driving: '?m=d',
+        TravelMode.walking: '?m=w',
+        TravelMode.transit: '?m=pt',
+        TravelMode.bicycling: '?m=b',
+      }.entries) {
+        test('exact route with mode ${entry.key}', () {
+          expect(
+            here.directionsUrl(
+              destination: LocationCoords(52.52, 13.405),
+              travelMode: entry.key,
+            ),
+            'https://share.here.com/r/mylocation/52.52,13.405${entry.value}',
+          );
+          expect(
+            here.directionsUrl(
+              destination: LocationCoords(52.52, 13.405),
+              origin: LocationCoords(53.1, 8.8, title: 'A/B, C'),
+              travelMode: entry.key,
+            ),
+            'https://share.here.com/r/53.1,8.8,A%2FB%2C%20C/52.52,13.405${entry.value}',
+          );
+        });
+      }
+
       test('generates share.here.com directions URL', () {
         final url = here.directionsUrl(
           destination: LocationCoords(52.520, 13.405),

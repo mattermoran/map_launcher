@@ -29,6 +29,9 @@ class Citymapper extends MapApp {
   @override
   Uint8List get iconBytes => citymapperIcon;
 
+  @override
+  bool supportsTravelMode(TravelMode mode) => false;
+
   /// Intentionally `false` even though [markerSchemeUrl] returns a non-null
   /// URL. Citymapper is a nav-only app, so [markerSchemeUrl] routes to
   /// directions as a best-effort fallback, not a true marker pin.
@@ -59,7 +62,9 @@ class Citymapper extends MapApp {
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
     required MapPlatform platform,
-  }) => _directionsUrl(destination, origin: origin);
+  }) => travelMode != null || (waypoints?.isNotEmpty ?? false)
+      ? null
+      : _directionsUrl(destination, origin: origin);
 
   static String _directionsUrl(
     LocationCoords destination, {

@@ -36,20 +36,28 @@ class Waze extends MapApp {
   bool get supportsMarkerCoords => false;
 
   @override
+  bool get supportsDirectionsOrigin => false;
+
+  @override
   bool supportsTravelMode(TravelMode mode) => mode == .driving;
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 
   @override
-  String directionsUrl({
+  String? directionsUrl({
     required LocationCoords destination,
     LocationCoords? origin,
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
-  }) => buildUrl(
-    url: 'https://waze.com/ul',
-    queryParams: {'ll': destination.latlng, 'navigate': 'yes'},
-  );
+  }) =>
+      origin != null ||
+          (travelMode != null && !supportsTravelMode(travelMode)) ||
+          (waypoints?.isNotEmpty ?? false)
+      ? null
+      : buildUrl(
+          url: 'https://waze.com/ul',
+          queryParams: {'ll': destination.latlng, 'navigate': 'yes'},
+        );
 
   @override
   String? directionsSchemeUrl({
@@ -58,8 +66,13 @@ class Waze extends MapApp {
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
     required MapPlatform platform,
-  }) => buildUrl(
-    url: 'waze://',
-    queryParams: {'ll': destination.latlng, 'navigate': 'yes'},
-  );
+  }) =>
+      origin != null ||
+          (travelMode != null && !supportsTravelMode(travelMode)) ||
+          (waypoints?.isNotEmpty ?? false)
+      ? null
+      : buildUrl(
+          url: 'waze://',
+          queryParams: {'ll': destination.latlng, 'navigate': 'yes'},
+        );
 }

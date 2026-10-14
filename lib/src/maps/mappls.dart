@@ -32,16 +32,27 @@ class Mappls extends MapApp {
   Uint8List get iconBytes => mapplsIcon;
 
   @override
-  String markerUrl(LocationCoords coords, {int? zoom}) =>
-      'https://www.mappls.com/location/${coords.latlng}';
+  bool get supportsDirectionsOrigin => false;
 
   @override
-  String directionsUrl({
+  bool supportsTravelMode(TravelMode mode) => mode != .transit;
+
+  @override
+  String markerUrl(LocationCoords coords, {int? zoom}) =>
+      'https://mappls.com/@${coords.latlng}';
+
+  @override
+  String? directionsUrl({
     required LocationCoords destination,
     LocationCoords? origin,
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
   }) {
+    if (origin != null ||
+        (waypoints?.isNotEmpty ?? false) ||
+        (travelMode != null && !supportsTravelMode(travelMode))) {
+      return null;
+    }
     final label = destination.title != null ? ',${destination.title!}' : '';
     return buildUrl(
       url: 'https://mappls.com/navigation',

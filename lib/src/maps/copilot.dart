@@ -30,6 +30,12 @@ class CoPilot extends MapApp {
   Uint8List get iconBytes => copilotIcon;
 
   @override
+  bool get supportsDirectionsOrigin => false;
+
+  @override
+  bool supportsTravelMode(TravelMode mode) => false;
+
+  @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 
   @override
@@ -63,14 +69,16 @@ class CoPilot extends MapApp {
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
     required MapPlatform platform,
-  }) => buildUrl(
-    url: 'copilot://mydestination',
-    queryParams: {
-      'type': 'LOCATION',
-      'action': 'GOTO',
-      'name': destination.title ?? '',
-      'lat': destination.lat.toString(),
-      'long': destination.lng.toString(),
-    },
-  );
+  }) => origin != null || travelMode != null || (waypoints?.isNotEmpty ?? false)
+      ? null
+      : buildUrl(
+          url: 'copilot://mydestination',
+          queryParams: {
+            'type': 'LOCATION',
+            'action': 'GOTO',
+            'name': destination.title ?? '',
+            'lat': destination.lat.toString(),
+            'long': destination.lng.toString(),
+          },
+        );
 }

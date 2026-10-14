@@ -8,6 +8,8 @@ import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
 /// Tencent (QQ Maps). Mobile only, directions with origin and travel mode.
+/// Tencent documents a developer key via TencentExtra.referer. The plugin
+/// permits keyless handoff attempts; provider acceptance is not guaranteed.
 class TencentMaps extends MapApp {
   /// Creates a [TencentMaps].
   const TencentMaps();
@@ -64,10 +66,8 @@ class TencentMaps extends MapApp {
   }) => buildUrl(
     url: 'qqmap://map/routeplan',
     queryParams: {
-      if (origin != null) ...{
-        if (origin.title != null) 'from': origin.title!,
-        'fromcoord': origin.latlng,
-      },
+      'from': ?origin?.title,
+      'fromcoord': origin?.latlng ?? 'CurrentLocation',
       if (destination.title != null) 'to': destination.title!,
       'tocoord': destination.latlng,
       'type': switch (travelMode) {

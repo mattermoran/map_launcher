@@ -31,6 +31,11 @@ class YandexNavi extends MapApp {
 
   @override
   bool get supportsWaypoints => true;
+
+  // build_route_on_map is documented as a driving route.
+  @override
+  bool supportsTravelMode(TravelMode mode) => mode == .driving;
+
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 
@@ -65,20 +70,22 @@ class YandexNavi extends MapApp {
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
     required MapPlatform platform,
-  }) => buildUrl(
-    url: 'yandexnavi://build_route_on_map',
-    queryParams: {
-      'lat_to': destination.lat.toString(),
-      'lon_to': destination.lng.toString(),
-      if (origin != null) ...{
-        'lat_from': origin.lat.toString(),
-        'lon_from': origin.lng.toString(),
-      },
-      if (waypoints != null)
-        for (var i = 0; i < waypoints.length; i++) ...{
-          'lat_via_$i': waypoints[i].lat.toString(),
-          'lon_via_$i': waypoints[i].lng.toString(),
-        },
-    },
-  );
+  }) => travelMode != null && !supportsTravelMode(travelMode)
+      ? null
+      : buildUrl(
+          url: 'yandexnavi://build_route_on_map',
+          queryParams: {
+            'lat_to': destination.lat.toString(),
+            'lon_to': destination.lng.toString(),
+            if (origin != null) ...{
+              'lat_from': origin.lat.toString(),
+              'lon_from': origin.lng.toString(),
+            },
+            if (waypoints != null)
+              for (var i = 0; i < waypoints.length; i++) ...{
+                'lat_via_$i': waypoints[i].lat.toString(),
+                'lon_via_$i': waypoints[i].lng.toString(),
+              },
+          },
+        );
 }

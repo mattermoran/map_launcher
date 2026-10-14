@@ -34,6 +34,9 @@ class MagicEarth extends MapApp {
   Uint8List get iconBytes => magicEarthIcon;
 
   @override
+  bool get supportsDirectionsOrigin => false;
+
+  @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 
   @override
@@ -70,6 +73,7 @@ class MagicEarth extends MapApp {
     TravelMode? travelMode,
     required MapPlatform platform,
   }) {
+    if (origin != null || (waypoints?.isNotEmpty ?? false)) return null;
     final mode = _directionsMode(travelMode);
     final flags = platform == MapPlatform.ios ? mode : 'get_directions&$mode';
     final url = buildUrl(

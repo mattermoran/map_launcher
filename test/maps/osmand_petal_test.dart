@@ -1,6 +1,8 @@
 import 'package:map_launcher/src/maps/osmand.dart';
 import 'package:map_launcher/src/maps/petal.dart';
 import 'package:map_launcher/src/models/location.dart';
+import 'package:map_launcher/src/models/map_platform.dart';
+import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -39,21 +41,42 @@ void main() {
       expect(url, contains('osmand.net/go'));
     });
 
-    test('directionsSchemeUrl iOS uses osmandmaps://navigate', () {
-      final url = osmand.directionsSchemeUrl(
-        destination: coords,
-        platform: .ios,
-      );
-      expect(url, contains('osmandmaps://navigate'));
-    });
-
-    test('directionsSchemeUrl Android uses osmand.net', () {
-      final url = osmand.directionsSchemeUrl(
-        destination: coords,
-        platform: .android,
-      );
-      expect(url, contains('osmand.net/go'));
-    });
+    for (final app in [osmand, const OsmAndPlus()]) {
+      for (final platform in MapPlatform.values) {
+        test('${app.id} $platform serializes route inputs and modes', () {
+          final profiles = ['car', 'pedestrian', 'public_transport', 'bicycle'];
+          for (final mode in TravelMode.values) {
+            final uri = Uri.parse(
+              app.directionsSchemeUrl(
+                destination: coords,
+                origin: LocationCoords(-33.8688, 151.2093),
+                waypoints: [LocationCoords(1, 2), LocationCoords(3, 4)],
+                travelMode: mode,
+                platform: platform,
+              )!,
+            );
+            expect(uri.scheme, 'https');
+            expect(uri.host, 'osmand.net');
+            expect(uri.path, '/map/navigate');
+            expect(uri.queryParameters, {
+              'start': '-33.8688,151.2093',
+              'end': coords.latlng,
+              'via': '1.0,2.0;3.0,4.0',
+              'profile': profiles[mode.index],
+            });
+          }
+          expect(app.supportsWaypoints, isTrue);
+          final uri = Uri.parse(
+            app.directionsSchemeUrl(
+              destination: coords,
+              waypoints: [],
+              platform: platform,
+            )!,
+          );
+          expect(uri.queryParameters, {'end': coords.latlng});
+        });
+      }
+    }
   });
 
   group('OsmAndPlus', () {

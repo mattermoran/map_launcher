@@ -8,8 +8,15 @@ import 'package:map_launcher/src/utils/url_builder.dart';
 
 /// Naver Map. Mobile only, directions with origin.
 class NaverMap extends MapApp {
-  /// Creates a [NaverMap].
-  const NaverMap();
+  /// Creates a [NaverMap] with the caller's identity.
+  ///
+  /// Naver documents [appName] on every launch: the Android application ID,
+  /// iOS bundle ID, or mobile web page URL. Supply the identity for the target
+  /// platform. Omission does not block launch; acceptance is provider-dependent.
+  const NaverMap({this.appName});
+
+  /// Caller identity sent as `appname`, not an API key.
+  final String? appName;
 
   @override
   String get id => 'naver';
@@ -47,15 +54,19 @@ class NaverMap extends MapApp {
     LocationCoords coords, {
     int? zoom,
     required MapPlatform platform,
-  }) => buildUrl(
-    url: 'nmap://place',
-    queryParams: {
-      'lat': coords.lat.toString(),
-      'lng': coords.lng.toString(),
-      if (zoom != null) 'zoom': zoom.toString(),
-      if (coords.title != null) 'name': coords.title!,
-    },
-  );
+  }) {
+    return buildUrl(
+      url: 'nmap://place',
+      queryParams: {
+        'lat': coords.lat.toString(),
+        'lng': coords.lng.toString(),
+        'name': coords.title?.trim().isNotEmpty == true
+            ? coords.title!
+            : coords.latlng,
+        'appname': ?appName,
+      },
+    );
+  }
 
   @override
   String? directionsSchemeUrl({
@@ -75,6 +86,7 @@ class NaverMap extends MapApp {
       'dlat': destination.lat.toString(),
       'dlng': destination.lng.toString(),
       if (destination.title != null) 'dname': destination.title!,
+      'appname': ?appName,
     },
   );
 }

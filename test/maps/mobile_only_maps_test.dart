@@ -7,6 +7,7 @@ import 'package:map_launcher/src/maps/mapswithme.dart';
 import 'package:map_launcher/src/maps/google_go.dart';
 import 'package:map_launcher/src/models/location.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
+import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -106,13 +107,42 @@ void main() {
     test('markerSchemeUrl iOS uses neshan://', () {
       final url = neshan.markerSchemeUrl(coords, platform: .ios);
       expect(url, contains('neshan://'));
-      expect(url, contains('destination='));
+      expect(Uri.parse(url!).queryParameters, {'ll': coords.latlng});
     });
 
     test('markerSchemeUrl Android uses nshn.ir', () {
       final url = neshan.markerSchemeUrl(coords, platform: .android);
       expect(url, contains('nshn.ir'));
     });
+
+    test(
+      'Neshan platform-specific vehicle choices are honored or rejected',
+      () {
+        for (final entry in <TravelMode, String>{
+          TravelMode.driving: 'd',
+          TravelMode.walking: 'w',
+          TravelMode.transit: 'p',
+          TravelMode.bicycling: 'b',
+        }.entries) {
+          final ios = neshan.directionsSchemeUrl(
+            destination: coords,
+            travelMode: entry.key,
+            platform: .ios,
+          );
+          expect(Uri.parse(ios!).queryParameters['vehicle'], entry.value);
+          final android = neshan.directionsSchemeUrl(
+            destination: coords,
+            travelMode: entry.key,
+            platform: .android,
+          );
+          if (entry.key == TravelMode.driving) {
+            expect(Uri.parse(android!).queryParameters['vehicle'], 'd');
+          } else {
+            expect(android, isNull);
+          }
+        }
+      },
+    );
 
     test('directionsSchemeUrl includes origin', () {
       final url = neshan.directionsSchemeUrl(
@@ -205,14 +235,85 @@ void main() {
       expect(url, contains('n=Beach'));
     });
 
-    test('directionsSchemeUrl uses mapsme://route', () {
-      final url = mapsme.directionsSchemeUrl(
-        destination: coords,
+    test('labels round-trip through the percent-only receiver decoder', () {
+      final origin = LocationCoords(3, 4, title: 'Central Station');
+      final destination = LocationCoords(1, 2, title: 'A+B & café/港');
+      final route = mapsme.directionsSchemeUrl(
+        origin: origin,
+        destination: destination,
         platform: .android,
-      );
-      expect(url, contains('mapsme://route'));
-      expect(url, contains('v=1'));
+      )!;
+      final marker = mapsme.markerSchemeUrl(destination, platform: .ios)!;
+      // MAPS.ME's referenced receiver decodes %HH, not form-encoded '+'.
+      for (final url in [route, marker]) {
+        final fields = {
+          for (final field in Uri.parse(url).query.split('&'))
+            field.split('=').first: Uri.decodeComponent(
+              field.substring(field.indexOf('=') + 1),
+            ),
+        };
+        if (url == route) {
+          expect(fields['saddr'], 'Central Station');
+          expect(fields['daddr'], 'A+B & café/港');
+        } else {
+          expect(fields['n'], 'A+B & café/港');
+        }
+      }
     });
+
+    for (final platform in MapPlatform.values) {
+      test(
+        '$platform routes require origin and ordered keys, preserve names',
+        () {
+          expect(
+            mapsme.directionsSchemeUrl(destination: coords, platform: platform),
+            isNull,
+          );
+          for (final mode in TravelMode.values) {
+            const label = 'A&B + café/港';
+            final uri = Uri.parse(
+              mapsme.directionsSchemeUrl(
+                origin: LocationCoords(-33.8688, 151.2093, title: label),
+                destination: LocationCoords(1, 2),
+                travelMode: mode,
+                platform: platform,
+              )!,
+            );
+            expect(uri.scheme, 'mapsme');
+            expect(uri.host, 'route');
+            expect(uri.queryParameters.keys.toList(), [
+              'sll',
+              'saddr',
+              'dll',
+              'daddr',
+              'type',
+            ]);
+            expect(uri.queryParameters, {
+              'sll': '-33.8688,151.2093',
+              'saddr': label,
+              'dll': '1.0,2.0',
+              'daddr': '',
+              'type': [
+                'vehicle',
+                'pedestrian',
+                'transit',
+                'bicycle',
+              ][mode.index],
+            });
+          }
+          final uri = Uri.parse(
+            mapsme.directionsSchemeUrl(
+              origin: LocationCoords(3, 4),
+              destination: LocationCoords(1, 2),
+              platform: platform,
+            )!,
+          );
+          expect(uri.queryParameters['saddr'], '');
+          expect(uri.queryParameters['daddr'], '');
+          expect(uri.queryParameters['type'], 'vehicle');
+        },
+      );
+    }
   });
 
   group('GoogleMapsGo', () {

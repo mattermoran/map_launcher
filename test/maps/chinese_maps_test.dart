@@ -2,6 +2,7 @@ import 'package:map_launcher/src/maps/baidu.dart';
 import 'package:map_launcher/src/maps/amap.dart';
 import 'package:map_launcher/src/maps/tencent.dart';
 import 'package:map_launcher/src/models/location.dart';
+import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -9,6 +10,51 @@ void main() {
 
   group('BaiduMaps', () {
     const baidu = BaiduMaps();
+
+    for (final platform in [MapPlatform.android, MapPlatform.ios]) {
+      test('marker required fields on $platform', () {
+        for (final title in [null, '', '   ', '入口 & + #%']) {
+          final point = LocationCoords(39.908, 116.397, title: title);
+          final uri = Uri.parse(
+            baidu.markerSchemeUrl(point, platform: platform)!,
+          );
+          expect(uri.toString().split('?').first, 'baidumap://map/marker');
+          expect(
+            uri.queryParameters['title'],
+            title?.trim().isNotEmpty == true ? title : point.latlng,
+          );
+          expect(
+            uri.queryParameters['content'],
+            platform == MapPlatform.ios ? point.latlng : null,
+          );
+          expect(
+            uri.queryParameters['traffic'],
+            platform == MapPlatform.android ? 'on' : null,
+          );
+        }
+      });
+
+      test('default versus explicit origin on $platform', () {
+        final current = baidu.directionsSchemeUrl(
+          destination: coords,
+          platform: platform,
+        );
+        if (platform == MapPlatform.ios) {
+          expect(Uri.parse(current!).queryParameters['origin'], '我的位置');
+        } else {
+          expect(current, isNull);
+        }
+        final explicit = Uri.parse(
+          baidu.directionsSchemeUrl(
+            destination: coords,
+            origin: LocationCoords(39.9, 116.4, title: 'Start & 入口'),
+            platform: platform,
+          )!,
+        ).queryParameters;
+        expect(explicit['origin'], 'latlng:39.9,116.4|name:Start & 入口');
+        expect(explicit['coord_type'], 'gcj02');
+      });
+    }
 
     test('type is baidu', () {
       expect(baidu.id, equals('baidu'));
@@ -23,7 +69,13 @@ void main() {
       expect(url, contains('baidumap://map/marker'));
       expect(url, contains('location='));
       expect(url, contains('coord_type=gcj02'));
-      expect(url, contains('src=com.map_launcher'));
+      expect(url, isNot(contains('src=')));
+      expect(
+        const BaiduMaps(
+          source: 'example.caller',
+        ).markerSchemeUrl(coords, platform: .android),
+        contains('src=andr.example.caller'),
+      );
     });
 
     test('markerSchemeUrl includes zoom', () {
@@ -34,6 +86,7 @@ void main() {
     test('directionsSchemeUrl uses baidumap:// direction', () {
       final url = baidu.directionsSchemeUrl(
         destination: coords,
+        origin: LocationCoords(39.9, 116.4),
         platform: .android,
       );
       expect(url, contains('baidumap://map/direction'));
@@ -44,6 +97,7 @@ void main() {
     test('directionsSchemeUrl maps travel modes', () {
       final walking = baidu.directionsSchemeUrl(
         destination: coords,
+        origin: LocationCoords(39.9, 116.4),
         travelMode: .walking,
         platform: .android,
       );
@@ -51,6 +105,7 @@ void main() {
 
       final transit = baidu.directionsSchemeUrl(
         destination: coords,
+        origin: LocationCoords(39.9, 116.4),
         travelMode: .transit,
         platform: .android,
       );
@@ -58,6 +113,7 @@ void main() {
 
       final cycling = baidu.directionsSchemeUrl(
         destination: coords,
+        origin: LocationCoords(39.9, 116.4),
         travelMode: .bicycling,
         platform: .android,
       );
@@ -108,12 +164,34 @@ void main() {
       expect(url, contains('androidamap://viewMap'));
     });
 
-    test('directionsSchemeUrl uses route/plan', () {
-      final url = amap.directionsSchemeUrl(destination: coords, platform: .ios);
-      expect(url, contains('iosamap://route/plan'));
-      expect(url, contains('dlat='));
-      expect(url, contains('dlon='));
-    });
+    for (final platform in [MapPlatform.android, MapPlatform.ios]) {
+      test('documented route endpoint and coordinate datum on $platform', () {
+        for (final origin in [
+          null,
+          LocationCoords(39.9, 116.4, title: 'Start'),
+        ]) {
+          final uri = Uri.parse(
+            amap.directionsSchemeUrl(
+              destination: coords,
+              origin: origin,
+              platform: platform,
+            )!,
+          );
+          expect(
+            uri.toString().split('?').first,
+            platform == MapPlatform.ios
+                ? 'iosamap://path'
+                : 'amapuri://route/plan/',
+          );
+          expect(uri.queryParameters['dev'], '0');
+          expect(uri.queryParameters['dlat'], '39.908');
+          expect(uri.queryParameters['dlon'], '116.397');
+          expect(uri.queryParameters['slat'], origin == null ? null : '39.9');
+          expect(uri.queryParameters['slon'], origin == null ? null : '116.4');
+          expect(uri.queryParameters['t'], '0');
+        }
+      });
+    }
 
     test('directionsSchemeUrl includes travel mode', () {
       final url = amap.directionsSchemeUrl(
@@ -127,6 +205,32 @@ void main() {
 
   group('TencentMaps', () {
     const tencent = TencentMaps();
+
+    for (final platform in [MapPlatform.android, MapPlatform.ios]) {
+      test('required current or explicit fromcoord on $platform', () {
+        for (final origin in [
+          null,
+          LocationCoords(39.9, 116.4, title: 'Start & 入口'),
+        ]) {
+          final uri = Uri.parse(
+            tencent.directionsSchemeUrl(
+              destination: coords,
+              origin: origin,
+              platform: platform,
+            )!,
+          );
+          expect(uri.toString().split('?').first, 'qqmap://map/routeplan');
+          expect(
+            uri.queryParameters['fromcoord'],
+            origin?.latlng ?? 'CurrentLocation',
+          );
+          expect(uri.queryParameters['from'], origin?.title);
+          expect(uri.queryParameters['tocoord'], coords.latlng);
+          // Credentials belong to the caller, not the provider builder.
+          expect(uri.queryParameters.containsKey('referer'), isFalse);
+        }
+      });
+    }
 
     test('type is tencent', () {
       expect(tencent.id, equals('tencent'));

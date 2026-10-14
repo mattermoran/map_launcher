@@ -8,7 +8,7 @@ import 'package:map_launcher/src/models/travel_mode.dart';
 
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// OsmAnd. Mobile only, iOS uses scheme, Android uses http.
+/// OsmAnd. Mobile markers and HTTP(S) route-planning links.
 class OsmAnd extends MapApp {
   /// Creates a [OsmAnd].
   const OsmAnd();
@@ -30,6 +30,9 @@ class OsmAnd extends MapApp {
 
   @override
   Uint8List get iconBytes => osmandIcon;
+
+  @override
+  bool get supportsWaypoints => true;
 
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
@@ -77,21 +80,22 @@ class OsmAnd extends MapApp {
     TravelMode? travelMode,
     required MapPlatform platform,
   }) {
-    if (platform == .ios) {
-      return buildUrl(
-        url: 'osmandmaps://navigate',
-        queryParams: {
-          'lat': destination.lat.toString(),
-          'lon': destination.lng.toString(),
-          if (destination.title != null) 'title': destination.title!,
-        },
-      );
-    }
+    // Both 5.3 release branches parse this route-planning contract.
+    // Unlike /go or the iOS custom navigate action, it honors route inputs.
     return buildUrl(
-      url: 'http://osmand.net/go',
+      url: 'https://osmand.net/map/navigate',
       queryParams: {
-        'lat': destination.lat.toString(),
-        'lon': destination.lng.toString(),
+        if (origin != null) 'start': origin.latlng,
+        'end': destination.latlng,
+        if (waypoints != null && waypoints.isNotEmpty)
+          'via': waypoints.map((point) => point.latlng).join(';'),
+        if (travelMode != null)
+          'profile': switch (travelMode) {
+            .driving => 'car',
+            .walking => 'pedestrian',
+            .transit => 'public_transport',
+            .bicycling => 'bicycle',
+          },
       },
     );
   }

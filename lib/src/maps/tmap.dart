@@ -29,6 +29,10 @@ class TMap extends MapApp {
   @override
   Uint8List get iconBytes => tmapIcon;
 
+  // carType is not a documented raw-link travel-mode selector.
+  @override
+  bool supportsTravelMode(TravelMode mode) => false;
+
   @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 
@@ -61,18 +65,20 @@ class TMap extends MapApp {
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
     required MapPlatform platform,
-  }) => buildUrl(
-    url: 'tmap://route',
-    queryParams: {
-      if (origin != null) ...{
-        if (origin.title != null) 'startname': origin.title!,
-        'startx': origin.lng.toString(),
-        'starty': origin.lat.toString(),
-      },
-      if (destination.title != null) 'goalname': destination.title!,
-      'goaly': destination.lat.toString(),
-      'goalx': destination.lng.toString(),
-      'carType': '1',
-    },
-  );
+  }) => travelMode != null || (waypoints?.isNotEmpty ?? false)
+      ? null
+      : buildUrl(
+          url: 'tmap://route',
+          queryParams: {
+            if (origin != null) ...{
+              if (origin.title != null) 'startname': origin.title!,
+              'startx': origin.lng.toString(),
+              'starty': origin.lat.toString(),
+            },
+            if (destination.title != null) 'goalname': destination.title!,
+            'goaly': destination.lat.toString(),
+            'goalx': destination.lng.toString(),
+            'carType': '1',
+          },
+        );
 }

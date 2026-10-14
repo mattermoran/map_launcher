@@ -47,10 +47,7 @@ class Neshan extends MapApp {
     required MapPlatform platform,
   }) {
     if (platform == .ios) {
-      return buildUrl(
-        url: 'neshan://',
-        queryParams: {'destination': coords.latlng},
-      );
+      return buildUrl(url: 'neshan://', queryParams: {'ll': coords.latlng});
     }
     return buildUrl(
       url: 'https://nshn.ir',
@@ -65,11 +62,25 @@ class Neshan extends MapApp {
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
     required MapPlatform platform,
-  }) => buildUrl(
-    url: platform == .ios ? 'neshan://' : 'https://nshn.ir/',
-    queryParams: {
-      if (origin != null) 'origin': origin.latlng,
-      'destination': destination.latlng,
-    },
-  );
+  }) {
+    // Android/web only document car and motorcycle; motorcycle is not one
+    // of this package's travel modes. iOS has additional vehicle tokens.
+    if (platform == .android && travelMode != null && travelMode != .driving) {
+      return null;
+    }
+    return buildUrl(
+      url: platform == .ios ? 'neshan://' : 'https://nshn.ir/',
+      queryParams: {
+        if (origin != null) 'origin': origin.latlng,
+        'destination': destination.latlng,
+        if (travelMode != null)
+          'vehicle': switch (travelMode) {
+            .driving => 'd',
+            .walking => 'w',
+            .transit => 'p',
+            .bicycling => 'b',
+          },
+      },
+    );
+  }
 }

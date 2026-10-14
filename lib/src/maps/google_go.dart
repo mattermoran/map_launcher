@@ -24,6 +24,9 @@ class GoogleMapsGo extends MapApp {
   Uint8List get iconBytes => googleGoIcon;
 
   @override
+  bool get supportsDirectionsOrigin => false;
+
+  @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 
   @override

@@ -33,6 +33,9 @@ class SygicTruck extends MapApp {
   bool get supportsMarkerCoords => false;
 
   @override
+  bool get supportsDirectionsOrigin => false;
+
+  @override
   bool supportsTravelMode(TravelMode mode) => mode == TravelMode.driving;
 
   @override
@@ -68,13 +71,18 @@ class SygicTruck extends MapApp {
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
     required MapPlatform platform,
-  }) => buildUrl(
-    url: [
-      'com.sygic.aura://coordinate',
-      destination.lng,
-      destination.lat,
-      'drive',
-    ].join('|'),
-    queryParams: {},
-  );
+  }) =>
+      origin != null ||
+          (travelMode != null && !supportsTravelMode(travelMode)) ||
+          (waypoints?.isNotEmpty ?? false)
+      ? null
+      : buildUrl(
+          url: [
+            'com.sygic.aura://coordinate',
+            destination.lng,
+            destination.lat,
+            'drive',
+          ].join('|'),
+          queryParams: {},
+        );
 }

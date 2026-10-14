@@ -7,7 +7,7 @@ import 'package:map_launcher/src/models/travel_mode.dart';
 
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// MAPS.ME. Mobile only, destination only.
+/// MAPS.ME. Mobile only; routes require an explicit origin.
 class MapsMe extends MapApp {
   /// Creates a [MapsMe].
   const MapsMe();
@@ -56,7 +56,7 @@ class MapsMe extends MapApp {
       'll': coords.latlng,
       if (coords.title != null) 'n': coords.title!,
     },
-  );
+  ).replaceAll('+', '%20');
 
   @override
   String? directionsSchemeUrl({
@@ -65,12 +65,26 @@ class MapsMe extends MapApp {
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
     required MapPlatform platform,
-  }) => buildUrl(
-    url: 'mapsme://route',
-    queryParams: {
-      'v': '1',
-      'll': destination.latlng,
-      if (destination.title != null) 'n': destination.title!,
-    },
-  );
+  }) {
+    if (origin == null) return null;
+    // The legacy parser requires these five keys in this order, even when
+    // names are empty. buildUrl deliberately drops empty values. Its decoder
+    // only handles percent escapes, so spaces must not use form-encoded '+'.
+    return Uri(
+      scheme: 'mapsme',
+      host: 'route',
+      queryParameters: {
+        'sll': origin.latlng,
+        'saddr': origin.title ?? '',
+        'dll': destination.latlng,
+        'daddr': destination.title ?? '',
+        'type': switch (travelMode ?? TravelMode.driving) {
+          .driving => 'vehicle',
+          .walking => 'pedestrian',
+          .transit => 'transit',
+          .bicycling => 'bicycle',
+        },
+      },
+    ).toString().replaceAll('+', '%20');
+  }
 }

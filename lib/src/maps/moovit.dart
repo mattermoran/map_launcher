@@ -33,6 +33,9 @@ class Moovit extends MapApp {
   bool get supportsMarkerCoords => false;
 
   @override
+  bool supportsTravelMode(TravelMode mode) => false;
+
+  @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 
   @override
@@ -60,17 +63,19 @@ class Moovit extends MapApp {
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
     required MapPlatform platform,
-  }) => buildUrl(
-    url: 'moovit://directions',
-    queryParams: {
-      'dest_lat': destination.lat.toString(),
-      'dest_lon': destination.lng.toString(),
-      if (destination.title != null) 'dest_name': destination.title!,
-      if (origin != null) ...{
-        'orig_lat': origin.lat.toString(),
-        'orig_lon': origin.lng.toString(),
-        if (origin.title != null) 'orig_name': origin.title!,
-      },
-    },
-  );
+  }) => travelMode != null || (waypoints?.isNotEmpty ?? false)
+      ? null
+      : buildUrl(
+          url: 'moovit://directions',
+          queryParams: {
+            'dest_lat': destination.lat.toString(),
+            'dest_lon': destination.lng.toString(),
+            if (destination.title != null) 'dest_name': destination.title!,
+            if (origin != null) ...{
+              'orig_lat': origin.lat.toString(),
+              'orig_lon': origin.lng.toString(),
+              if (origin.title != null) 'orig_name': origin.title!,
+            },
+          },
+        );
 }

@@ -5,7 +5,7 @@ import 'package:map_launcher/src/models/location.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
 import 'package:map_launcher/src/utils/url_builder.dart';
 
-/// Mapy.cz. Coordinates only, destination only.
+/// Mapy.cz. Coordinate routes using the documented v1 URL API.
 class MapyCz extends MapApp {
   /// Creates a [MapyCz].
   const MapyCz();
@@ -32,6 +32,9 @@ class MapyCz extends MapApp {
   Uint8List get iconBytes => mapyCzIcon;
 
   @override
+  bool supportsTravelMode(TravelMode mode) => mode != .transit;
+
+  @override
   String markerUrl(LocationCoords coords, {int? zoom}) => buildUrl(
     url: 'https://mapy.cz/zakladni',
     queryParams: {
@@ -42,13 +45,29 @@ class MapyCz extends MapApp {
   );
 
   @override
-  String directionsUrl({
+  String? directionsUrl({
     required LocationCoords destination,
     LocationCoords? origin,
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
-  }) => buildUrl(
-    url: 'https://mapy.cz/zakladni',
-    queryParams: {'id': destination.lnglat, 'source': 'rout'},
-  );
+  }) {
+    if ((travelMode != null && !supportsTravelMode(travelMode)) ||
+        (waypoints?.isNotEmpty ?? false)) {
+      return null;
+    }
+    return buildUrl(
+      url: 'https://mapy.com/fnc/v1/route',
+      queryParams: {
+        'end': destination.lnglat,
+        if (origin != null) 'start': origin.lnglat,
+        if (travelMode != null)
+          'routeType': switch (travelMode) {
+            .driving => 'car_fast',
+            .walking => 'foot_fast',
+            .bicycling => 'bike_road',
+            .transit => throw StateError('Unsupported transit mode'),
+          },
+      },
+    );
+  }
 }

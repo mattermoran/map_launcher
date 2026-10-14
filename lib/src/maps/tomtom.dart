@@ -31,6 +31,13 @@ class TomTomGo extends MapApp {
   Uint8List get iconBytes => tomtomgoIcon;
 
   @override
+  bool get supportsDirectionsOrigin => false;
+
+  // No GO-specific mode selector or fixed URL mode is documented.
+  @override
+  bool supportsTravelMode(TravelMode mode) => false;
+
+  @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 
   @override
@@ -48,11 +55,8 @@ class TomTomGo extends MapApp {
     required MapPlatform platform,
   }) {
     if (platform == .ios) {
-      // iOS: uses navigate endpoint even for markers (original behavior)
-      return buildUrl(
-        url: 'tomtomgo://x-callback-url/navigate',
-        queryParams: {'destination': coords.latlng},
-      );
+      // The known iOS endpoint navigates; it cannot represent a passive pin.
+      return null;
     }
     // Android: geo: intent with optional title
     final titleFormatted = coords.title != null ? '(${coords.title!})' : '';
@@ -70,6 +74,12 @@ class TomTomGo extends MapApp {
     TravelMode? travelMode,
     required MapPlatform platform,
   }) {
+    if (origin != null ||
+        travelMode != null ||
+        (waypoints?.isNotEmpty ?? false) ||
+        (platform == .ios && iosScheme == null)) {
+      return null;
+    }
     if (platform == .ios) {
       return buildUrl(
         url: 'tomtomgo://x-callback-url/navigate',

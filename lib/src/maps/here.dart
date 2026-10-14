@@ -51,7 +51,7 @@ class HereWeGo extends MapApp {
   }) {
     final originPart = origin != null
         ? '${origin.latlng},${Uri.encodeComponent(origin.title ?? '')}/'
-        : '';
+        : 'mylocation/';
     return buildUrl(
       url: 'https://share.here.com/r/$originPart${destination.latlng}',
       queryParams: {

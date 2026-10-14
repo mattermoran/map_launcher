@@ -59,6 +59,13 @@ class KakaoMap extends MapApp {
     queryParams: {
       if (origin != null) 'sp': origin.latlng,
       'ep': destination.latlng,
+      if (travelMode != null)
+        'by': switch (travelMode) {
+          .driving => 'car',
+          .transit => 'publictransit',
+          .walking => 'foot',
+          .bicycling => 'bicycle',
+        },
     },
   );
 }

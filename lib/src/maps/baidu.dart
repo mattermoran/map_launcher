@@ -8,8 +8,15 @@ import 'package:map_launcher/src/utils/url_builder.dart';
 
 /// Baidu Maps. Mobile only, directions with origin and travel mode.
 class BaiduMaps extends MapApp {
-  /// Creates a [BaiduMaps].
-  const BaiduMaps();
+  /// Creates a [BaiduMaps] with caller attribution, e.g. `company.application`.
+  ///
+  /// The platform prefix (`andr.` or `ios.`) is added automatically.
+  /// Alternatively pass a complete `src` through request extras.
+  /// Attribution is documented by Baidu but not enforced by this plugin.
+  const BaiduMaps({this.source});
+
+  /// Caller company and application, without the platform prefix.
+  final String? source;
 
   @override
   String get id => 'baidu';
@@ -49,9 +56,13 @@ class BaiduMaps extends MapApp {
     url: 'baidumap://map/marker',
     queryParams: {
       'location': coords.latlng,
-      'title': coords.title ?? '',
-      'traffic': 'on',
-      'src': 'com.map_launcher',
+      'title': coords.title?.trim().isNotEmpty == true
+          ? coords.title!
+          : coords.latlng,
+      // The request has no description; display the actual coordinates.
+      if (platform == .ios) 'content': coords.latlng,
+      if (platform == .android) 'traffic': 'on',
+      if (source != null) 'src': '${platform == .ios ? 'ios' : 'andr'}.$source',
       'coord_type': 'gcj02',
       if (zoom != null) 'zoom': zoom.toString(),
     },
@@ -64,22 +75,31 @@ class BaiduMaps extends MapApp {
     List<LocationCoords>? waypoints,
     TravelMode? travelMode,
     required MapPlatform platform,
-  }) => buildUrl(
-    url: 'baidumap://map/direction',
-    queryParams: {
-      'destination':
-          'latlng:${destination.latlng}|name:${destination.title ?? ''}',
-      if (origin != null)
-        'origin': 'latlng:${origin.latlng}|name:${origin.title ?? ''}',
-      'coord_type': 'gcj02',
-      'src': 'com.map_launcher',
-      'mode': switch (travelMode) {
-        .driving => 'driving',
-        .walking => 'walking',
-        .transit => 'transit',
-        .bicycling => 'riding',
-        null => 'driving',
+  }) {
+    // Only iOS documents a current-location token. Do not invent an Android
+    // origin or silently emit a route missing its required starting point.
+    if (platform == .android && origin == null) return null;
+    return buildUrl(
+      url: 'baidumap://map/direction',
+      queryParams: {
+        'destination':
+            'latlng:${destination.latlng}|name:${destination.title ?? ''}',
+        if (origin != null)
+          'origin': 'latlng:${origin.latlng}|name:${origin.title ?? ''}'
+        else if (platform == .ios)
+          // Documented for iOS 7.1+; Android support is not established.
+          'origin': '我的位置',
+        'coord_type': 'gcj02',
+        if (source != null)
+          'src': '${platform == .ios ? 'ios' : 'andr'}.$source',
+        'mode': switch (travelMode) {
+          .driving => 'driving',
+          .walking => 'walking',
+          .transit => 'transit',
+          .bicycling => 'riding',
+          null => 'driving',
+        },
       },
-    },
-  );
+    );
+  }
 }

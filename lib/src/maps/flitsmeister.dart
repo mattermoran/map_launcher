@@ -32,6 +32,12 @@ class Flitsmeister extends MapApp {
   bool get supportsMarkerCoords => false;
 
   @override
+  bool get supportsDirectionsOrigin => false;
+
+  @override
+  bool supportsTravelMode(TravelMode mode) => false;
+
+  @override
   String? markerUrl(LocationCoords coords, {int? zoom}) => null;
 
   @override
@@ -65,6 +71,11 @@ class Flitsmeister extends MapApp {
     TravelMode? travelMode,
     required MapPlatform platform,
   }) {
+    if (origin != null ||
+        travelMode != null ||
+        (waypoints?.isNotEmpty ?? false)) {
+      return null;
+    }
     if (platform == .ios) {
       return buildUrl(
         url: '$scheme://',

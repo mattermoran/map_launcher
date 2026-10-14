@@ -51,7 +51,9 @@ class Amap extends MapApp {
       url: '${prefix}amap://viewMap',
       queryParams: {
         'sourceApplication': 'map_launcher',
-        'poiname': coords.title ?? '',
+        'poiname': coords.title?.trim().isNotEmpty == true
+            ? coords.title!
+            : coords.latlng,
         'lat': coords.lat.toString(),
         'lon': coords.lng.toString(),
         'dev': '0',
@@ -67,11 +69,12 @@ class Amap extends MapApp {
     TravelMode? travelMode,
     required MapPlatform platform,
   }) {
-    final prefix = platform == .ios ? 'ios' : 'android';
     return buildUrl(
-      url: '${prefix}amap://route/plan/',
+      url: platform == .ios ? 'iosamap://path' : 'amapuri://route/plan/',
       queryParams: {
         'sourceApplication': 'map_launcher',
+        // Already encrypted coordinates, consistent with marker URLs.
+        'dev': '0',
         'dlat': destination.lat.toString(),
         'dlon': destination.lng.toString(),
         'dname': destination.title ?? '',
