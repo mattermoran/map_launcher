@@ -79,7 +79,7 @@ origin with stops/native cycling and 2GIS legacy bicycle remain unverified.
   - [URL Inspection](#url-inspection)
   - [Map Info & Store Links](#map-info--store-links)
   - [Extras](#extras)
-- [Example: Bottom Sheet Picker](#example--bottom-sheet-picker)
+- [Example: Bottom Sheet Picker](#example-bottom-sheet-picker)
 - [Binary Size & Native Declarations](#binary-size--native-declarations)
 - [Custom Maps](#custom-maps)
 - [Migrating from 5.x](#migrating-from-5x)
@@ -113,7 +113,7 @@ await MapLauncher.marker(.coords(59.33, 18.07)).show(map: .google);
 // Discover available maps (pass the maps your app supports)
 final maps = await MapLauncher.marker(.coords(59.33, 18.07))
     .getSupportedMaps([.apple, .google, .waze]);
-await maps.first.show();
+if (maps.isNotEmpty) await maps.first.show();
 ```
 
 ## Setup
@@ -267,9 +267,7 @@ that provider's transports. Launch from a user gesture on web.
 
 ### Discovering Maps
 
-Discovery takes the list of maps your app supports. Only the maps you
-reference are compiled into your binary. Declare the list once as a
-constant and reuse it:
+Pass the providers your app offers. Declare the list once and reuse it:
 
 ```dart
 const myMaps = <MapApp>[.apple, .google, .waze];
@@ -290,14 +288,10 @@ final navMaps = await directions.getSupportedMaps(myMaps);
 final allAvailable = await MapLauncher.getAvailableMaps(myMaps);
 ```
 
-Discovery always takes your explicit list. `MapApp.all` was removed in v7;
-there is no core/safe replacement list. The example keeps a full showcase in
-its own `DemoData.maps`, with matching native declarations, not a consumer default.
-
-Request discovery returns `SupportedMap` entries with validated, captured
-options and parameterless `show()`. Configure provider extras before discovery;
-rebuild results when the request changes. Expected configuration rejections are
-excluded. Availability does not certify credentials or predict the OS handler.
+`MapApp.all` was removed in v7. Configure extras before request discovery and
+refresh results when the request changes. Entries capture validated options;
+unsupported or misconfigured providers are excluded. Availability does not
+guarantee a successful launch.
 
 ### URL Inspection
 
@@ -341,14 +335,9 @@ MapApp.waze.hasUniversalLink // true
 
 ### Extras
 
-Typed helper classes for map-specific parameters:
-
-Use `providerExtras: Map<MapApp, Map<String, String>>` on request constructors
-or factories for automatic launch and discovery. Options are copied into nested
-unmodifiable snapshots and matched by provider ID (duplicate IDs are rejected).
-They are conditional preferences, not portable requirements: an Apple fallback
-does not inherit Google Place IDs or navigation options. Keep essential origin,
-mode and stops in the portable request fields.
+Use `providerExtras` for automatic launch or discovery. Options apply only to
+the matching provider ID; an Apple fallback does not inherit Google options.
+Keep essential origin, mode and stops in the request fields.
 
 ```dart
 final request = MapLauncher.directions(
@@ -361,17 +350,13 @@ final maps = await request.getSupportedMaps([.apple, .google]);
 if (maps.isNotEmpty) await maps.first.show();
 ```
 
-Nonempty raw `extra` remains supported only with explicit `show(map: ...)`;
-automatic launch and discovery reject it with `ArgumentError`. On explicit
-launch, raw extras override provider options and show extras override request
-extras. Request extras and waypoints are also immutable snapshots.
+Raw `extra` requires explicit `show(map: ...)`. Precedence, highest first:
+show extras → request extras → provider extras. Conflicting generated URL
+parameters are rejected; identical values are kept once. Extras and waypoints
+are copied into immutable snapshots; duplicate provider IDs are rejected.
 
-Extras retain an identical built-in parameter once. A conflicting value excludes
-the provider from discovery or produces `MapLaunchException` on explicit launch,
-with `MapConfigurationError` in its issues. Other URL bytes, fragments and opaque navigation
-syntax are preserved. Google place-ID/navigation extras select universal URLs
-at launch and require their companion fields (query/destination/origin/waypoints);
-`dir_action` requires directions. Universal Google marker zoom is not emitted.
+Google Place-ID/navigation extras select HTTPS and require companion fields.
+See the [Google reference](docs/maps/google.md) for requirements and limits.
 
 ```dart
 // Google: Place IDs, navigation mode
@@ -494,24 +479,14 @@ showModalBottomSheet(
 
 ## Binary Size & Native Declarations
 
-Each map is a const object, and **only the maps your code references are
-retained by Dart's tree shaking**: their Dart URL strings, store ids, and icons.
-Bare `show()` also references Apple and Google Maps as its default choices.
+Dart tree shaking removes unreferenced providers, including their icons and URL
+strings. Discovery lists retain their providers; bare `show()` also retains Apple
+and Google.
 
-This does not remove your app's Android manifest entries or iOS query schemes.
-The library no longer ships provider package queries. Inspect the final merged
-manifest, iOS plist and release archive when identifier presence matters.
-Archive/release checks can reveal unwanted declarations or retained code, but
-cannot guarantee store approval.
-
-Things to know:
-
-- An explicit discovery list retains the maps it references. Keep it limited
-  to the providers your app offers; bare `show()` still retains Apple and Google.
-- Your `LSApplicationQueriesSchemes` is part of your app, not the plugin.
-  Declare only the schemes you use and prune stale ones (see [Setup](#setup)).
-- Declare selected Android packages in your app for Android 11+ installed-app
-  discovery (see [Setup](#setup)); Dart tree shaking does not prune them.
+Native declarations are separate. Declare only the Android packages and iOS
+schemes your app uses (see [Setup](#setup)). When identifier presence matters,
+inspect the merged manifest, plist and release archive. These checks do not
+guarantee store approval.
 
 ## Custom Maps
 
@@ -586,24 +561,9 @@ the plugin does not bundle provider discovery declarations:
 
 ## Migrating from 5.x
 
-For **6.x → 7.0**, see [MIGRATION.md](MIGRATION.md): scope extras before discovery,
-use metadata-only `AvailableMap` for general availability, and handle typed
-launch failures. Apple legacy cycling is rejected. Google enforces 2,048-character
-HTTPS URLs and at most nine intermediate stops on Android package-targeted or
-desktop transports, three on mobile unpinned HTTPS; routes are never truncated.
-
-Call sites like `show(map: .google)` compile unchanged. The full guide is in
-[MIGRATION.md](MIGRATION.md). The short version:
-
-| 5.x | 6.0 |
-| --- | --- |
-| `MapType.google` | `MapApp.google` |
-| `getSupportedMaps()` | `getSupportedMaps([.apple, .google, .waze])` |
-| `MapLauncher.getAvailableMaps()` | `MapLauncher.getAvailableMaps(myMaps)` |
-| `map.mapType` | `map.map` |
-| `map.displayName` | `map.name` |
-| `SvgPicture.asset(map.icon)` | `Image.memory(map.iconBytes)` |
-| `MapType.values.byName(saved)` | `myMaps.firstWhere((m) => m.id == saved)` |
+Follow [5.x → 6.0](MIGRATION.md#5x--60), then
+[6.x → 7.0](MIGRATION.md#6x--70). If you already use v6, only the second guide
+applies. The [changelog](CHANGELOG.md) lists release changes.
 
 ## Known Issues
 

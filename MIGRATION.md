@@ -4,8 +4,7 @@
 
 ### Replace the bundled discovery list and native queries
 
-`MapApp.all` is removed, with no core/safe replacement. Provide the providers
-your app offers explicitly to both discovery APIs:
+Replace `MapApp.all` with the providers your app offers:
 
 ```dart
 const myMaps = <MapApp>[.apple, .google, .waze];
@@ -13,30 +12,19 @@ final available = await MapLauncher.getAvailableMaps(myMaps);
 final supported = await request.getSupportedMaps(myMaps);
 ```
 
-The Android library no longer declares provider `<queries>`. For installed-app
-discovery on Android 11+, add selected package names to your app's manifest;
-remove old `tools:node="remove"` overrides that only removed library entries.
-See [README setup](README.md#setup) for Google/Waze entries. iOS still requires
-your selected `LSApplicationQueriesSchemes`; that requirement is unchanged.
-The example intentionally retains the full showcase via its own `DemoData.maps`
-and its own Android/iOS declarations, not a library registry.
+Add selected Android packages to your app's `<queries>` for Android 11+
+discovery; the library no longer declares them. Remove old `tools:node="remove"`
+overrides that only removed library entries. iOS `LSApplicationQueriesSchemes`
+requirements are unchanged. See [setup examples](README.md#setup).
 
-Dart tree shaking and native declarations are separate: referencing fewer maps
-does not prune your manifest or plist. Inspect final release archives and merged
-declarations, but do not treat those checks as a guarantee of store approval.
-
-`request.show({map, extra})` keeps its signature. Bare `show()` now tries Apple
-then Google on iOS and Google then Apple elsewhere, without awaiting detection.
-Unsupported or misconfigured candidates are skipped. Transport/provider retry
-requires confirmed non-handoff; popup-blocked and unknown outcomes are terminal
-to avoid opening a second app. Explicit `show(map: ...)` and picker entries may
-retry transports, but never change provider.
+Dart tree shaking does not remove native declarations. Keep both lists limited
+to providers your app offers; this is not a guarantee of store approval.
 
 ### Scope options before automatic launch or discovery
 
-Nonempty raw `extra`, whether on a request or passed to `show`, is only accepted
-with explicit `show(map: ...)`. Automatic launch and request discovery reject it
-with `ArgumentError`. Move picker/automatic options to `providerExtras`:
+Raw `extra` still works with explicit `show(map: ...)`. Automatic launch and
+request discovery reject nonempty raw extras with `ArgumentError`; use
+`providerExtras` instead:
 
 ```dart
 final request = MapLauncher.directions(
@@ -51,56 +39,49 @@ final maps = await request.getSupportedMaps([.apple, .google]);
 if (maps.isNotEmpty) await maps.first.show();
 ```
 
-Both request constructors and factories accept this type. Options are matched
-by provider ID, with duplicate IDs rejected. Nested maps, raw extras and
-waypoints are copied into unmodifiable snapshots; request constructors are no
-longer `const`. Provider options are conditional preferences, not portable
-requirements: another provider need not honor Google navigation or Place IDs.
-Put essential origin, mode and stops in the request fields. For explicit launch,
-raw request/show extras override provider options; show extras override request
-extras, but conflicting built-in URL parameters are rejected.
+Options match by provider ID; duplicate IDs are rejected. Keep essential origin,
+mode and stops in request fields: another provider need not honor Google options.
+For explicit launch, precedence (highest first) is show extras → request extras → provider extras.
+Conflicts with generated URL parameters are rejected.
+
+Extras and waypoints are copied into unmodifiable snapshots. Remove `const`
+from request constructors.
 
 ### Update picker and availability types
 
-`MapLauncher.getAvailableMaps(myMaps)` returns `List<AvailableMap>` containing
-metadata only, without `show()`. Use request `getSupportedMaps(myMaps)` for
-`List<SupportedMap>`: entries capture validated options and have parameterless
-`show()`. Configure extras before discovery rather than passing them on tap.
-Rebuild discovery results when the request changes. Empty results are valid.
-`SupportedMap` now uses identity equality: entries from separate discovery calls
-are not equal, even for the same provider. Keep `map.id` as your selection key
-and resolve it against fresh results before launching; do not retain an old
-`SupportedMap` as a selection or map/set key across refreshes.
-Replace the removed unnamed `SupportedMap` constructor with `AvailableMap`
-when constructing metadata. Obtain launchable entries through request discovery.
-`opensNatively`/`opensInBrowser` are deprecated; use `isInstalled` and
-`hasUniversalLink` as hints, not promises about the OS handler.
+| v6 usage | v7 replacement |
+| --- | --- |
+| `getAvailableMaps(myMaps)` returning `List<SupportedMap>` | `List<AvailableMap>` — metadata only |
+| `SupportedMap(map: ..., isInstalled: ...)` | `AvailableMap(map: ..., isInstalled: ...)` |
+| Picker entry `show(extra: ...)` | Configure `providerExtras` before discovery, then `show()` |
+| Compare picker entries across refreshes | Compare `map.id`; `SupportedMap` now uses identity equality |
+| `opensNatively` / `opensInBrowser` | `isInstalled` / `hasUniversalLink` — hints, not handler guarantees |
+
+Request discovery returns launchable `SupportedMap` entries. Rebuild them when
+the request changes, handle empty results, and resolve saved IDs against fresh
+entries before launching.
 
 ### Handle typed failures and provider validation
 
-`MapLaunchException.reason` is `noEligibleMap`, `exhausted`, `blocked` or
-`unknown` (`MapLaunchFailure`). Its ordered `issues` describe rejected providers
-and failed transports; `url` is nullable because preparation may fail before a
-URL exists. URLs can contain private data; avoid logging them indiscriminately.
-Unsupported explicit launches now report `MapLaunchException`, not
-`UnsupportedError`. URL getters still return raw base URLs or `null`, without
-extras or launch validation.
+Catch `MapLaunchException` rather than `UnsupportedError` for unsupported launches.
+Its `reason` is `noEligibleMap`, `exhausted`, `blocked` or `unknown`; `issues`
+contains ordered failures and `url` is nullable. URLs may contain private data.
 
-Custom providers should throw `MapConfigurationError` (an `ArgumentError`
-subclass) from `validateLaunchUrl` or `validateLaunchTransport` for expected
-rejections. These can be filtered during discovery or automatic selection;
-unexpected programming errors are not swallowed.
+Bare `show()` tries Apple then Google on iOS, Google then Apple elsewhere,
+skipping unsupported or misconfigured candidates. Only confirmed failed handoffs
+retry; blocked or unknown outcomes stop. Explicit maps and picker entries never
+switch provider. URL getters remain base URLs without extras or launch validation.
 
-Custom platform adapters should throw `MapHandoffException` only when they
-know the URL was not handed off. Set `blocked: true` for terminal restrictions
-such as blocked popups. Other exceptions produce an `unknown` outcome and stop
-fallback; retrying after an uncertain handoff could open a second map.
+Custom providers: throw `MapConfigurationError` from `validateLaunchUrl` or
+`validateLaunchTransport` for expected rejections. Other errors propagate.
 
-Configure Naver (`appName`/`appname`), Baidu (`source`/complete `src`) and Tencent
-(`referer`) to follow their documented contracts. The plugin does not reject
-discovery or launch when these options are absent, or enforce Baidu attribution
-formatting. Provider acceptance is not guaranteed. No credential is invented;
-Naver and Baidu identify the caller, rather than requiring an API key.
+Custom platform adapters: throw `MapHandoffException` only for confirmed failed
+handoffs. Set `blocked: true` for terminal restrictions such as blocked popups.
+Other exceptions stop retries to avoid opening a second map.
+
+Naver/Baidu caller attribution and Tencent's `referer` remain optional in the
+plugin. Follow [provider requirements](docs/maps/README.md) for app acceptance;
+Naver/Baidu attribution is not an API key.
 
 ### Check stricter request support
 

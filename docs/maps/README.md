@@ -9,31 +9,11 @@ Check the support section before using them. Native-app behavior has not been
 device-tested; known documentation conflicts and version limits are noted beside
 the affected fields. Source-check dates are not app compatibility guarantees.
 
-In 7.0, request discovery validates capabilities and provider configuration and
-returns request-bound `SupportedMap` entries with parameterless `show()`.
-General `getAvailableMaps` returns metadata-only `AvailableMap` entries. Neither
-detection nor configuration validation guarantees credentials or the OS handler.
-Use request `providerExtras` for provider-specific conditional preferences before
-discovery or automatic launch; raw extras require explicit `show(map: ...)`.
-
-Discovery requires an explicit provider list, for example `[.apple, .google,
-.waze]`; `MapApp.all` is removed and has no core/safe replacement. For Android
-11+ installed-app discovery, declare selected package names in the consuming
-app's manifest: the library no longer bundles provider `<queries>`. Selected
-iOS `LSApplicationQueriesSchemes` remain required and unchanged. The
-[example Android manifest](../../example/android/app/src/main/AndroidManifest.xml)
-and [iOS plist](../../example/ios/Runner/Info.plist) support the example's full
-`DemoData.maps` showcase; they are not suggested consumer defaults.
-Dart tree shaking does not prune native declarations, and release/archive
-inspection cannot guarantee store approval. See [setup](../../README.md#setup).
-
-Automatic launch tries Apple then Google on iOS, Google then Apple elsewhere,
-without awaiting detection. Explicit maps and picker entries stay with their
-provider. Retry requires confirmed non-handoff; blocked or unknown outcomes are
-terminal. See the [migration guide](../../MIGRATION.md) for typed failures,
-immutable request options, documented Naver/Baidu/Tencent caller options and
-stricter request support. Apple legacy cycling is rejected; Google enforces
-HTTPS length and transport-specific stop limits without truncation.
+For plugin usage, see [setup](../../README.md#setup),
+[extras](../../README.md#extras) and the [v7 migration guide](../../MIGRATION.md#6x--70).
+The [example Android manifest](../../example/android/app/src/main/AndroidManifest.xml)
+and [iOS plist](../../example/ios/Runner/Info.plist) list all showcase providers;
+copy only the declarations your app needs.
 
 ## Included providers
 
