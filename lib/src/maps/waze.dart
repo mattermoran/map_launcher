@@ -1,6 +1,7 @@
 import 'dart:typed_data';
-import 'package:map_launcher/src/maps/map_app.dart';
+
 import 'package:map_launcher/src/maps/icons/waze_icon.dart';
+import 'package:map_launcher/src/maps/map_app.dart';
 import 'package:map_launcher/src/models/location.dart';
 import 'package:map_launcher/src/models/map_platform.dart';
 import 'package:map_launcher/src/models/travel_mode.dart';
@@ -33,15 +34,26 @@ class Waze extends MapApp {
   Uint8List get iconBytes => wazeIcon;
 
   @override
-  bool get supportsMarkerCoords => false;
-
-  @override
   bool get supportsDirectionsOrigin => false;
 
   @override
   bool supportsTravelMode(TravelMode mode) => mode == .driving;
+
   @override
-  String? markerUrl(LocationCoords coords, {int? zoom}) => null;
+  String? markerUrl(LocationCoords coords, {int? zoom}) => buildUrl(
+    url: 'https://waze.com/ul',
+    queryParams: {'ll': coords.latlng, if (zoom case int zoom) 'zoom': '$zoom'},
+  );
+
+  @override
+  String? markerSchemeUrl(
+    LocationCoords coords, {
+    int? zoom,
+    required MapPlatform platform,
+  }) => buildUrl(
+    url: 'waze://',
+    queryParams: {'ll': coords.latlng, if (zoom case int zoom) 'zoom': '$zoom'},
+  );
 
   @override
   String? directionsUrl({
