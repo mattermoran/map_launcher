@@ -33,6 +33,7 @@ copy only the declarations your app needs.
 - [Petal Maps](petal.md)
 - [Citymapper](citymapper.md)
 - [MAPS.ME](maps-me.md)
+- [Organic Maps](organic-maps.md)
 - [OsmAnd](osmand.md)
 - [OsmAnd+](osmand-plus.md)
 - [TomTom Go](tomtom-go.md)
@@ -60,6 +61,4 @@ for requests and discussion.
 - [Transit](transit.md) — public-transport directions.
 - [TomTom MyDrive](tomtom-mydrive.md) — discontinued mobile app, distinct from GO.
 - [Lazarillo](lazarillo.md) — no published inbound routing API found.
-- [Organic Maps](organic-maps.md) — marker and route links; v2 documentation differs
-  from the released parser.
 - [Sygic GPS Navigation](sygic.md) — consumer app, distinct from Sygic Truck.

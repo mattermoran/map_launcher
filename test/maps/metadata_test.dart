@@ -149,6 +149,15 @@ const _expected = <_Expected>[
     hasUniversalLink: false,
   ),
   (
+    app: MapApp.organicMaps,
+    id: 'organicMaps',
+    name: 'Organic Maps',
+    playStoreId: 'app.organicmaps',
+    appStoreId: '1567437057',
+    iosScheme: 'om://',
+    hasUniversalLink: false,
+  ),
+  (
     app: MapApp.osmand,
     id: 'osmand',
     name: 'OsmAnd',

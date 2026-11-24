@@ -46,6 +46,7 @@ links, detailed parameter references, platform differences, and known gaps.
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/osmandplus.png" width="20"> OsmAnd+                   |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     ✓     | Android  |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/petal.png" width="20"> Petal Maps                     |   ✓    |   —    |     ✓      |   ✓    |      ✓      |     —     | Android  |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/mapswithme.png" width="20"> MAPS.ME                   |   ✓    |   —    |     ✓      | Required |    ✓      |     —     | Mobile   |
+| <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/organicMaps.png" width="20"> Organic Maps             |   ✓    |   —    |     ✓      | Required |    ✓      |     —     | Mobile   |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/neshan.png" width="20"> Neshan                        |   ✓    |   —    |     ✓      |   ✓    | iOS all; Android driving | — | Mobile |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/copilot.png" width="20"> CoPilot                      |   ✓    |   —    |     ✓      |   —    |      —      |     —     | Mobile   |
 | <img src="https://github.com/mattermoran/map_launcher/raw/master/assets/icons/moovit.png" width="20"> Moovit                        |   —    |   —    |     ✓      |   ✓    |      —      |     —     | Mobile   |
@@ -151,6 +152,7 @@ Add selected lines inside your `LSApplicationQueriesSchemes` array:
 <string>yandexnavi</string> <!-- Yandex Navigator -->
 <string>citymapper</string> <!-- Citymapper -->
 <string>mapswithme</string> <!-- MAPS.ME -->
+<string>om</string> <!-- Organic Maps -->
 <string>osmandmaps</string> <!-- OsmAnd -->
 <string>dgis</string> <!-- 2GIS -->
 <string>qqmap</string> <!-- Tencent (QQ Maps) -->
@@ -210,6 +212,7 @@ Add selected lines inside your manifest's `<queries>` element:
 <package android:name="ru.yandex.yandexnavi" /> <!-- Yandex Navigator -->
 <package android:name="com.citymapper.app.release" /> <!-- Citymapper -->
 <package android:name="com.mapswithme.maps.pro" /> <!-- MAPS.ME -->
+<package android:name="app.organicmaps" /> <!-- Organic Maps -->
 <package android:name="net.osmand" /> <!-- OsmAnd -->
 <package android:name="net.osmand.plus" /> <!-- OsmAnd+ -->
 <package android:name="ru.dublgis.dgismobile" /> <!-- 2GIS -->

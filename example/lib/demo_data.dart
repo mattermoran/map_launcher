@@ -19,6 +19,7 @@ abstract final class DemoData {
     .yandexNavi,
     .citymapper,
     .mapswithme,
+    .organicMaps,
     .osmand,
     .osmandplus,
     .tencent,

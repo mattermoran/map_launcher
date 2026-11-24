@@ -16,6 +16,7 @@ const providerFixture = <MapApp>[
   MapApp.yandexNavi,
   MapApp.citymapper,
   MapApp.mapswithme,
+  MapApp.organicMaps,
   MapApp.osmand,
   MapApp.osmandplus,
   MapApp.tencent,

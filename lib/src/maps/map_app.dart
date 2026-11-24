@@ -26,6 +26,7 @@ import 'package:map_launcher/src/maps/mapy_cz.dart';
 import 'package:map_launcher/src/maps/moovit.dart';
 import 'package:map_launcher/src/maps/naver.dart';
 import 'package:map_launcher/src/maps/neshan.dart';
+import 'package:map_launcher/src/maps/organic_maps.dart';
 import 'package:map_launcher/src/maps/osmand.dart';
 import 'package:map_launcher/src/maps/petal.dart';
 import 'package:map_launcher/src/maps/sygic_truck.dart';
@@ -101,6 +102,9 @@ abstract class MapApp {
 
   /// Maps.me.
   static const mapswithme = MapsMe();
+
+  /// Organic Maps.
+  static const organicMaps = OrganicMaps();
 
   /// OsmAnd.
   static const osmand = OsmAnd();

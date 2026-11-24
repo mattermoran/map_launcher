@@ -1,10 +1,25 @@
 # Organic Maps
 
-Checked: **2026-10-02**. Native-device behavior has not been verified.
+Checked: **2026-10-02**. Device-checked on **2026-11-24**: iPhone, iOS 27.2,
+Organic Maps from the App Store (see below).
 
-## Plugin status and identity
+## Plugin behavior
 
-**Organic Maps is not implemented in map_launcher.** Support is requested in [issue 111](https://github.com/mattermoran/map_launcher/issues/111). The formats below describe provider interfaces, not plugin capabilities.
+`MapApp.organicMaps` uses the legacy native links only:
+
+- Markers: `om://map?v=1&ll=LAT,LON[&n=NAME][&z=ZOOM]`.
+- Directions: `om://route?sll=...&saddr=...&dll=...&daddr=...&type=...`, the
+  five keys in this order, names kept even when empty, spaces as `%20`.
+  `type` maps driving/walking/transit/bicycling to
+  `vehicle`/`pedestrian`/`transit`/`bicycle`.
+- Routes require an explicit origin; without one the plugin returns no URL, as
+  for MAPS.ME. No waypoints, no HTTPS links, no v2 links.
+
+On the device above, `om://route` with an explicit origin opened a car route
+preview; `om://v2/dir?origin=currentLocation&destination=...&mode=drive` opened
+the app and did nothing, matching the parser findings below.
+
+## Identity
 
 Organic Maps is an active offline map/navigation product, not another spelling of MAPS.ME. Official identities: [Android `app.organicmaps`](https://play.google.com/store/apps/details?id=app.organicmaps), [Apple ID `1567437057`](https://apps.apple.com/app/id1567437057), primary native scheme `om`. The [Android API](https://github.com/organicmaps/api-android/blob/f813cc11ee7262a1b33f64aade4443843c83c9ea/README.md) additionally recognizes `.beta`, `.debug`, and `.web` package variants; they must not be mistaken for the production Play app. [iOS API store fallback](https://github.com/organicmaps/api-ios/blob/045dbce7756dfc116be3469f939eda5455b151fe/api/OrganicMapsAPI.swift) confirms the Apple identity.
 
