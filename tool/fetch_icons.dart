@@ -386,6 +386,11 @@ const _maps = <_MapEntry>[
     appStoreId: '510623322',
     playStoreId: 'com.mapswithme.maps.pro',
   ),
+  _MapEntry(
+    'organicMaps',
+    appStoreId: '1567437057',
+    playStoreId: 'app.organicmaps',
+  ),
   _MapEntry('osmand', appStoreId: '934850257', playStoreId: 'net.osmand'),
   _MapEntry('osmandplus', playStoreId: 'net.osmand.plus'),
   _MapEntry(

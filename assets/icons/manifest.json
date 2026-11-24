@@ -167,5 +167,11 @@
     "fetched_at": "2026-07-27T20:21:09.461433Z",
     "app_store_id": "474500851",
     "country": "ru"
+  },
+  "organicMaps": {
+    "source": "itunes",
+    "fetched_at": "2026-11-24T10:18:49.315443Z",
+    "app_store_id": "1567437057",
+    "country": "us"
   }
 }

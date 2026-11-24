@@ -57,6 +57,7 @@ export 'src/maps/mapy_cz.dart';
 export 'src/maps/moovit.dart';
 export 'src/maps/naver.dart';
 export 'src/maps/neshan.dart';
+export 'src/maps/organic_maps.dart';
 export 'src/maps/osmand.dart';
 export 'src/maps/petal.dart';
 export 'src/maps/sygic_truck.dart';
